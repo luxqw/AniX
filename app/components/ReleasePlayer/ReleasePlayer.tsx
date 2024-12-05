@@ -162,87 +162,105 @@ export const ReleasePlayer = (props: { id: number }) => {
     preferredVoiceoverStore.setPreferredPlayer(props.id, player.name);
   };
 
-  useEffect(() => {
-    async function _fetchInfo() {
-      try {
-        const voiceover = await _fetch(
-          `${ENDPOINTS.release.episode}/${props.id}`
-        );
-        const preferredVoiceover =
-          voiceover.types.find(
-            (voiceover: any) => voiceover.name === storedPreferredVoiceover
-          ) || voiceover.types[0];
-        setVoiceoverInfo(voiceover.types);
-        setSelectedVoiceover(preferredVoiceover);
-      } catch {
-        setVoiceoverInfo([]);
-        setSelectedVoiceover(null);
-        console.log("Error fetching voiceover info");
-        setError("Ошибка получения озвучек");
-      }
-    }
-    _fetchInfo();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  function _setError(error: string) {
+    setVoiceoverInfo(null);
+    setSelectedVoiceover(null);
+    setSourcesInfo(null);
+    setSelectedSource(null);
+    setEpisodeInfo(null);
+    setSelectedEpisode(null);
+    setError(error);
+  }
 
-  useEffect(() => {
-    async function _fetchInfo() {
-      try {
-        const sources = await _fetch(
-          `${ENDPOINTS.release.episode}/${props.id}/${selectedVoiceover.id}`
-        );
-        const preferredSource =
-          sources.sources.find(
-            (source: any) => source.name === storedPreferredPlayer
-          ) || sources.sources[0];
-        setSourcesInfo(sources.sources);
-        setSelectedSource(preferredSource);
-      } catch {
-        setSourcesInfo([]);
-        setSelectedSource(null);
-        console.log("Error fetching player info");
-        setError("Ошибка получения доступных плееров");
-      }
-    }
-    if (selectedVoiceover) {
-      _fetchInfo();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedVoiceover]);
-
-  useEffect(() => {
-    async function _fetchInfo(url: string) {
-      try {
-        const episodes = await _fetch(url);
-
-        if (episodes.episodes.length === 0) {
-          const remSources = sourcesInfo.filter(
-            (source) => source.id !== selectedSource.id
-          );
-          setSourcesInfo(remSources);
-          setSelectedSource(remSources[0]);
-
-          return;
+  async function _fetchInfo(
+    url: string,
+    type: "voiceover" | "sources" | "episodes"
+  ) {
+    let data: any = {};
+    data = await fetch(url)
+      .then((res) => {
+        if (res.ok) {
+          return res.json();
+        } else {
+          throw new Error("Error fetching data");
         }
+      })
+      .catch((err) => {
+        console.log(err);
+        _setError("Ошибка получение ответа от сервера");
+        return;
+      });
 
-        setEpisodeInfo(episodes.episodes);
-        setSelectedEpisode(episodes.episodes[0]);
-      } catch {
-        setEpisodeInfo([]);
-        setSelectedEpisode(null);
-        console.log("Error fetching episodes info");
-        setError("Ошибка получения доступных эпизодов");
-      }
+    if (data && Object.keys(data).length == 0) {
+      _setError("Ошибка получение данных с сервера");
     }
+
+    if (type == "voiceover") {
+      if (data.types.length > 0) {
+        setVoiceoverInfo(data.types);
+        const preferredVoiceover =
+          data.types.find(
+            (voiceover: any) => voiceover.name === storedPreferredVoiceover
+          ) || data.types[0];
+        setSelectedVoiceover(preferredVoiceover);
+      } else {
+        _setError("Ошибка получения озвучек");
+      }
+    } else if (type == "sources") {
+      if (data.sources.length > 0) {
+        setSourcesInfo(data.sources);
+        const preferredSource =
+          data.sources.find(
+            (source: any) => source.name === storedPreferredPlayer
+          ) || data.sources[0];
+        setSelectedSource(preferredSource);
+      } else {
+        _setError("Ошибка получения источников");
+      }
+    } else if (type == "episodes") {
+      if (data.episodes.length === 0) {
+        const remSources = sourcesInfo.filter(
+          (source) => source.id !== selectedSource.id
+        );
+        setSourcesInfo(remSources);
+        setSelectedSource(remSources[0]);
+        return;
+      } else if (data.episodes.length > 0) {
+        setEpisodeInfo(data.episodes);
+        setSelectedEpisode(data.episodes[0]);
+      } else {
+        _setError("Ошибка получения эпизодов");
+      }
+    } else {
+      _setError("Неизвестный тип запроса");
+    }
+  }
+
+  useEffect(() => {
+    _fetchInfo(`${ENDPOINTS.release.episode}/${props.id}`, "voiceover");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [props.id]);
+
+  useEffect(() => {
+    if (selectedVoiceover) {
+      _fetchInfo(
+        `${ENDPOINTS.release.episode}/${props.id}/${selectedVoiceover.id}`,
+        "sources"
+      );
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [props.id, selectedVoiceover]);
+
+  useEffect(() => {
     if (selectedSource) {
       let url = `${ENDPOINTS.release.episode}/${props.id}/${selectedVoiceover.id}/${selectedSource.id}`;
       if (userStore.token) {
         url = `${ENDPOINTS.release.episode}/${props.id}/${selectedVoiceover.id}/${selectedSource.id}?token=${userStore.token}`;
       }
-      _fetchInfo(url);
+      _fetchInfo(url, "episodes");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedSource, userStore.token]);
+  }, [props.id, selectedSource, userStore.token]);
 
   async function _addToHistory(episode: any) {
     if (episode && userStore.token) {
