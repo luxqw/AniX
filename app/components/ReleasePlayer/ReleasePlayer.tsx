@@ -2,6 +2,7 @@
 
 import { Spinner } from "#/components/Spinner/Spinner";
 import { useUserStore } from "#/store/auth";
+import { useUserPlayerPreferencesStore } from "#/store/player";
 import { Card, Dropdown, Button } from "flowbite-react";
 import { ENDPOINTS } from "#/api/config";
 import { useState, useEffect } from "react";
@@ -38,27 +39,14 @@ const getAnonEpisodesWatched = (
 ) => {
   const anonEpisodesWatched =
     JSON.parse(localStorage.getItem("anonEpisodesWatched")) || {};
-  console.log("anonEpisodesWatched", anonEpisodesWatched);
 
   if (!anonEpisodesWatched.hasOwnProperty(Release)) {
-    console.log(
-      `no key found for R: ${Release}`,
-      anonEpisodesWatched.hasOwnProperty(Release)
-    );
     anonEpisodesWatched[Release] = {};
   }
   if (!anonEpisodesWatched[Release].hasOwnProperty(Source)) {
-    console.log(
-      `no key found for R: ${Release} S: ${Source}`,
-      anonEpisodesWatched.hasOwnProperty(Release)
-    );
     anonEpisodesWatched[Release][Source] = {};
   }
   if (!anonEpisodesWatched[Release][Source].hasOwnProperty(Voiceover)) {
-    console.log(
-      `no key found for R: ${Release} S: ${Source} V: ${Voiceover}`,
-      anonEpisodesWatched.hasOwnProperty(Release)
-    );
     anonEpisodesWatched[Release][Source][Voiceover] = {};
   }
 
@@ -75,33 +63,17 @@ const getAnonCurrentEpisodeWatched = (
     JSON.parse(localStorage.getItem("anonEpisodesWatched")) || {};
 
   if (!anonEpisodesWatched.hasOwnProperty(Release)) {
-    console.log(
-      `no key found for R: ${Release}`,
-      anonEpisodesWatched.hasOwnProperty(Release)
-    );
     return false;
   }
   if (!anonEpisodesWatched[Release].hasOwnProperty(Source)) {
-    console.log(
-      `no key found for R: ${Release} S: ${Source}`,
-      anonEpisodesWatched.hasOwnProperty(Release)
-    );
     return false;
   }
   if (!anonEpisodesWatched[Release][Source].hasOwnProperty(Voiceover)) {
-    console.log(
-      `no key found for R: ${Release} S: ${Source} V: ${Voiceover}`,
-      anonEpisodesWatched.hasOwnProperty(Release)
-    );
     return false;
   }
   if (
     !anonEpisodesWatched[Release][Source][Voiceover].hasOwnProperty(Episode)
   ) {
-    console.log(
-      `no key found for R: ${Release} S: ${Source} V: ${Voiceover} E: ${Episode}`,
-      anonEpisodesWatched.hasOwnProperty(Release)
-    );
     return false;
   }
 
@@ -139,65 +111,148 @@ const saveAnonEpisodeWatched = (
 
 export const ReleasePlayer = (props: { id: number }) => {
   const userStore = useUserStore();
+  const preferredVoiceoverStore = useUserPlayerPreferencesStore();
+  const storedPreferredVoiceover =
+    preferredVoiceoverStore.getPreferredVoiceover(props.id);
+  const storedPreferredPlayer = preferredVoiceoverStore.getPreferredPlayer(
+    props.id
+  );
   const [voiceoverInfo, setVoiceoverInfo] = useState(null);
   const [selectedVoiceover, setSelectedVoiceover] = useState(null);
   const [sourcesInfo, setSourcesInfo] = useState(null);
   const [selectedSource, setSelectedSource] = useState(null);
   const [episodeInfo, setEpisodeInfo] = useState(null);
   const [selectedEpisode, setSelectedEpisode] = useState(null);
+  const [error, setError] = useState(null);
+  const setSelectedVoiceoverAndSaveAsPreferred = (voiceover: any) => {
+    setSelectedVoiceover(voiceover);
+    preferredVoiceoverStore.setPreferredVoiceover(props.id, voiceover.name);
+  };
+  const setSelectedPlayerAndSaveAsPreferred = (player: any) => {
+    setSelectedSource(player);
+    preferredVoiceoverStore.setPreferredPlayer(props.id, player.name);
+  };
 
-  useEffect(() => {
-    async function _fetchInfo() {
-      const voiceover = await _fetch(
-        `${ENDPOINTS.release.episode}/${props.id}`
-      );
-      setVoiceoverInfo(voiceover.types);
-      setSelectedVoiceover(voiceover.types[0]);
+  function _setError(error: string) {
+    setVoiceoverInfo(null);
+    setSelectedVoiceover(null);
+    setSourcesInfo(null);
+    setSelectedSource(null);
+    setEpisodeInfo(null);
+    setSelectedEpisode(null);
+    setError(error);
+  }
+
+  async function _fetchInfo(
+    url: string,
+    type: "voiceover" | "sources" | "episodes"
+  ) {
+    let data: any = {};
+    data = await fetch(url)
+      .then((res) => {
+        if (res.ok) {
+          return res.json();
+        } else {
+          throw new Error("Error fetching data");
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+        _setError("Ошибка получение ответа от сервера");
+        return;
+      });
+
+    if (data && Object.keys(data).length == 0) {
+      _setError("Ошибка получение данных с сервера");
     }
-    _fetchInfo();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
-  useEffect(() => {
-    async function _fetchInfo() {
-      const sources = await _fetch(
-        `${ENDPOINTS.release.episode}/${props.id}/${selectedVoiceover.id}`
-      );
-      setSourcesInfo(sources.sources);
-      setSelectedSource(sources.sources[0]);
-    }
-    if (selectedVoiceover) {
-      _fetchInfo();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedVoiceover]);
-
-  useEffect(() => {
-    async function _fetchInfo(url: string) {
-      const episodes = await _fetch(url);
-
-      if (episodes.episodes.length === 0) {
+    if (type == "voiceover") {
+      if (data.types.length > 0) {
+        setVoiceoverInfo(data.types);
+        const preferredVoiceover =
+          data.types.find(
+            (voiceover: any) => voiceover.name === storedPreferredVoiceover
+          ) || data.types[0];
+        setSelectedVoiceover(preferredVoiceover);
+      } else {
+        _setError("Ошибка получения озвучек");
+      }
+    } else if (type == "sources") {
+      if (data.sources.length > 0) {
+        setSourcesInfo(data.sources);
+        const preferredSource =
+          data.sources.find(
+            (source: any) => source.name === storedPreferredPlayer
+          ) || data.sources[0];
+        setSelectedSource(preferredSource);
+      } else {
+        _setError("Ошибка получения источников");
+      }
+    } else if (type == "episodes") {
+      if (data.episodes.length === 0) {
         const remSources = sourcesInfo.filter(
           (source) => source.id !== selectedSource.id
         );
         setSourcesInfo(remSources);
         setSelectedSource(remSources[0]);
-
         return;
-      }
+      } else if (data.episodes.length > 0) {
+        setEpisodeInfo(data.episodes);
+        setSelectedEpisode(data.episodes[0]);
 
-      setEpisodeInfo(episodes.episodes);
-      setSelectedEpisode(episodes.episodes[0]);
+        const WatchedEpisodes = getAnonEpisodesWatched(
+          props.id,
+          selectedSource.id,
+          selectedVoiceover.id
+        );
+        if (
+          Object.keys(
+            WatchedEpisodes[props.id][selectedSource.id][selectedVoiceover.id]
+          ).length != 0
+        ) {
+          const watchedEpisodes =
+            WatchedEpisodes[props.id][selectedSource.id][selectedVoiceover.id];
+          let lastWatchedEpisode = Number(Object.keys(watchedEpisodes).pop());
+          if (
+            !["Sibnet", "Sibnet (не работает)"].includes(selectedSource.name)
+          ) {
+            lastWatchedEpisode = Number(lastWatchedEpisode) - 1;
+          }
+          setSelectedEpisode(data.episodes[lastWatchedEpisode]);
+        }
+      } else {
+        _setError("Ошибка получения эпизодов");
+      }
+    } else {
+      _setError("Неизвестный тип запроса");
     }
+  }
+
+  useEffect(() => {
+    _fetchInfo(`${ENDPOINTS.release.episode}/${props.id}`, "voiceover");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [props.id]);
+
+  useEffect(() => {
+    if (selectedVoiceover) {
+      _fetchInfo(
+        `${ENDPOINTS.release.episode}/${props.id}/${selectedVoiceover.id}`,
+        "sources"
+      );
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [props.id, selectedVoiceover]);
+
+  useEffect(() => {
     if (selectedSource) {
       let url = `${ENDPOINTS.release.episode}/${props.id}/${selectedVoiceover.id}/${selectedSource.id}`;
       if (userStore.token) {
         url = `${ENDPOINTS.release.episode}/${props.id}/${selectedVoiceover.id}/${selectedSource.id}?token=${userStore.token}`;
       }
-      _fetchInfo(url);
+      _fetchInfo(url, "episodes");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedSource, userStore.token]);
+  }, [props.id, selectedSource, userStore.token]);
 
   async function _addToHistory(episode: any) {
     if (episode && userStore.token) {
@@ -214,7 +269,7 @@ export const ReleasePlayer = (props: { id: number }) => {
     <Card>
       {!voiceoverInfo || !sourcesInfo || !episodeInfo ? (
         <div className="flex items-center justify-center w-full aspect-video">
-          <Spinner />
+          {!error ? <Spinner /> : <p>{error}</p>}
         </div>
       ) : (
         <>
@@ -227,7 +282,9 @@ export const ReleasePlayer = (props: { id: number }) => {
               {voiceoverInfo.map((voiceover: any) => (
                 <Dropdown.Item
                   key={`voiceover_${voiceover.id}`}
-                  onClick={() => setSelectedVoiceover(voiceover)}
+                  onClick={() =>
+                    setSelectedVoiceoverAndSaveAsPreferred(voiceover)
+                  }
                 >
                   {voiceover.name}
                 </Dropdown.Item>
@@ -241,7 +298,7 @@ export const ReleasePlayer = (props: { id: number }) => {
               {sourcesInfo.map((source: any) => (
                 <Dropdown.Item
                   key={`source_${source.id}`}
-                  onClick={() => setSelectedSource(source)}
+                  onClick={() => setSelectedPlayerAndSaveAsPreferred(source)}
                 >
                   {source.name}
                 </Dropdown.Item>
@@ -249,11 +306,15 @@ export const ReleasePlayer = (props: { id: number }) => {
             </Dropdown>
           </div>
           <div className="aspect-video">
-            <iframe
-              allowFullScreen={true}
-              src={selectedEpisode.url}
-              className="w-full h-full rounded-md"
-            ></iframe>
+            {selectedEpisode ? (
+              <iframe
+                allowFullScreen={true}
+                src={selectedEpisode.url}
+                className="w-full h-full rounded-md"
+              ></iframe>
+            ) : (
+              <p>Ошибка загрузки плеера</p>
+            )}
           </div>
           <div>
             <Swiper
@@ -301,7 +362,9 @@ export const ReleasePlayer = (props: { id: number }) => {
                     {episode.name
                       ? episode.name
                       : `${
-                          selectedSource.name != "Sibnet"
+                          !["Sibnet", "Sibnet (не работает)"].includes(
+                            selectedSource.name
+                          )
                             ? episode.position
                             : episode.position + 1
                         } серия`}
