@@ -3,8 +3,8 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
 interface userPlayerPreferencesState {
-    voiceover: Map<number, string>;
-    player: Map<number, string>;
+    voiceover: Record<number, string>;
+    player: Record<number, string>;
     getPreferredVoiceover: (id: number) => (string | undefined);
     setPreferredVoiceover: (id: number, voiceover: string) => void;
     getPreferredPlayer: (id: number) => (string | undefined);
@@ -14,8 +14,8 @@ interface userPlayerPreferencesState {
 export const useUserPlayerPreferencesStore = create<userPlayerPreferencesState>()(
     persist(
         (set, get) => ({
-            voiceover: new Map<number, string>(),
-            player: new Map<number, string>(),
+            voiceover: {},
+            player: {},
             getPreferredVoiceover: (id: number) => get().voiceover[id],
             setPreferredVoiceover: (id: number, voiceover: string) => {
                 let current = get().voiceover
