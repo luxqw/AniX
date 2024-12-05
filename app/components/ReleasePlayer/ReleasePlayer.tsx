@@ -370,7 +370,9 @@ export const ReleasePlayer = (props: { id: number }) => {
                     {episode.name
                       ? episode.name
                       : `${
-                          selectedSource.name != "Sibnet"
+                          !["Sibnet", "Sibnet (не работает)"].includes(
+                            selectedSource.name
+                          )
                             ? episode.position
                             : episode.position + 1
                         } серия`}
