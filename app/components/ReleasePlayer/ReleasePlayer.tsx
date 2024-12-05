@@ -141,34 +141,45 @@ const saveAnonEpisodeWatched = (
 export const ReleasePlayer = (props: { id: number }) => {
   const userStore = useUserStore();
   const preferredVoiceoverStore = useUserPlayerPreferencesStore();
-  const storedPreferredVoiceover = preferredVoiceoverStore.getPreferredVoiceover(props.id);
-  const storedPreferredPlayer = preferredVoiceoverStore.getPreferredPlayer(props.id);
+  const storedPreferredVoiceover =
+    preferredVoiceoverStore.getPreferredVoiceover(props.id);
+  const storedPreferredPlayer = preferredVoiceoverStore.getPreferredPlayer(
+    props.id
+  );
   const [voiceoverInfo, setVoiceoverInfo] = useState(null);
   const [selectedVoiceover, setSelectedVoiceover] = useState(null);
   const [sourcesInfo, setSourcesInfo] = useState(null);
   const [selectedSource, setSelectedSource] = useState(null);
   const [episodeInfo, setEpisodeInfo] = useState(null);
   const [selectedEpisode, setSelectedEpisode] = useState(null);
+  const [error, setError] = useState(null);
   const setSelectedVoiceoverAndSaveAsPreferred = (voiceover: any) => {
     setSelectedVoiceover(voiceover);
     preferredVoiceoverStore.setPreferredVoiceover(props.id, voiceover.name);
-  }
+  };
   const setSelectedPlayerAndSaveAsPreferred = (player: any) => {
     setSelectedSource(player);
     preferredVoiceoverStore.setPreferredPlayer(props.id, player.name);
-  }
+  };
 
   useEffect(() => {
     async function _fetchInfo() {
-      const voiceover = await _fetch(
-        `${ENDPOINTS.release.episode}/${props.id}`
-      );
-      const preferredVoiceover = voiceover.types.find(
-        (voiceover: any) => voiceover.name === storedPreferredVoiceover
-      ) || voiceover.types[0];
-
-      setVoiceoverInfo(voiceover.types);
-      setSelectedVoiceover(preferredVoiceover);
+      try {
+        const voiceover = await _fetch(
+          `${ENDPOINTS.release.episode}/${props.id}`
+        );
+        const preferredVoiceover =
+          voiceover.types.find(
+            (voiceover: any) => voiceover.name === storedPreferredVoiceover
+          ) || voiceover.types[0];
+        setVoiceoverInfo(voiceover.types);
+        setSelectedVoiceover(preferredVoiceover);
+      } catch {
+        setVoiceoverInfo([]);
+        setSelectedVoiceover(null);
+        console.log("Error fetching voiceover info");
+        setError("Ошибка получения озвучек");
+      }
     }
     _fetchInfo();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -176,15 +187,22 @@ export const ReleasePlayer = (props: { id: number }) => {
 
   useEffect(() => {
     async function _fetchInfo() {
-      const sources = await _fetch(
-        `${ENDPOINTS.release.episode}/${props.id}/${selectedVoiceover.id}`
-      );
-      const preferredSource = sources.sources.find(
-        (source: any) => source.name === storedPreferredPlayer
-      ) || sources.sources[0];
-
-      setSourcesInfo(sources.sources);
-      setSelectedSource(preferredSource);
+      try {
+        const sources = await _fetch(
+          `${ENDPOINTS.release.episode}/${props.id}/${selectedVoiceover.id}`
+        );
+        const preferredSource =
+          sources.sources.find(
+            (source: any) => source.name === storedPreferredPlayer
+          ) || sources.sources[0];
+        setSourcesInfo(sources.sources);
+        setSelectedSource(preferredSource);
+      } catch {
+        setSourcesInfo([]);
+        setSelectedSource(null);
+        console.log("Error fetching player info");
+        setError("Ошибка получения доступных плееров");
+      }
     }
     if (selectedVoiceover) {
       _fetchInfo();
@@ -194,20 +212,27 @@ export const ReleasePlayer = (props: { id: number }) => {
 
   useEffect(() => {
     async function _fetchInfo(url: string) {
-      const episodes = await _fetch(url);
+      try {
+        const episodes = await _fetch(url);
 
-      if (episodes.episodes.length === 0) {
-        const remSources = sourcesInfo.filter(
-          (source) => source.id !== selectedSource.id
-        );
-        setSourcesInfo(remSources);
-        setSelectedSource(remSources[0]);
+        if (episodes.episodes.length === 0) {
+          const remSources = sourcesInfo.filter(
+            (source) => source.id !== selectedSource.id
+          );
+          setSourcesInfo(remSources);
+          setSelectedSource(remSources[0]);
 
-        return;
+          return;
+        }
+
+        setEpisodeInfo(episodes.episodes);
+        setSelectedEpisode(episodes.episodes[0]);
+      } catch {
+        setEpisodeInfo([]);
+        setSelectedEpisode(null);
+        console.log("Error fetching episodes info");
+        setError("Ошибка получения доступных эпизодов");
       }
-
-      setEpisodeInfo(episodes.episodes);
-      setSelectedEpisode(episodes.episodes[0]);
     }
     if (selectedSource) {
       let url = `${ENDPOINTS.release.episode}/${props.id}/${selectedVoiceover.id}/${selectedSource.id}`;
@@ -234,7 +259,7 @@ export const ReleasePlayer = (props: { id: number }) => {
     <Card>
       {!voiceoverInfo || !sourcesInfo || !episodeInfo ? (
         <div className="flex items-center justify-center w-full aspect-video">
-          <Spinner />
+          {!error ? <Spinner /> : <p>{error}</p>}
         </div>
       ) : (
         <>
@@ -247,7 +272,9 @@ export const ReleasePlayer = (props: { id: number }) => {
               {voiceoverInfo.map((voiceover: any) => (
                 <Dropdown.Item
                   key={`voiceover_${voiceover.id}`}
-                  onClick={() => setSelectedVoiceoverAndSaveAsPreferred(voiceover)}
+                  onClick={() =>
+                    setSelectedVoiceoverAndSaveAsPreferred(voiceover)
+                  }
                 >
                   {voiceover.name}
                 </Dropdown.Item>
@@ -269,11 +296,15 @@ export const ReleasePlayer = (props: { id: number }) => {
             </Dropdown>
           </div>
           <div className="aspect-video">
-            <iframe
-              allowFullScreen={true}
-              src={selectedEpisode.url}
-              className="w-full h-full rounded-md"
-            ></iframe>
+            {selectedEpisode ? (
+              <iframe
+                allowFullScreen={true}
+                src={selectedEpisode.url}
+                className="w-full h-full rounded-md"
+              ></iframe>
+            ) : (
+              <p>Ошибка загрузки плеера</p>
+            )}
           </div>
           <div>
             <Swiper
