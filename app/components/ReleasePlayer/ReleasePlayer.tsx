@@ -39,27 +39,14 @@ const getAnonEpisodesWatched = (
 ) => {
   const anonEpisodesWatched =
     JSON.parse(localStorage.getItem("anonEpisodesWatched")) || {};
-  console.log("anonEpisodesWatched", anonEpisodesWatched);
 
   if (!anonEpisodesWatched.hasOwnProperty(Release)) {
-    console.log(
-      `no key found for R: ${Release}`,
-      anonEpisodesWatched.hasOwnProperty(Release)
-    );
     anonEpisodesWatched[Release] = {};
   }
   if (!anonEpisodesWatched[Release].hasOwnProperty(Source)) {
-    console.log(
-      `no key found for R: ${Release} S: ${Source}`,
-      anonEpisodesWatched.hasOwnProperty(Release)
-    );
     anonEpisodesWatched[Release][Source] = {};
   }
   if (!anonEpisodesWatched[Release][Source].hasOwnProperty(Voiceover)) {
-    console.log(
-      `no key found for R: ${Release} S: ${Source} V: ${Voiceover}`,
-      anonEpisodesWatched.hasOwnProperty(Release)
-    );
     anonEpisodesWatched[Release][Source][Voiceover] = {};
   }
 
@@ -76,33 +63,17 @@ const getAnonCurrentEpisodeWatched = (
     JSON.parse(localStorage.getItem("anonEpisodesWatched")) || {};
 
   if (!anonEpisodesWatched.hasOwnProperty(Release)) {
-    console.log(
-      `no key found for R: ${Release}`,
-      anonEpisodesWatched.hasOwnProperty(Release)
-    );
     return false;
   }
   if (!anonEpisodesWatched[Release].hasOwnProperty(Source)) {
-    console.log(
-      `no key found for R: ${Release} S: ${Source}`,
-      anonEpisodesWatched.hasOwnProperty(Release)
-    );
     return false;
   }
   if (!anonEpisodesWatched[Release][Source].hasOwnProperty(Voiceover)) {
-    console.log(
-      `no key found for R: ${Release} S: ${Source} V: ${Voiceover}`,
-      anonEpisodesWatched.hasOwnProperty(Release)
-    );
     return false;
   }
   if (
     !anonEpisodesWatched[Release][Source][Voiceover].hasOwnProperty(Episode)
   ) {
-    console.log(
-      `no key found for R: ${Release} S: ${Source} V: ${Voiceover} E: ${Episode}`,
-      anonEpisodesWatched.hasOwnProperty(Release)
-    );
     return false;
   }
 
@@ -228,6 +199,27 @@ export const ReleasePlayer = (props: { id: number }) => {
       } else if (data.episodes.length > 0) {
         setEpisodeInfo(data.episodes);
         setSelectedEpisode(data.episodes[0]);
+
+        const WatchedEpisodes = getAnonEpisodesWatched(
+          props.id,
+          selectedSource.id,
+          selectedVoiceover.id
+        );
+        if (
+          Object.keys(
+            WatchedEpisodes[props.id][selectedSource.id][selectedVoiceover.id]
+          ).length != 0
+        ) {
+          const watchedEpisodes =
+            WatchedEpisodes[props.id][selectedSource.id][selectedVoiceover.id];
+          let lastWatchedEpisode = Number(Object.keys(watchedEpisodes).pop());
+          if (
+            !["Sibnet", "Sibnet (не работает)"].includes(selectedSource.name)
+          ) {
+            lastWatchedEpisode = Number(lastWatchedEpisode) - 1;
+          }
+          setSelectedEpisode(data.episodes[lastWatchedEpisode]);
+        }
       } else {
         _setError("Ошибка получения эпизодов");
       }
