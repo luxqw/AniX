@@ -2,6 +2,7 @@
 
 import { Spinner } from "#/components/Spinner/Spinner";
 import { useUserStore } from "#/store/auth";
+import { useUserPlayerPreferencesStore } from "#/store/player";
 import { Card, Dropdown, Button } from "flowbite-react";
 import { ENDPOINTS } from "#/api/config";
 import { useState, useEffect } from "react";
@@ -139,20 +140,35 @@ const saveAnonEpisodeWatched = (
 
 export const ReleasePlayer = (props: { id: number }) => {
   const userStore = useUserStore();
+  const preferredVoiceoverStore = useUserPlayerPreferencesStore();
+  const storedPreferredVoiceover = preferredVoiceoverStore.getPreferredVoiceover(props.id);
+  const storedPreferredPlayer = preferredVoiceoverStore.getPreferredPlayer(props.id);
   const [voiceoverInfo, setVoiceoverInfo] = useState(null);
   const [selectedVoiceover, setSelectedVoiceover] = useState(null);
   const [sourcesInfo, setSourcesInfo] = useState(null);
   const [selectedSource, setSelectedSource] = useState(null);
   const [episodeInfo, setEpisodeInfo] = useState(null);
   const [selectedEpisode, setSelectedEpisode] = useState(null);
+  const setSelectedVoiceoverAndSaveAsPreferred = (voiceover: any) => {
+    setSelectedVoiceover(voiceover);
+    preferredVoiceoverStore.setPreferredVoiceover(props.id, voiceover.name);
+  }
+  const setSelectedPlayerAndSaveAsPreferred = (player: any) => {
+    setSelectedSource(player);
+    preferredVoiceoverStore.setPreferredPlayer(props.id, player.name);
+  }
 
   useEffect(() => {
     async function _fetchInfo() {
       const voiceover = await _fetch(
         `${ENDPOINTS.release.episode}/${props.id}`
       );
+      const preferredVoiceover = voiceover.types.find(
+        (voiceover: any) => voiceover.name === storedPreferredVoiceover
+      ) || voiceover.types[0];
+
       setVoiceoverInfo(voiceover.types);
-      setSelectedVoiceover(voiceover.types[0]);
+      setSelectedVoiceover(preferredVoiceover);
     }
     _fetchInfo();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -163,8 +179,12 @@ export const ReleasePlayer = (props: { id: number }) => {
       const sources = await _fetch(
         `${ENDPOINTS.release.episode}/${props.id}/${selectedVoiceover.id}`
       );
+      const preferredSource = sources.sources.find(
+        (source: any) => source.name === storedPreferredPlayer
+      ) || sources.sources[0];
+
       setSourcesInfo(sources.sources);
-      setSelectedSource(sources.sources[0]);
+      setSelectedSource(preferredSource);
     }
     if (selectedVoiceover) {
       _fetchInfo();
@@ -227,7 +247,7 @@ export const ReleasePlayer = (props: { id: number }) => {
               {voiceoverInfo.map((voiceover: any) => (
                 <Dropdown.Item
                   key={`voiceover_${voiceover.id}`}
-                  onClick={() => setSelectedVoiceover(voiceover)}
+                  onClick={() => setSelectedVoiceoverAndSaveAsPreferred(voiceover)}
                 >
                   {voiceover.name}
                 </Dropdown.Item>
@@ -241,7 +261,7 @@ export const ReleasePlayer = (props: { id: number }) => {
               {sourcesInfo.map((source: any) => (
                 <Dropdown.Item
                   key={`source_${source.id}`}
-                  onClick={() => setSelectedSource(source)}
+                  onClick={() => setSelectedPlayerAndSaveAsPreferred(source)}
                 >
                   {source.name}
                 </Dropdown.Item>
