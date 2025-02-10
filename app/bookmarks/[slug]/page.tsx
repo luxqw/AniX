@@ -1,4 +1,5 @@
 import { BookmarksCategoryPage } from "#/pages/BookmarksCategory";
+export const dynamic = 'force-static';
 
 const SectionTitleMapping = {
   watching: "Смотрю",

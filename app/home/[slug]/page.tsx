@@ -1,4 +1,5 @@
 import { IndexCategoryPage } from "#/pages/IndexCategory";
+export const dynamic = 'force-static';
 
 const SectionTitleMapping = {
   last: "Последние релизы",

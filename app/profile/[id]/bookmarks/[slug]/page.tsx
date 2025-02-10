@@ -1,6 +1,7 @@
 import { BookmarksCategoryPage } from "#/pages/BookmarksCategory";
 import { fetchDataViaGet } from "#/api/utils";
 import type { Metadata, ResolvingMetadata } from "next";
+export const dynamic = 'force-static';
 
 const SectionTitleMapping = {
   watching: "Смотрю",

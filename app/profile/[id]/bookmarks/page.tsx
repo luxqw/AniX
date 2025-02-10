@@ -1,6 +1,7 @@
 import { BookmarksPage } from "#/pages/Bookmarks";
 import { fetchDataViaGet } from "#/api/utils";
 import type { Metadata, ResolvingMetadata } from "next";
+export const dynamic = 'force-static';
 
 export async function generateMetadata(
   { params },

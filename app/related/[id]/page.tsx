@@ -1,6 +1,7 @@
 import { RelatedPage } from "#/pages/Related";
 import { fetchDataViaGet } from "#/api/utils";
 import type { Metadata, ResolvingMetadata } from "next";
+export const dynamic = 'force-static';
 
 export async function generateMetadata({ params }, parent: ResolvingMetadata): Promise<Metadata> {
   const id:string = params.id;
