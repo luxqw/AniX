@@ -10,7 +10,7 @@ module.exports = withPlausibleProxy({
   async headers() {
     return [
       {
-        source: '/bookmarks/[slug]',
+        source: '/bookmarks/:slug*',
         headers: [
           {
             key: 'Cache-Control',
@@ -19,7 +19,7 @@ module.exports = withPlausibleProxy({
         ],
       },
       {
-        source: '/collection/[id]',
+        source: '/collection/:slug*',
         headers: [
           {
             key: 'Cache-Control',
@@ -28,7 +28,7 @@ module.exports = withPlausibleProxy({
         ],
       },
       {
-        source: '/home/[slug]',
+        source: '/home/:slug*',
         headers: [
           {
             key: 'Cache-Control',
@@ -37,7 +37,7 @@ module.exports = withPlausibleProxy({
         ],
       },
       {
-        source: '/profile/[id]',
+        source: '/profile/:slug*',
         headers: [
           {
             key: 'Cache-Control',
@@ -46,7 +46,7 @@ module.exports = withPlausibleProxy({
         ],
       },
       {
-        source: '/profile/[id]/bookmarks/[slug]',
+        source: '/release/:slug*',
         headers: [
           {
             key: 'Cache-Control',
@@ -55,34 +55,7 @@ module.exports = withPlausibleProxy({
         ],
       },
       {
-        source: '/profile/[id]/:path',
-        headers: [
-          {
-            key: 'Cache-Control',
-            value: 's-maxage=2592000, stale-while-revalidate=86400',
-          },
-        ],
-      },
-      {
-        source: '/release/[id]',
-        headers: [
-          {
-            key: 'Cache-Control',
-            value: 's-maxage=2592000, stale-while-revalidate=86400',
-          },
-        ],
-      },
-      {
-        source: '/release/[id]/collections',
-        headers: [
-          {
-            key: 'Cache-Control',
-            value: 's-maxage=2592000, stale-while-revalidate=86400',
-          },
-        ],
-      },
-      {
-        source: '/related/[id]',
+        source: '/related/:slug*',
         headers: [
           {
             key: 'Cache-Control',
