@@ -10,7 +10,7 @@ module.exports = withPlausibleProxy({
   async headers() {
     return [
       {
-        source: '/bookmarks/(.+)',
+        source: '/bookmarks/[slug]',
         headers: [
           {
             key: 'Cache-Control',
@@ -19,7 +19,7 @@ module.exports = withPlausibleProxy({
         ],
       },
       {
-        source: '/collection/(.+)',
+        source: '/collection/[id]',
         headers: [
           {
             key: 'Cache-Control',
@@ -28,7 +28,7 @@ module.exports = withPlausibleProxy({
         ],
       },
       {
-        source: '/home/(.+)',
+        source: '/home/[slug]',
         headers: [
           {
             key: 'Cache-Control',
@@ -37,7 +37,61 @@ module.exports = withPlausibleProxy({
         ],
       },
       {
-        source: '/profile/(.+)',
+        source: '/profile/[id]',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 's-maxage=2592000, stale-while-revalidate=86400',
+          },
+        ],
+      },
+      {
+        source: '/profile/[id]/bookmarks/[slug]',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 's-maxage=2592000, stale-while-revalidate=86400',
+          },
+        ],
+      },
+      {
+        source: '/profile/[id]/:path',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 's-maxage=2592000, stale-while-revalidate=86400',
+          },
+        ],
+      },
+      {
+        source: '/release/[id]',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 's-maxage=2592000, stale-while-revalidate=86400',
+          },
+        ],
+      },
+      {
+        source: '/release/[id]/collections',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 's-maxage=2592000, stale-while-revalidate=86400',
+          },
+        ],
+      },
+      {
+        source: '/related/[id]',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 's-maxage=2592000, stale-while-revalidate=86400',
+          },
+        ],
+      },
+      {
+        source: '/search',
         headers: [
           {
             key: 'Cache-Control',
