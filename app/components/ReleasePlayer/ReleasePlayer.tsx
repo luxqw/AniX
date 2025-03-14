@@ -162,32 +162,25 @@ export const ReleasePlayer = (props: { id: number }) => {
         return;
       });
 
-    if (data && Object.keys(data).length == 0) {
+    if (!data || (data && Object.keys(data).length == 0)) {
       _setError("Ошибка получение данных с сервера");
+      return;
     }
 
     if (type == "voiceover") {
-      if (data.types.length > 0) {
-        setVoiceoverInfo(data.types);
-        const preferredVoiceover =
-          data.types.find(
-            (voiceover: any) => voiceover.name === storedPreferredVoiceover
-          ) || data.types[0];
-        setSelectedVoiceover(preferredVoiceover);
-      } else {
-        _setError("Ошибка получения озвучек");
-      }
+      setVoiceoverInfo(data.types);
+      const preferredVoiceover =
+        data.types.find(
+          (voiceover: any) => voiceover.name === storedPreferredVoiceover
+        ) || data.types[0];
+      setSelectedVoiceover(preferredVoiceover);
     } else if (type == "sources") {
-      if (data.sources.length > 0) {
-        setSourcesInfo(data.sources);
-        const preferredSource =
-          data.sources.find(
-            (source: any) => source.name === storedPreferredPlayer
-          ) || data.sources[0];
-        setSelectedSource(preferredSource);
-      } else {
-        _setError("Ошибка получения источников");
-      }
+      setSourcesInfo(data.sources);
+      const preferredSource =
+        data.sources.find(
+          (source: any) => source.name === storedPreferredPlayer
+        ) || data.sources[0];
+      setSelectedSource(preferredSource);
     } else if (type == "episodes") {
       if (data.episodes.length === 0) {
         const remSources = sourcesInfo.filter(
@@ -196,7 +189,7 @@ export const ReleasePlayer = (props: { id: number }) => {
         setSourcesInfo(remSources);
         setSelectedSource(remSources[0]);
         return;
-      } else if (data.episodes.length > 0) {
+      } else {
         setEpisodeInfo(data.episodes);
         setSelectedEpisode(data.episodes[0]);
 
@@ -220,8 +213,6 @@ export const ReleasePlayer = (props: { id: number }) => {
           }
           setSelectedEpisode(data.episodes[lastWatchedEpisode]);
         }
-      } else {
-        _setError("Ошибка получения эпизодов");
       }
     } else {
       _setError("Неизвестный тип запроса");
