@@ -18,6 +18,9 @@ interface preferencesState {
       enabled: boolean;
       homeCategory: string;
       bookmarksCategory: string;
+    };
+    experimental?: {
+      newPlayer: boolean;
     }
     // color: {
     //   primary: string;
@@ -47,6 +50,9 @@ export const usePreferencesStore = create<preferencesState>()(
           enabled: false,
           homeCategory: "last",
           bookmarksCategory: "watching",
+        },
+        experimental: {
+          newPlayer: false
         }
       },
       setHasHydrated: (state) => {
