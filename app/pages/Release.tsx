@@ -61,6 +61,7 @@ export const ReleasePage = (props: any) => {
             }}
             description={data.release.description}
             note={data.release.note}
+            release_id={data.release.id}
           />
         </div>
         <div className="[grid-column:2]">

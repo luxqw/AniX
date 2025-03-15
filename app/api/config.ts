@@ -10,6 +10,7 @@ export const ENDPOINTS = {
     info: `${API_PREFIX}/release`,
     episode: `${API_PREFIX}/episode`,
     related: `${API_PREFIX}/related`,
+    licensed: `${API_PREFIX}/release/streaming/platform`,
   },
   user: {
     profile: `${API_PREFIX}/profile`,
