@@ -56,6 +56,10 @@ const DropdownItem = ({
   );
 };
 
+const DropdownTheme = {
+  content: "md:grid md:grid-cols-2 xl:grid-cols-4 gap-2 w-full container",
+};
+
 export const VoiceoverSelector = (props: {
   availableVoiceover: Voiceover[];
   voiceover: Voiceover;
@@ -66,6 +70,7 @@ export const VoiceoverSelector = (props: {
 
   return (
     <Dropdown
+      theme={DropdownTheme}
       label=""
       dismissOnClick={true}
       renderTrigger={() => (
@@ -76,9 +81,13 @@ export const VoiceoverSelector = (props: {
     >
       {props.availableVoiceover.map((voiceover: Voiceover) => (
         <Dropdown.Item
+          className="w-fit"
           key={`voiceover_${voiceover.id}`}
           onClick={() => {
-            playerPreferenceStore.setPreferredVoiceover(props.release_id, voiceover.name);
+            playerPreferenceStore.setPreferredVoiceover(
+              props.release_id,
+              voiceover.name
+            );
             props.setVoiceover({
               selected: voiceover,
               available: props.availableVoiceover,
