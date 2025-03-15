@@ -57,9 +57,11 @@ export const ReleasePlayerCustom = (props: {
     voiceover_id: number,
     source_id: number
   ) => {
-    const response = await fetch(
-      `${ENDPOINTS.release.episode}/${release_id}/${voiceover_id}/${source_id}`
-    );
+    let url = `${ENDPOINTS.release.episode}/${release_id}/${voiceover_id}/${source_id}`
+    if (props.token) {
+      url += `?token=${props.token}`;
+    }
+    const response = await fetch(url);
     const data = await response.json();
     return data;
   };
@@ -196,7 +198,7 @@ export const ReleasePlayerCustom = (props: {
           episode.selected.url
         );
         SetPlayerProps({
-          src: `${manifest}`,
+          src: manifest,
           poster: poster,
           useCustom: true,
         });
@@ -214,7 +216,7 @@ export const ReleasePlayerCustom = (props: {
   }, [episode.selected]);
 
   return (
-    <Card>
+    <Card className="h-full">
       {(
         !voiceover.selected ||
         !source.selected ||
@@ -237,27 +239,24 @@ export const ReleasePlayerCustom = (props: {
               setSource={setSource}
             />
           </div>
-          {
-            playerProps.useCustom ?
-              <MediaThemeSutro>
-                <HlsVideo
-                  slot="media"
-                  src={playerProps.src}
-                  poster={playerProps.poster}
-                  preload="auto"
-                  muted
-                  crossOrigin=""
-                />
-              </MediaThemeSutro>
-              // @ts-ignore
-              // <Player
-              //   src={playerProps.src}
-              //   poster={playerProps.poster}
-              //   className="w-full aspect-video"
-              //   type="hls"
-              // />
-            : <iframe src={playerProps.src} className="w-full aspect-video" />
-          }
+          {playerProps.useCustom ?
+            <MediaThemeSutro className="w-full aspect-video">
+              <HlsVideo
+                slot="media"
+                src={playerProps.src}
+                poster={playerProps.poster}
+              />
+            </MediaThemeSutro>
+          : <iframe src={playerProps.src} className="w-full aspect-video" />}
+          <EpisodeSelector
+            availableEpisodes={episode.available}
+            episode={episode.selected}
+            setEpisode={setEpisode}
+            release={props.id}
+            source={source.selected}
+            voiceover={voiceover.selected}
+            token={props.token}
+          />
         </div>
       }
     </Card>

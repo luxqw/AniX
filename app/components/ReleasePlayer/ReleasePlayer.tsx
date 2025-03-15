@@ -32,7 +32,7 @@ async function _fetch(url: string) {
   return data;
 }
 
-const getAnonEpisodesWatched = (
+export const getAnonEpisodesWatched = (
   Release: number,
   Source: number,
   Voiceover: number
@@ -80,7 +80,7 @@ const getAnonCurrentEpisodeWatched = (
   return anonEpisodesWatched[Release][Source][Voiceover][Episode];
 };
 
-const saveAnonEpisodeWatched = (
+export const saveAnonEpisodeWatched = (
   Release: number,
   Source: number,
   Voiceover: number,
