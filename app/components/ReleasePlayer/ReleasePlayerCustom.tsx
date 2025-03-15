@@ -33,6 +33,7 @@ export const ReleasePlayerCustom = (props: {
   const [playerProps, SetPlayerProps] = useState({
     src: null,
     poster: null,
+    type: null,
     useCustom: false,
   });
 
@@ -146,6 +147,17 @@ export const ReleasePlayerCustom = (props: {
     return { manifest, poster };
   };
 
+  const _fetchSibnetManifest = async (url: string) => {
+    const response = await fetch(
+      `/api/proxy/${encodeURIComponent(url)}?isSibnet=true`
+    );
+    const data = await response.json();
+
+    let manifest = data.url;
+    let poster = data.poster;
+    return { manifest, poster };
+  };
+
   useEffect(() => {
     const __getInfo = async () => {
       const vo = await _fetchVoiceover(props.id);
@@ -232,6 +244,7 @@ export const ReleasePlayerCustom = (props: {
           src: manifest,
           poster: poster,
           useCustom: true,
+          type: "hls",
         });
         return;
       }
@@ -243,6 +256,19 @@ export const ReleasePlayerCustom = (props: {
           src: manifest,
           poster: poster,
           useCustom: true,
+          type: "hls",
+        });
+        return;
+      }
+      if (source.selected.name == "Sibnet") {
+        const { manifest, poster } = await _fetchSibnetManifest(
+          episode.selected.url
+        );
+        SetPlayerProps({
+          src: manifest,
+          poster: poster,
+          useCustom: true,
+          type: "mp4",
         });
         return;
       }
@@ -250,6 +276,7 @@ export const ReleasePlayerCustom = (props: {
         src: episode.selected.url,
         poster: null,
         useCustom: false,
+        type: null,
       });
     };
     if (episode.selected) {
@@ -285,11 +312,18 @@ export const ReleasePlayerCustom = (props: {
           </div>
           {playerProps.useCustom ?
             <MediaThemeSutro className="w-full aspect-video">
-              <HlsVideo
-                slot="media"
-                src={playerProps.src}
-                poster={playerProps.poster}
-              />
+              {playerProps.type == "hls" ?
+                <HlsVideo
+                  slot="media"
+                  src={playerProps.src}
+                  poster={playerProps.poster}
+                />
+              : <video
+                  slot="media"
+                  src={playerProps.src}
+                  poster={playerProps.poster}
+                ></video>
+              }
             </MediaThemeSutro>
           : <iframe src={playerProps.src} className="w-full aspect-video" />}
           <EpisodeSelector

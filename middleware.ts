@@ -25,13 +25,75 @@ export default async function middleware(
     if (isNotAnixart) {
       url.searchParams.delete("isNotAnixart");
     }
+    const isSibnet = url.searchParams.get("isSibnet") == "true" || false;
+    if (isSibnet) {
+      url.searchParams.delete("isSibnet");
+    }
     let path = url.pathname.match(/\/api\/proxy\/(.*)/)?.[1] + url.search;
     let data = null;
     path = decodeURIComponent(path);
 
-    if ((isHTML || isNotAnixart) && !(path.startsWith("https://kodik.info") || path.startsWith("https://aniqit.com"))) {
+    if (
+      (isHTML || isNotAnixart || isSibnet) &&
+      !(
+        path.startsWith("https://kodik.info") ||
+        path.startsWith("https://aniqit.com") ||
+        path.startsWith("https://video.sibnet.ru") ||
+        path.includes("sibnet.ru")
+      )
+    ) {
       return new Response(JSON.stringify({ message: "URL not allowed" }), {
         status: 403,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+    }
+
+    if (isSibnet) {
+      const page = await fetch(path, {
+        headers: {
+          "User-Agent":
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36",
+        },
+      });
+      const pageData = await page.text();
+
+      const videoRe = /\/v\/.*?\.mp4/;
+      const video = videoRe.exec(pageData);
+
+      if (video.length == 0) {
+        return new Response(JSON.stringify({ message: "Error Fetching Data" }), {
+          status: 500,
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+      }
+
+      const posterRe = /\/upload\/cover\/.*?\.jpg/;
+      const posterUrl = posterRe.exec(pageData);
+
+      if (posterUrl.length == 0) {
+        return new Response(JSON.stringify({ message: "Error Fetching Data" }), {
+          status: 500,
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+      }
+
+      const response = await fetch(`https://video.sibnet.ru${video[0]}`, {
+        redirect: "manual",
+        headers: {
+          referer: path,
+          "User-Agent":
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36",
+        },
+      });
+
+      return new Response(JSON.stringify({ url: `https:${response.headers.get("Location")}`, poster: `https://st.sibnet.ru${posterUrl[0]}` }), {
+        status: 200,
         headers: {
           "Content-Type": "application/json",
         },
@@ -85,7 +147,12 @@ export default async function middleware(
     path = decodeURIComponent(path);
 
     if (isNotAnixart) {
-      if (!(path.startsWith("https://kodik.info") || path.startsWith("https://aniqit.com"))) {
+      if (
+        !(
+          path.startsWith("https://kodik.info") ||
+          path.startsWith("https://aniqit.com")
+        )
+      ) {
         return new Response(JSON.stringify({ message: "URL not allowed" }), {
           status: 403,
           headers: {
