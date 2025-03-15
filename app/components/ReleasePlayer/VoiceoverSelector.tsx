@@ -2,6 +2,7 @@
 
 import { Dropdown } from "flowbite-react";
 import { numberDeclension } from "#/api/utils";
+import { useUserPlayerPreferencesStore } from "#/store/player";
 
 interface Voiceover {
   id: number;
@@ -59,7 +60,10 @@ export const VoiceoverSelector = (props: {
   availableVoiceover: Voiceover[];
   voiceover: Voiceover;
   setVoiceover: any;
+  release_id: number;
 }) => {
+  const playerPreferenceStore = useUserPlayerPreferencesStore();
+
   return (
     <Dropdown
       label=""
@@ -73,12 +77,13 @@ export const VoiceoverSelector = (props: {
       {props.availableVoiceover.map((voiceover: Voiceover) => (
         <Dropdown.Item
           key={`voiceover_${voiceover.id}`}
-          onClick={() =>
+          onClick={() => {
+            playerPreferenceStore.setPreferredVoiceover(props.release_id, voiceover.name);
             props.setVoiceover({
               selected: voiceover,
               available: props.availableVoiceover,
-            })
-          }
+            });
+          }}
         >
           <DropdownItem {...voiceover} />
         </Dropdown.Item>

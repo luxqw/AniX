@@ -2,6 +2,7 @@
 
 import { Dropdown } from "flowbite-react";
 import { numberDeclension } from "#/api/utils";
+import { useUserPlayerPreferencesStore } from "#/store/player";
 
 interface Source {
   id: number;
@@ -19,10 +20,7 @@ const DropdownTrigger = ({ name }: Source) => {
   );
 };
 
-const DropdownItem = ({
-  name,
-  episodes_count,
-}: Source) => {
+const DropdownItem = ({ name, episodes_count }: Source) => {
   return (
     <div className="flex flex-col gap-2 cursor-pointer">
       <div className="flex items-center gap-2">
@@ -42,7 +40,10 @@ export const SourceSelector = (props: {
   availableSource: Source[];
   source: Source;
   setSource: any;
+  release_id: any;
 }) => {
+  const playerPreferenceStore = useUserPlayerPreferencesStore();
+
   return (
     <Dropdown
       label=""
@@ -56,12 +57,16 @@ export const SourceSelector = (props: {
       {props.availableSource.map((source: Source) => (
         <Dropdown.Item
           key={`source_${source.id}`}
-          onClick={() =>
+          onClick={() => {
+            playerPreferenceStore.setPreferredPlayer(
+              props.release_id,
+              source.name
+            );
             props.setSource({
               selected: source,
               available: props.availableSource,
-            })
-          }
+            });
+          }}
         >
           <DropdownItem {...source} />
         </Dropdown.Item>

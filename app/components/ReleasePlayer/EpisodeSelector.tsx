@@ -33,25 +33,25 @@ export const EpisodeSelector = (props: {
   episode: Episode;
   setEpisode: any;
   source: Source;
-  release: any;
+  release_id: any;
   voiceover: any;
   token: string | null;
 }) => {
   let anonEpisodesWatched = getAnonEpisodesWatched(
-    props.release,
+    props.release_id,
     props.source.id,
     props.voiceover.id
   );
   anonEpisodesWatched =
-    anonEpisodesWatched[props.release][props.source.id][props.voiceover.id];
+    anonEpisodesWatched[props.release_id][props.source.id][props.voiceover.id];
 
   async function saveEpisodeToHistory(episode: Episode) {
     if (episode && props.token) {
       fetch(
-        `${ENDPOINTS.statistic.addHistory}/${props.release}/${props.source.id}/${episode.position}?token=${props.token}`
+        `${ENDPOINTS.statistic.addHistory}/${props.release_id}/${props.source.id}/${episode.position}?token=${props.token}`
       );
       fetch(
-        `${ENDPOINTS.statistic.markWatched}/${props.release}/${props.source.id}/${episode.position}?token=${props.token}`
+        `${ENDPOINTS.statistic.markWatched}/${props.release_id}/${props.source.id}/${episode.position}?token=${props.token}`
       );
     }
   }
@@ -86,9 +86,14 @@ export const EpisodeSelector = (props: {
               }
               theme={{ base: "w-full disabled:opacity-100" }}
               onClick={() => {
-                props.availableEpisodes[episode.position - 1].is_watched = true;
+                if (["Sibnet"].includes(props.source.name)) {
+                  props.availableEpisodes[episode.position].is_watched = true;
+                } else {
+                  props.availableEpisodes[episode.position - 1].is_watched =
+                    true;
+                }
                 saveAnonEpisodeWatched(
-                  props.release,
+                  props.release_id,
                   props.source.id,
                   props.voiceover.id,
                   episode.position
@@ -102,7 +107,11 @@ export const EpisodeSelector = (props: {
               disabled={props.episode.position === episode.position}
             >
               <div className="flex items-center">
-                {episode.name}
+                {episode.name ?
+                  episode.name
+                : ["Sibnet"].includes(props.source.name) ?
+                  `${episode.position + 1} Серия`
+                : `${episode.position} Серия`}
                 {(
                   episode.is_watched ||
                   Object.keys(anonEpisodesWatched).includes(

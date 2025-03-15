@@ -8,9 +8,11 @@ import { VoiceoverSelector } from "./VoiceoverSelector";
 import { SourceSelector } from "./SourceSelector";
 import { EpisodeSelector } from "./EpisodeSelector";
 import { Spinner } from "../Spinner/Spinner";
+import { useUserPlayerPreferencesStore } from "#/store/player";
 
 import HlsVideo from "hls-video-element/react";
 import MediaThemeSutro from "player.style/sutro/react";
+import { getAnonEpisodesWatched } from "./ReleasePlayer";
 
 export const ReleasePlayerCustom = (props: {
   id: number;
@@ -33,6 +35,10 @@ export const ReleasePlayerCustom = (props: {
     poster: null,
     useCustom: false,
   });
+
+  const playerPreferenceStore = useUserPlayerPreferencesStore();
+  const preferredVO = playerPreferenceStore.getPreferredVoiceover(props.id);
+  const preferredSource = playerPreferenceStore.getPreferredPlayer(props.id);
 
   const _fetchVoiceover = async (release_id: number) => {
     let url = `${ENDPOINTS.release.episode}/${release_id}`;
@@ -57,7 +63,7 @@ export const ReleasePlayerCustom = (props: {
     voiceover_id: number,
     source_id: number
   ) => {
-    let url = `${ENDPOINTS.release.episode}/${release_id}/${voiceover_id}/${source_id}`
+    let url = `${ENDPOINTS.release.episode}/${release_id}/${voiceover_id}/${source_id}`;
     if (props.token) {
       url += `?token=${props.token}`;
     }
@@ -85,13 +91,14 @@ export const ReleasePlayerCustom = (props: {
       .replace("';", "");
     const urlParams = JSON.parse(urlParamsStr);
 
-    const urlStr = url.replace("https://kodik.info/", "");
+    const domain = url.replace("https://", "").split("/")[0];
+    const urlStr = url.replace(`https://${domain}/`, "");
     const type = urlStr.split("/")[0];
     const id = urlStr.split("/")[1];
     const hash = urlStr.split("/")[2];
 
     const responseMan = await fetch(
-      `/api/proxy/${encodeURIComponent("https://kodik.info/ftor")}?isNotAnixart=true`,
+      `/api/proxy/${encodeURIComponent(`https://${domain}/ftor`)}?isNotAnixart=true`,
       {
         method: "POST",
         headers: {
@@ -142,8 +149,11 @@ export const ReleasePlayerCustom = (props: {
   useEffect(() => {
     const __getInfo = async () => {
       const vo = await _fetchVoiceover(props.id);
+      const selectedVO =
+        vo.types.find((voiceover: any) => voiceover.name === preferredVO) ||
+        vo.types[0];
       setVoiceover({
-        selected: vo.types[0],
+        selected: selectedVO,
         available: vo.types,
       });
     };
@@ -153,8 +163,21 @@ export const ReleasePlayerCustom = (props: {
   useEffect(() => {
     const __getInfo = async () => {
       const src = await _fetchSource(props.id, voiceover.selected.id);
+      const selectedSrc =
+        src.sources.find((source: any) => source.name === preferredSource) ||
+        src.sources[0];
+      if (selectedSrc.episodes_count == 0) {
+        const remSources = src.sources.filter(
+          (source: any) => source.id !== selectedSrc.id
+        );
+        setSource({
+          selected: remSources[0],
+          available: remSources,
+        });
+        return;
+      }
       setSource({
-        selected: src.sources[0],
+        selected: selectedSrc,
         available: src.sources,
       });
     };
@@ -170,8 +193,27 @@ export const ReleasePlayerCustom = (props: {
         voiceover.selected.id,
         source.selected.id
       );
+
+      let anonEpisodesWatched = getAnonEpisodesWatched(
+        props.id,
+        source.selected.id,
+        voiceover.selected.id
+      );
+      let lastEpisodeWatched = Math.max.apply(
+        0,
+        Object.keys(
+          anonEpisodesWatched[props.id][source.selected.id][
+            voiceover.selected.id
+          ]
+        )
+      );
+      let selectedEpisode =
+        episodes.episodes.find(
+          (episode: any) => episode.position == lastEpisodeWatched
+        ) || episodes.episodes[0];
+
       setEpisode({
-        selected: episodes.episodes[0],
+        selected: selectedEpisode,
         available: episodes.episodes,
       });
     };
@@ -232,11 +274,13 @@ export const ReleasePlayerCustom = (props: {
               availableVoiceover={voiceover.available}
               voiceover={voiceover.selected}
               setVoiceover={setVoiceover}
+              release_id={props.id}
             />
             <SourceSelector
               availableSource={source.available}
               source={source.selected}
               setSource={setSource}
+              release_id={props.id}
             />
           </div>
           {playerProps.useCustom ?
@@ -252,7 +296,7 @@ export const ReleasePlayerCustom = (props: {
             availableEpisodes={episode.available}
             episode={episode.selected}
             setEpisode={setEpisode}
-            release={props.id}
+            release_id={props.id}
             source={source.selected}
             voiceover={voiceover.selected}
             token={props.token}

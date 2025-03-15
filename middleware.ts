@@ -29,7 +29,7 @@ export default async function middleware(
     let data = null;
     path = decodeURIComponent(path);
 
-    if ((isHTML || isNotAnixart) && !path.startsWith("https://kodik.info")) {
+    if ((isHTML || isNotAnixart) && !(path.startsWith("https://kodik.info") || path.startsWith("https://aniqit.com"))) {
       return new Response(JSON.stringify({ message: "URL not allowed" }), {
         status: 403,
         headers: {
@@ -85,7 +85,7 @@ export default async function middleware(
     path = decodeURIComponent(path);
 
     if (isNotAnixart) {
-      if (!path.startsWith("https://kodik.info")) {
+      if (!(path.startsWith("https://kodik.info") || path.startsWith("https://aniqit.com"))) {
         return new Response(JSON.stringify({ message: "URL not allowed" }), {
           status: 403,
           headers: {
