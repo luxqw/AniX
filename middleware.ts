@@ -60,6 +60,11 @@ export default async function middleware(
           "User-Agent":
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36",
         },
+      }).catch((err) => {
+        console.log(err);
+        return new Response(err.message, {
+          status: 500,
+        });
       });
       const pageData = await page.text();
 
@@ -94,6 +99,11 @@ export default async function middleware(
           "User-Agent":
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36",
         },
+      }).catch((err) => {
+        console.log(err);
+        return new Response(err.message, {
+          status: 500,
+        });
       });
 
       return new Response(JSON.stringify({ url: `https:${response.headers.get("Location")}`, poster: `https://st.sibnet.ru${posterUrl[0]}` }), {
@@ -177,6 +187,11 @@ export default async function middleware(
       const response = await fetch(`https://${path}`, {
         method: "POST",
         body: formData,
+      }).catch((err) => {
+        console.log(err);
+        return new Response(err.message, {
+          status: 500,
+        });
       });
       const data = await response.json();
       return new Response(JSON.stringify(data), {
