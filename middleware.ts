@@ -179,10 +179,15 @@ export default async function middleware(
       //   });
       // }
 
+      const params = await request.json()
+
       const formData = new FormData();
-      for (const [key, value] of Object.entries(await request.json())) {
+      for (const [key, value] of Object.entries(params)) {
         formData.append(key as any, value as any);
       }
+
+      console.log("get JSON:", params);
+      console.log("send FORM:", formData);
 
       const response = await fetch(`https://${path}`, {
         method: "POST",
