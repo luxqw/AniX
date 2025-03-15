@@ -1,6 +1,6 @@
 import { Card, Table } from "flowbite-react";
 import { ReleaseInfoSearchLink } from "#/components/ReleaseInfo/ReleaseInfo.SearchLink";
-import { unixToDate, getSeasonFromUnix, minutesToTime } from "#/api/utils";
+import { unixToDate, minutesToTime } from "#/api/utils";
 const weekDay = [
   "_",
   "каждый понедельник",
@@ -33,21 +33,20 @@ export const ReleaseInfoInfo = (props: {
         <Table.Body>
           <Table.Row>
             <Table.Cell className="py-0">
-              {props.country ? (
-                props.country.toLowerCase() == "япония" ? (
+              {props.country ?
+                props.country.toLowerCase() == "япония" ?
                   <span className="w-8 h-8 iconify-color twemoji--flag-for-japan"></span>
-                ) : (
-                  <span className="w-8 h-8 iconify-color twemoji--flag-for-china"></span>
-                )
-              ) : (
-                <span className="w-8 h-8 iconify-color twemoji--flag-for-united-nations "></span>
-              )}
+                : <span className="w-8 h-8 iconify-color twemoji--flag-for-china"></span>
+
+              : <span className="w-8 h-8 iconify-color twemoji--flag-for-united-nations "></span>
+              }
             </Table.Cell>
             <Table.Cell className="font-medium text-gray-900 whitespace-nowrap dark:text-white">
               {props.country && props.country}
               {(props.aired_on_date != 0 || props.year) && ", "}
-              {props.aired_on_date != 0 &&
-                `${getSeasonFromUnix(props.aired_on_date)} `}
+              {props.season && props.season != 0 ?
+                `${YearSeason[props.season]} `
+              : ""}
               {props.year && `${props.year} г.`}
             </Table.Cell>
           </Table.Row>
@@ -59,7 +58,8 @@ export const ReleaseInfoInfo = (props: {
               {props.episodes.released ? props.episodes.released : "?"}
               {"/"}
               {props.episodes.total ? props.episodes.total + " эп. " : "? эп. "}
-              {props.duration != 0 && `по ${minutesToTime(props.duration, "daysHours")}`}
+              {props.duration != 0 &&
+                `по ${minutesToTime(props.duration, "daysHours")}`}
             </Table.Cell>
           </Table.Row>
           <Table.Row>
@@ -69,9 +69,9 @@ export const ReleaseInfoInfo = (props: {
             <Table.Cell className="font-medium text-gray-900 dark:text-white">
               {props.category}
               {", "}
-              {props.broadcast == 0
-                ? props.status.toLowerCase()
-                : `выходит ${weekDay[props.broadcast]}`}
+              {props.broadcast == 0 ?
+                props.status.toLowerCase()
+              : `выходит ${weekDay[props.broadcast]}`}
             </Table.Cell>
           </Table.Row>
           <Table.Row>
@@ -88,7 +88,10 @@ export const ReleaseInfoInfo = (props: {
                       return (
                         <div key={index} className="inline">
                           {index > 0 && ", "}
-                          <ReleaseInfoSearchLink title={studio} searchBy={"studio"} />
+                          <ReleaseInfoSearchLink
+                            title={studio}
+                            searchBy={"studio"}
+                          />
                         </div>
                       );
                     })}
@@ -98,14 +101,20 @@ export const ReleaseInfoInfo = (props: {
               {props.author && (
                 <>
                   {"Автор: "}
-                  <ReleaseInfoSearchLink title={props.author} searchBy={"author"} />
+                  <ReleaseInfoSearchLink
+                    title={props.author}
+                    searchBy={"author"}
+                  />
                   {props.director && ", "}
                 </>
               )}
               {props.director && (
                 <>
                   {"Режиссёр: "}
-                  <ReleaseInfoSearchLink title={props.director} searchBy={"director"} />
+                  <ReleaseInfoSearchLink
+                    title={props.director}
+                    searchBy={"director"}
+                  />
                 </>
               )}
             </Table.Cell>
@@ -132,18 +141,16 @@ export const ReleaseInfoInfo = (props: {
                 <span className="w-8 h-8 iconify-color mdi--clock-outline dark:invert"></span>
               </Table.Cell>
               <Table.Cell className="font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                {props.aired_on_date != 0 ? (
+                {props.aired_on_date != 0 ?
                   unixToDate(props.aired_on_date, "full")
-                ) : props.year ? (
+                : props.year ?
                   <>
-                    {props.season && props.season != 0
-                      ? `${YearSeason[props.season]} `
-                      : ""}
+                    {props.season && props.season != 0 ?
+                      `${YearSeason[props.season]} `
+                    : ""}
                     {props.year && `${props.year} г.`}
                   </>
-                ) : (
-                  "Скоро"
-                )}
+                : "Скоро"}
               </Table.Cell>
             </Table.Row>
           )}
