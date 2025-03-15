@@ -33,25 +33,29 @@ export default async function middleware(
     let data = null;
     path = decodeURIComponent(path);
 
-    if (
-      (isHTML || isNotAnixart || isSibnet) &&
-      !(
-        path.startsWith("https://kodik.info") ||
-        path.startsWith("https://aniqit.com") ||
-        path.startsWith("https://video.sibnet.ru") ||
-        path.includes("sibnet.ru")
-      )
-    ) {
-      return new Response(JSON.stringify({ message: "URL not allowed" }), {
-        status: 403,
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-    }
+    console.log(path);
+
+    // if (
+    //   (isHTML || isNotAnixart || isSibnet) &&
+    //   !(
+    //     path.startsWith("https://kodik.info") ||
+    //     path.startsWith("https://aniqit.com") ||
+    //     path.startsWith("https://video.sibnet.ru") ||
+    //     path.includes("sibnet.ru")
+    //   )
+    // ) {
+    //   console.log("URL NOT ALLOWED");
+
+    //   return new Response(JSON.stringify({ message: "URL not allowed" }), {
+    //     status: 403,
+    //     headers: {
+    //       "Content-Type": "application/json",
+    //     },
+    //   });
+    // }
 
     if (isSibnet) {
-      const page = await fetch(path, {
+      const page = await fetch(`https://${path}`, {
         headers: {
           "User-Agent":
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36",
@@ -86,7 +90,7 @@ export default async function middleware(
       const response = await fetch(`https://video.sibnet.ru${video[0]}`, {
         redirect: "manual",
         headers: {
-          referer: path,
+          referer: `https://${path}`,
           "User-Agent":
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36",
         },
@@ -101,7 +105,7 @@ export default async function middleware(
     }
 
     if (isHTML) {
-      const response = await fetch(path);
+      const response = await fetch(`https://${path}`);
       data = await response.text();
       return new Response(data, {
         status: 200,
@@ -110,7 +114,7 @@ export default async function middleware(
         },
       });
     } else if (isNotAnixart) {
-      data = await fetchDataViaGet(path);
+      data = await fetchDataViaGet(`https://${path}`);
     } else {
       data = await fetchDataViaGet(`${API_URL}/${path}`, isApiV2);
     }
@@ -146,27 +150,31 @@ export default async function middleware(
     let path = url.pathname.match(/\/api\/proxy\/(.*)/)?.[1] + url.search;
     path = decodeURIComponent(path);
 
+    console.log(path);
+
     if (isNotAnixart) {
-      if (
-        !(
-          path.startsWith("https://kodik.info") ||
-          path.startsWith("https://aniqit.com")
-        )
-      ) {
-        return new Response(JSON.stringify({ message: "URL not allowed" }), {
-          status: 403,
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-      }
+      // if (
+      //   !(
+      //     path.startsWith("https://kodik.info") ||
+      //     path.startsWith("https://aniqit.com")
+      //   )
+      // ) {
+      //   console.log("URL NOT ALLOWED");
+
+      //   return new Response(JSON.stringify({ message: "URL not allowed" }), {
+      //     status: 403,
+      //     headers: {
+      //       "Content-Type": "application/json",
+      //     },
+      //   });
+      // }
 
       const formData = new FormData();
       for (const [key, value] of Object.entries(await request.json())) {
         formData.append(key as any, value as any);
       }
 
-      const response = await fetch(path, {
+      const response = await fetch(`https://${path}`, {
         method: "POST",
         body: formData,
       });

@@ -74,6 +74,7 @@ export const ReleasePlayerCustom = (props: {
   };
 
   const _fetchKodikManifest = async (url: string) => {
+    url = url.replace("https://", "")
     const response = await fetch(
       `/api/proxy/${encodeURIComponent(url)}?html=true`
     );
@@ -92,14 +93,14 @@ export const ReleasePlayerCustom = (props: {
       .replace("';", "");
     const urlParams = JSON.parse(urlParamsStr);
 
-    const domain = url.replace("https://", "").split("/")[0];
-    const urlStr = url.replace(`https://${domain}/`, "");
+    const domain = url.split("/")[0];
+    const urlStr = url.replace(`${domain}/`, "");
     const type = urlStr.split("/")[0];
     const id = urlStr.split("/")[1];
     const hash = urlStr.split("/")[2];
 
     const responseMan = await fetch(
-      `/api/proxy/${encodeURIComponent(`https://${domain}/ftor`)}?isNotAnixart=true`,
+      `/api/proxy/${encodeURIComponent(`${domain}/ftor`)}?isNotAnixart=true`,
       {
         method: "POST",
         headers: {
@@ -148,6 +149,7 @@ export const ReleasePlayerCustom = (props: {
   };
 
   const _fetchSibnetManifest = async (url: string) => {
+    url = url.replace("https://", "")
     const response = await fetch(
       `/api/proxy/${encodeURIComponent(url)}?isSibnet=true`
     );
