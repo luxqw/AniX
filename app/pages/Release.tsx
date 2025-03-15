@@ -99,7 +99,7 @@ export const ReleasePage = (props: any) => {
           data.release.status.name.toLowerCase() != "анонс" && (
             <div className="[grid-column:1] [grid-row:span_12]">
               {preferenceStore.params.experimental.newPlayer ? (
-                <ReleasePlayerCustom id={props.id} />
+                <ReleasePlayerCustom id={props.id} token={userStore.token} />
               ) : (
                 <ReleasePlayer id={props.id} />
               )}
