@@ -71,8 +71,8 @@ export default async function middleware(
       const videoRe = /\/v\/.*?\.mp4/;
       const video = videoRe.exec(pageData);
 
-      if (video.length == 0) {
-        return new Response(JSON.stringify({ message: "Error Fetching Data" }), {
+      if (!video || video.length == 0) {
+        return new Response(JSON.stringify({ message: "Sibnet: Video not found" }), {
           status: 500,
           headers: {
             "Content-Type": "application/json",
@@ -83,8 +83,8 @@ export default async function middleware(
       const posterRe = /\/upload\/cover\/.*?\.jpg/;
       const posterUrl = posterRe.exec(pageData);
 
-      if (posterUrl.length == 0) {
-        return new Response(JSON.stringify({ message: "Error Fetching Data" }), {
+      if (!posterUrl || posterUrl.length == 0) {
+        return new Response(JSON.stringify({ message: "Sibnet: Poster not found" }), {
           status: 500,
           headers: {
             "Content-Type": "application/json",
@@ -186,12 +186,12 @@ export default async function middleware(
         formData.append(key as any, value as any);
       }
 
-      console.log("get JSON:", params);
-      console.log("send FORM:", formData);
-
-      const response = await fetch(`https://${path}`, {
+      const response = await fetch(`https://anix-c.wah.su/https://${path}`, {
         method: "POST",
         body: formData,
+        headers: {
+          origin: "anix.wah.su"
+        }
       }).catch((err) => {
         console.log(err);
         return new Response(err.message, {
