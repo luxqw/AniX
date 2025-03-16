@@ -11,8 +11,9 @@ import { Spinner } from "../Spinner/Spinner";
 import { useUserPlayerPreferencesStore } from "#/store/player";
 
 import HlsVideo from "hls-video-element/react";
-import MediaThemeSutro from "player.style/sutro/react";
+import MediaThemeSutro from "./MediaThemeSutro";
 import { getAnonEpisodesWatched } from "./ReleasePlayer";
+import { MediaControlBar, MediaSeekForwardButton } from "media-chrome/react";
 
 export const ReleasePlayerCustom = (props: {
   id: number;
@@ -280,6 +281,9 @@ export const ReleasePlayerCustom = (props: {
                   poster={playerProps.poster}
                 ></video>
               }
+              <MediaControlBar>
+                <MediaSeekForwardButton></MediaSeekForwardButton>
+              </MediaControlBar>
             </MediaThemeSutro>
           : <iframe src={playerProps.src} className="w-full aspect-video" />}
           <EpisodeSelector
