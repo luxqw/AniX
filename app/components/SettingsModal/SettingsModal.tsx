@@ -217,6 +217,9 @@ export const SettingsModal = (props: { isOpen: boolean; setIsOpen: any }) => {
           <div className="flex items-center justify-between">
             <div>
               <p className=" dark:text-white">Новый плеер</p>
+              <p className="text-gray-500 dark:text-gray-300">
+                Поддерживаемые источники: Kodik, Sibnet, Libria
+              </p>
             </div>
             <ToggleSwitch
               color="blue"

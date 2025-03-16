@@ -6,10 +6,10 @@ AniX - это неофициальный веб-клиент для Android-пр
 
 ## Список изменений
 
+- [3.3.0](/public/changelog/3.3.0.md)
 - [3.2.3](/public/changelog/3.2.3.md)
 - [3.2.2](/public/changelog/3.2.2.md)
 - [3.2.1](/public/changelog/3.2.1.md)
-- [3.2.0](/public/changelog/3.2.0.md)
 
 [другие версии](/public/changelog)
 
