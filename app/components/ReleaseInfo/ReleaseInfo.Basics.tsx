@@ -1,8 +1,10 @@
 import { Card, Button } from "flowbite-react";
 import { useState } from "react";
 import Image from "next/image";
+import { ReleaseInfoStreaming } from "./ReleaseInfo.LicensedPlatforms";
 
 export const ReleaseInfoBasics = (props: {
+  release_id: number;
   image: string;
   title: { ru: string; original: string };
   note: string | null;
@@ -52,6 +54,7 @@ export const ReleaseInfoBasics = (props: {
           >
             {isFullDescription ? "Скрыть" : "Показать полностью"}
           </Button>
+          <ReleaseInfoStreaming release_id={props.release_id} />
         </div>
       </div>
     </Card>

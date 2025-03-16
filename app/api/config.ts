@@ -1,4 +1,4 @@
-export const CURRENT_APP_VERSION = "3.2.3";
+export const CURRENT_APP_VERSION = "3.3.0";
 
 export const API_URL = "https://api.anixart.tv";
 export const API_PREFIX = "/api/proxy";
@@ -10,6 +10,7 @@ export const ENDPOINTS = {
     info: `${API_PREFIX}/release`,
     episode: `${API_PREFIX}/episode`,
     related: `${API_PREFIX}/related`,
+    licensed: `${API_PREFIX}/release/streaming/platform`,
   },
   user: {
     profile: `${API_PREFIX}/profile`,

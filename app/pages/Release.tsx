@@ -10,6 +10,7 @@ import { useEffect, useState } from "react";
 import { ReleaseInfoBasics } from "#/components/ReleaseInfo/ReleaseInfo.Basics";
 import { ReleaseInfoInfo } from "#/components/ReleaseInfo/ReleaseInfo.Info";
 import { ReleasePlayer } from "#/components/ReleasePlayer/ReleasePlayer";
+import { ReleasePlayerCustom } from "#/components/ReleasePlayer/ReleasePlayerCustom";
 import { ReleaseInfoUserList } from "#/components/ReleaseInfo/ReleaseInfo.UserList";
 import { ReleaseInfoRating } from "#/components/ReleaseInfo/ReleaseInfo.Rating";
 import { ReleaseInfoRelated } from "#/components/ReleaseInfo/ReleaseInfo.Related";
@@ -17,9 +18,11 @@ import { ReleaseInfoScreenshots } from "#/components/ReleaseInfo/ReleaseInfo.Scr
 import { CommentsMain } from "#/components/Comments/Comments.Main";
 import { InfoLists } from "#/components/InfoLists/InfoLists";
 import { ENDPOINTS } from "#/api/config";
+import { usePreferencesStore } from "#/store/preferences";
 
 export const ReleasePage = (props: any) => {
   const userStore = useUserStore();
+  const preferenceStore = usePreferencesStore();
   const [userList, setUserList] = useState(0);
   const [userFavorite, setUserFavorite] = useState(false);
 
@@ -58,6 +61,7 @@ export const ReleasePage = (props: any) => {
             }}
             description={data.release.description}
             note={data.release.note}
+            release_id={data.release.id}
           />
         </div>
         <div className="[grid-column:2]">
@@ -92,29 +96,35 @@ export const ReleasePage = (props: any) => {
             collection_count={data.release.collection_count}
           />
         </div>
-        {data.release.status && data.release.status.name.toLowerCase() != "анонс" && (
-          <div className="[grid-column:1] [grid-row:span_12]">
-            <ReleasePlayer id={props.id} />
-          </div>
-        )}
-        {data.release.status && data.release.status.name.toLowerCase() != "анонс" && (
-          <div className="[grid-column:2]">
-            <ReleaseInfoRating
-              release_id={props.id}
-              grade={data.release.grade}
-              token={userStore.token}
-              votes={{
-                1: data.release.vote_1_count,
-                2: data.release.vote_2_count,
-                3: data.release.vote_3_count,
-                4: data.release.vote_4_count,
-                5: data.release.vote_5_count,
-                total: data.release.vote_count,
-                user: data.release.your_vote,
-              }}
-            />
-          </div>
-        )}
+        {data.release.status &&
+          data.release.status.name.toLowerCase() != "анонс" && (
+            <div className="[grid-column:1] [grid-row:span_12]">
+              {preferenceStore.params.experimental.newPlayer ? (
+                <ReleasePlayerCustom id={props.id} token={userStore.token} />
+              ) : (
+                <ReleasePlayer id={props.id} />
+              )}
+            </div>
+          )}
+        {data.release.status &&
+          data.release.status.name.toLowerCase() != "анонс" && (
+            <div className="[grid-column:2]">
+              <ReleaseInfoRating
+                release_id={props.id}
+                grade={data.release.grade}
+                token={userStore.token}
+                votes={{
+                  1: data.release.vote_1_count,
+                  2: data.release.vote_2_count,
+                  3: data.release.vote_3_count,
+                  4: data.release.vote_4_count,
+                  5: data.release.vote_5_count,
+                  total: data.release.vote_count,
+                  user: data.release.your_vote,
+                }}
+              />
+            </div>
+          )}
         <div className="[grid-column:2] [grid-row:span_4]">
           <InfoLists
             completed={data.release.completed_count}

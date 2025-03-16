@@ -41,8 +41,12 @@ export const SettingsModal = (props: { isOpen: boolean; setIsOpen: any }) => {
       <Modal.Header>Настройки</Modal.Header>
       <Modal.Body>
         <div className="space-y-6">
+          <div className="flex items-center gap-2">
+            <span className="w-6 h-6 iconify material-symbols--palette-outline"></span>
+            <p className="text-lg font-bold dark:text-white">Интерфейс</p>
+          </div>
           <div className="flex items-center justify-between">
-            <p className="font-bold dark:text-white">Тема</p>
+            <p className=" dark:text-white">Тема</p>
             <Button.Group>
               <Button
                 color={computedMode == "light" ? "blue" : "gray"}
@@ -59,30 +63,7 @@ export const SettingsModal = (props: { isOpen: boolean; setIsOpen: any }) => {
             </Button.Group>
           </div>
           <div className="flex items-center justify-between">
-            <p className="font-bold dark:text-white">
-              Показывать список изменений
-            </p>
-            <ToggleSwitch
-              color="blue"
-              theme={{
-                toggle: {
-                  checked: {
-                    color: {
-                      blue: "border-blue-700 bg-blue-700",
-                    },
-                  },
-                },
-              }}
-              onChange={() =>
-                preferenceStore.setFlags({
-                  showChangelog: !preferenceStore.flags.showChangelog,
-                })
-              }
-              checked={preferenceStore.flags.showChangelog}
-            />
-          </div>
-          <div className="flex items-center justify-between">
-            <p className="font-bold dark:text-white max-w-96">
+            <p className=" dark:text-white max-w-96">
               Пропускать страницу выбора категорий на страницах Домашняя и
               Закладки
             </p>
@@ -111,10 +92,17 @@ export const SettingsModal = (props: { isOpen: boolean; setIsOpen: any }) => {
           {preferenceStore.params.skipToCategory.enabled ? (
             <>
               <div className="flex items-center justify-between">
-                <p className="font-bold dark:text-white max-w-96">
+                <p className=" dark:text-white max-w-96">
                   Категория домашней страницы
                 </p>
-                <Dropdown color="blue" label={HomeCategory[preferenceStore.params.skipToCategory.homeCategory]}>
+                <Dropdown
+                  color="blue"
+                  label={
+                    HomeCategory[
+                      preferenceStore.params.skipToCategory.homeCategory
+                    ]
+                  }
+                >
                   {Object.keys(HomeCategory).map((key) => {
                     return (
                       <Dropdown.Item
@@ -135,10 +123,17 @@ export const SettingsModal = (props: { isOpen: boolean; setIsOpen: any }) => {
                 </Dropdown>
               </div>
               <div className="flex items-center justify-between">
-                <p className="font-bold dark:text-white max-w-96">
+                <p className=" dark:text-white max-w-96">
                   Категория страницы закладок
                 </p>
-                <Dropdown color="blue" label={BookmarksCategory[preferenceStore.params.skipToCategory.bookmarksCategory]}>
+                <Dropdown
+                  color="blue"
+                  label={
+                    BookmarksCategory[
+                      preferenceStore.params.skipToCategory.bookmarksCategory
+                    ]
+                  }
+                >
                   {Object.keys(BookmarksCategory).map((key) => {
                     return (
                       <Dropdown.Item
@@ -162,9 +157,35 @@ export const SettingsModal = (props: { isOpen: boolean; setIsOpen: any }) => {
           ) : (
             ""
           )}
+          <HR className="my-4 dark:bg-slate-400" />
+          <div className="flex items-center gap-2">
+            <span className="w-6 h-6 iconify material-symbols--settings-outline"></span>
+            <p className="text-lg font-bold dark:text-white">Приложение</p>
+          </div>
+          <div className="flex items-center justify-between">
+            <p className=" dark:text-white">Показывать список изменений</p>
+            <ToggleSwitch
+              color="blue"
+              theme={{
+                toggle: {
+                  checked: {
+                    color: {
+                      blue: "border-blue-700 bg-blue-700",
+                    },
+                  },
+                },
+              }}
+              onChange={() =>
+                preferenceStore.setFlags({
+                  showChangelog: !preferenceStore.flags.showChangelog,
+                })
+              }
+              checked={preferenceStore.flags.showChangelog}
+            />
+          </div>
           <div className="flex items-center justify-between">
             <div>
-              <p className="font-bold dark:text-white">Отправка аналитики</p>
+              <p className=" dark:text-white">Отправка аналитики</p>
               <p className="text-gray-500 dark:text-gray-300">
                 Требуется перезагрузка для применения
               </p>
@@ -186,6 +207,40 @@ export const SettingsModal = (props: { isOpen: boolean; setIsOpen: any }) => {
                 })
               }
               checked={preferenceStore.flags.enableAnalytics}
+            />
+          </div>
+          <HR className="my-4 dark:bg-slate-400" />
+          <div className="flex items-center gap-2">
+            <span className="w-6 h-6 iconify material-symbols--experiment-outline"></span>
+            <p className="text-lg font-bold dark:text-white">Эксперименты</p>
+          </div>
+          <div className="flex items-center justify-between">
+            <div>
+              <p className=" dark:text-white">Новый плеер</p>
+              <p className="text-gray-500 dark:text-gray-300">
+                Поддерживаемые источники: Kodik, Sibnet, Libria
+              </p>
+            </div>
+            <ToggleSwitch
+              color="blue"
+              theme={{
+                toggle: {
+                  checked: {
+                    color: {
+                      blue: "border-blue-700 bg-blue-700",
+                    },
+                  },
+                },
+              }}
+              onChange={() =>
+                preferenceStore.setParams({
+                  experimental: {
+                    ...preferenceStore.params.experimental,
+                    newPlayer: !preferenceStore.params.experimental.newPlayer,
+                  },
+                })
+              }
+              checked={preferenceStore.params.experimental.newPlayer}
             />
           </div>
         </div>

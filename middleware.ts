@@ -1,19 +1,22 @@
-import type { NextFetchEvent } from 'next/server';
-import { fetchDataViaGet, fetchDataViaPost } from '#/api/utils';
-import { API_URL } from '#/api/config';
+import type { NextFetchEvent } from "next/server";
+import { fetchDataViaGet, fetchDataViaPost } from "#/api/utils";
+import { API_URL } from "#/api/config";
 
 export const config = {
-  matcher: '/api/proxy/:path*',
+  matcher: "/api/proxy/:path*",
 };
 
-export default async function middleware(request: Request, context: NextFetchEvent) {
+export default async function middleware(
+  request: Request,
+  context: NextFetchEvent
+) {
   if (request.method == "GET") {
     const url = new URL(request.url);
     const isApiV2 = url.searchParams.get("API-Version") == "v2" || false;
     if (isApiV2) {
       url.searchParams.delete("API-Version");
     }
-    const path = url.pathname.match(/\/api\/proxy\/(.*)/)?.[1] + url.search
+    let path = url.pathname.match(/\/api\/proxy\/(.*)/)?.[1] + url.search;
 
     const data = await fetchDataViaGet(`${API_URL}/${path}`, isApiV2);
 
@@ -21,7 +24,7 @@ export default async function middleware(request: Request, context: NextFetchEve
       return new Response(JSON.stringify({ message: "Error Fetching Data" }), {
         status: 500,
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
       });
     }
@@ -29,7 +32,7 @@ export default async function middleware(request: Request, context: NextFetchEve
     return new Response(JSON.stringify(data), {
       status: 200,
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
     });
   }
@@ -40,7 +43,7 @@ export default async function middleware(request: Request, context: NextFetchEve
     if (isApiV2) {
       url.searchParams.delete("API-Version");
     }
-    const path = url.pathname.match(/\/api\/proxy\/(.*)/)?.[1] + url.search
+    const path = url.pathname.match(/\/api\/proxy\/(.*)/)?.[1] + url.search;
 
     const ReqContentTypeHeader = request.headers.get("Content-Type") || "";
     let ResContentTypeHeader = "";
@@ -54,13 +57,18 @@ export default async function middleware(request: Request, context: NextFetchEve
       body = JSON.stringify(await request.json());
     }
 
-    const data = await fetchDataViaPost(`${API_URL}/${path}`, body, isApiV2, ResContentTypeHeader);
+    const data = await fetchDataViaPost(
+      `${API_URL}/${path}`,
+      body,
+      isApiV2,
+      ResContentTypeHeader
+    );
 
     if (!data) {
       return new Response(JSON.stringify({ message: "Error Fetching Data" }), {
         status: 500,
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
       });
     }
@@ -68,7 +76,7 @@ export default async function middleware(request: Request, context: NextFetchEve
     return new Response(JSON.stringify(data), {
       status: 200,
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
     });
   }

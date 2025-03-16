@@ -144,15 +144,6 @@ export function unixToDate(
     );
 }
 
-export const getSeasonFromUnix = (unix: number) => {
-  const date = new Date(unix * 1000);
-  const month = date.getMonth();
-  if (month >= 3 && month <= 5) return "весна";
-  if (month >= 6 && month <= 8) return "лето";
-  if (month >= 9 && month <= 11) return "осень";
-  return "зима";
-};
-
 export function sinceUnixDate(unixInSeconds: number) {
   const unix = Math.floor(unixInSeconds * 1000);
   const date = new Date(unix);
