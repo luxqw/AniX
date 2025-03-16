@@ -1,7 +1,7 @@
 "use client";
 import { useUserStore } from "./store/auth";
 import { usePreferencesStore } from "./store/preferences";
-import { Navbar } from "./components/Navbar/Navbar";
+import { Navbar } from "./components/Navbar/NavbarUpdate";
 import { Inter } from "next/font/google";
 import { useEffect, useState } from "react";
 import { Button, Modal } from "flowbite-react";
