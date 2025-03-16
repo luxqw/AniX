@@ -10,6 +10,7 @@ interface preferencesState {
     saveWatchHistory?: boolean;
     showChangelog?: boolean;
     enableAnalytics?: boolean;
+    showNavbarTitles?: "always" | "links" | "selected" | "never";
   };
   params: {
     isFirstLaunch?: boolean;
@@ -42,6 +43,7 @@ export const usePreferencesStore = create<preferencesState>()(
         saveWatchHistory: true,
         showChangelog: true,
         enableAnalytics: true,
+        showNavbarTitles: "always",
       },
       params: {
         isFirstLaunch: true,

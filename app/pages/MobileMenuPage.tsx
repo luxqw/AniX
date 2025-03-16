@@ -81,7 +81,7 @@ export const MenuPage = () => {
               </button>
             </div>
           </div>
-          <Link href="/favorites" className="flex-1">
+          <Link href="/favorites" className="flex-1 sm:hidden">
             <Card>
               <div className="flex items-center gap-2">
                 <span
@@ -91,7 +91,7 @@ export const MenuPage = () => {
               </div>
             </Card>
           </Link>
-          <Link href="/collections" className="flex-1">
+          <Link href="/collections" className="flex-1 sm:hidden">
             <Card>
               <div className="flex items-center gap-2">
                 <span
@@ -101,7 +101,7 @@ export const MenuPage = () => {
               </div>
             </Card>
           </Link>
-          <Link href="/history" className="flex-1">
+          <Link href="/history" className="flex-1 sm:hidden">
             <Card>
               <div className="flex items-center gap-2">
                 <span

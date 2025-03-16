@@ -27,6 +27,13 @@ const BookmarksCategory = {
   abandoned: "Заброшено",
 };
 
+const NavbarTitles = {
+  always: "Всегда",
+  links: "Только ссылки",
+  selected: "Только выбранные",
+  never: "Никогда",
+}
+
 export const SettingsModal = (props: { isOpen: boolean; setIsOpen: any }) => {
   const preferenceStore = usePreferencesStore();
 
@@ -89,7 +96,7 @@ export const SettingsModal = (props: { isOpen: boolean; setIsOpen: any }) => {
               checked={preferenceStore.params.skipToCategory.enabled}
             />
           </div>
-          {preferenceStore.params.skipToCategory.enabled ? (
+          {preferenceStore.params.skipToCategory.enabled ?
             <>
               <div className="flex items-center justify-between">
                 <p className=" dark:text-white max-w-96">
@@ -154,9 +161,33 @@ export const SettingsModal = (props: { isOpen: boolean; setIsOpen: any }) => {
                 </Dropdown>
               </div>
             </>
-          ) : (
-            ""
-          )}
+          : ""}
+          <div className="flex items-center justify-between">
+            <p className=" dark:text-white max-w-96">
+              Показывать название пункта в навигации
+            </p>
+            <Dropdown
+              color="blue"
+              label={
+                NavbarTitles[preferenceStore.flags.showNavbarTitles]
+              }
+            >
+              {Object.keys(NavbarTitles).map((key: "always" | "links" | "selected" | "never") => {
+                return (
+                  <Dropdown.Item
+                    key={`navbar-titles-${key}`}
+                    onClick={() =>
+                      preferenceStore.setFlags({
+                        showNavbarTitles: key,
+                      })
+                    }
+                  >
+                    {NavbarTitles[key]}
+                  </Dropdown.Item>
+                );
+              })}
+            </Dropdown>
+          </div>
           <HR className="my-4 dark:bg-slate-400" />
           <div className="flex items-center gap-2">
             <span className="w-6 h-6 iconify material-symbols--settings-outline"></span>
