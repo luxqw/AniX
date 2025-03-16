@@ -74,57 +74,12 @@ export const ReleasePlayerCustom = (props: {
   };
 
   const _fetchKodikManifest = async (url: string) => {
-    url = url.replace("https://", "")
     const response = await fetch(
-      `/api/proxy/${encodeURIComponent(url)}?html=true`
+      `https://anix-player.wah.su/?url=${url}&player=kodik`
     );
-    const data = await response.text();
-
-    const urlParamsRe = /var urlParams = .*;$/m;
-    const urlParamsMatch = urlParamsRe.exec(data);
-
-    if (urlParamsMatch.length == 0) {
-      alert("Failed to get urlParams");
-      return;
-    }
-
-    const urlParamsStr = urlParamsMatch[0]
-      .replace("var urlParams = '", "")
-      .replace("';", "");
-    const urlParams = JSON.parse(urlParamsStr);
-
-    const domain = url.split("/")[0];
-    const urlStr = url.replace(`${domain}/`, "");
-    const type = urlStr.split("/")[0];
-    const id = urlStr.split("/")[1];
-    const hash = urlStr.split("/")[2];
-
-    const responseMan = await fetch(
-      `/api/proxy/${encodeURIComponent(`${domain}/ftor`)}?isNotAnixart=true`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          type: type,
-          id: id,
-          hash: hash,
-          d: urlParams.d,
-          d_sign: urlParams.d_sign,
-          pd: urlParams.pd,
-          pd_sign: urlParams.pd_sign,
-          ref: urlParams.ref,
-          ref_sign: urlParams.ref_sign,
-          bad_user: false,
-          cdn_is_working: true,
-          info: {},
-        }),
-      }
-    );
-    const dataMan = await responseMan.json();
-    let manifest = `https:${dataMan.links["360"][0].src.replace("360.mp4:hls:", "")}`;
-    let poster = `https:${dataMan.links["360"][0].src.replace("360.mp4:hls:manifest.m3u8", "thumb001.jpg")}`;
+    const data = await response.json();
+    let manifest = `https:${data.links["360"][0].src.replace("360.mp4:hls:", "")}`;
+    let poster = `https:${data.links["360"][0].src.replace("360.mp4:hls:manifest.m3u8", "thumb001.jpg")}`;
     return { manifest, poster };
   };
 
@@ -149,13 +104,12 @@ export const ReleasePlayerCustom = (props: {
   };
 
   const _fetchSibnetManifest = async (url: string) => {
-    url = url.replace("https://", "")
     const response = await fetch(
-      `/api/proxy/${encodeURIComponent(url)}?isSibnet=true`
+      `https://sibnet.anix-player.wah.su/?url=${url}`
     );
     const data = await response.json();
 
-    let manifest = data.url;
+    let manifest = data.video;
     let poster = data.poster;
     return { manifest, poster };
   };
