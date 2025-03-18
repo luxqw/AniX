@@ -80,11 +80,6 @@ export default function Page(props: { children: any, className?: string }) {
 
           <media-controller
             breakpoints="md:480"
-            defaultsubtitles="{{defaultsubtitles}}"
-            defaultduration="{{defaultduration}}"
-            gesturesdisabled="{{disabled}}"
-            hotkeys="{{hotkeys}}"
-            nohotkeys="{{nohotkeys}}"
             defaultstreamtype="on-demand"
           >
             <slot name="media" slot="media"></slot>

@@ -268,14 +268,16 @@ export const ReleasePlayerCustom = (props: {
             />
           </div>
           {playerProps.useCustom ?
-            <MediaThemeSutro className="w-full aspect-video">
+            <MediaThemeSutro className="object-none w-full aspect-video">
               {playerProps.type == "hls" ?
                 <HlsVideo
+                  className="object-contain h-full aspect-video"
                   slot="media"
                   src={playerProps.src}
                   poster={playerProps.poster}
                 />
               : <video
+                  className="object-contain h-full aspect-video"
                   slot="media"
                   src={playerProps.src}
                   poster={playerProps.poster}
