@@ -11,6 +11,7 @@ import { Spinner } from "../Spinner/Spinner";
 import { useUserPlayerPreferencesStore } from "#/store/player";
 
 import HlsVideo from "hls-video-element/react";
+import VideoJS from "videojs-video-element/react";
 import MediaThemeSutro from "./MediaThemeSutro";
 import { getAnonEpisodesWatched } from "./ReleasePlayer";
 
@@ -36,6 +37,7 @@ export const ReleasePlayerCustom = (props: {
     type: null,
     useCustom: false,
   });
+  const [playbackRate, setPlaybackRate] = useState(1);
 
   const playerPreferenceStore = useUserPlayerPreferencesStore();
   const preferredVO = playerPreferenceStore.getPreferredVoiceover(props.id);
@@ -78,8 +80,49 @@ export const ReleasePlayerCustom = (props: {
       `https://anix-player.wah.su/?url=${url}&player=kodik`
     );
     const data = await response.json();
-    let manifest = `https:${data.links["360"][0].src.replace("360.mp4:hls:", "")}`;
-    let poster = `https:${data.links["360"][0].src.replace("360.mp4:hls:manifest.m3u8", "thumb001.jpg")}`;
+    let lowQualityLink = data.links["360"][0].src;
+    if (lowQualityLink.includes("https://")) {
+      lowQualityLink = lowQualityLink.replace("https://", "//");
+    }
+    let manifest = `https:${lowQualityLink.replace("360.mp4:hls:", "")}`;
+    let poster = `https:${lowQualityLink.replace("360.mp4:hls:manifest.m3u8", "thumb001.jpg")}`;
+
+    if (lowQualityLink.includes("animetvseries")) {
+      let blobTxt = "#EXTM3U\n";
+
+      if (data.links.hasOwnProperty("240")) {
+        blobTxt += "#EXT-X-STREAM-INF:RESOLUTION=427x240,BANDWIDTH=200000\n";
+        !data.links["240"][0].src.startsWith("https:") ?
+          (blobTxt += `https:${data.links["240"][0].src}\n`)
+        : (blobTxt += `${data.links["240"][0].src}\n`);
+      }
+
+      if (data.links.hasOwnProperty("360")) {
+        blobTxt += "#EXT-X-STREAM-INF:RESOLUTION=578x360,BANDWIDTH=400000\n";
+        !data.links["360"][0].src.startsWith("https:") ?
+          (blobTxt += `https:${data.links["360"][0].src}\n`)
+        : (blobTxt += `${data.links["360"][0].src}\n`);
+      }
+
+      if (data.links.hasOwnProperty("480")) {
+        blobTxt += "#EXT-X-STREAM-INF:RESOLUTION=854x480,BANDWIDTH=596000\n";
+        !data.links["480"][0].src.startsWith("https:") ?
+          (blobTxt += `https:${data.links["480"][0].src}\n`)
+        : (blobTxt += `${data.links["480"][0].src}\n`);
+      }
+
+      if (data.links.hasOwnProperty("720")) {
+        blobTxt += "#EXT-X-STREAM-INF:RESOLUTION=1280x720,BANDWIDTH=1280000\n";
+        !data.links["720"][0].src.startsWith("https:") ?
+          (blobTxt += `https:${data.links["720"][0].src}\n`)
+        : (blobTxt += `${data.links["720"][0].src}\n`);
+      }
+
+      let file = new File([blobTxt], "manifest.m3u8", {
+        type: "application/x-mpegURL",
+      });
+      manifest = URL.createObjectURL(file);
+    }
     return { manifest, poster };
   };
 
@@ -93,8 +136,6 @@ export const ReleasePlayerCustom = (props: {
     const ep = data.player.list[episode.selected.position];
 
     const blobTxt = `#EXTM3U\n${ep.hls.sd && `#EXT-X-STREAM-INF:RESOLUTION=854x480,BANDWIDTH=596000\n${host}${ep.hls.sd}\n`}${ep.hls.hd && `#EXT-X-STREAM-INF:RESOLUTION=1280x720,BANDWIDTH=1280000\n${host}${ep.hls.hd}\n`}${ep.hls.fhd && `#EXT-X-STREAM-INF:RESOLUTION=1920x1080,BANDWIDTH=2560000\n${host}${ep.hls.fhd}\n`}`;
-    const blob = new Blob([blobTxt], { type: "application/x-mpegURL" });
-
     let file = new File([blobTxt], "manifest.m3u8", {
       type: "application/x-mpegURL",
     });
@@ -274,13 +315,23 @@ export const ReleasePlayerCustom = (props: {
                   slot="media"
                   src={playerProps.src}
                   poster={playerProps.poster}
+                  defaultPlaybackRate={playbackRate}
+                  onRateChange={(e) => {
+                    // @ts-ignore
+                    setPlaybackRate(e.target.playbackRate || 1);
+                  }}
                 />
-              : <video
+              : <VideoJS
                   className="object-contain h-full aspect-video"
                   slot="media"
                   src={playerProps.src}
                   poster={playerProps.poster}
-                ></video>
+                  defaultPlaybackRate={playbackRate}
+                  onRateChange={(e) => {
+                    // @ts-ignore
+                    setPlaybackRate(e.target.playbackRate || 1);
+                  }}
+                ></VideoJS>
               }
             </MediaThemeSutro>
           : <iframe src={playerProps.src} className="w-full aspect-video" />}

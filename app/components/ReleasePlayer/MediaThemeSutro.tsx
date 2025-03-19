@@ -175,7 +175,7 @@ export default function Page(props: { children: any, className?: string }) {
             <media-settings-menu hidden anchor="auto">
               <media-settings-menu-item>
                 Playback Speed
-                <media-playback-rate-menu slot="submenu" hidden>
+                <media-playback-rate-menu slot="submenu" hidden rates="0.5 0.75 1 1.25 1.5 1.75 2">
                   <div slot="title">Playback Speed</div>
                 </media-playback-rate-menu>
               </media-settings-menu-item>
