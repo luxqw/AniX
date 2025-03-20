@@ -35,7 +35,7 @@ export const ReleaseInfoUserList = (props: {
   const [AddReleaseToCollectionModalOpen, setAddReleaseToCollectionModalOpen] =
     useState(false);
   const [favButtonDisabled, setFavButtonDisabled] = useState(false);
-  const [listEventDisabledd, setListEventDisabled] = useState(false);
+  const [listEventDisabled, setListEventDisabled] = useState(false);
   const theme = useThemeMode();
 
   function _addToFavorite() {
@@ -96,9 +96,46 @@ export const ReleaseInfoUserList = (props: {
   }
 
   function _addToList(list: number) {
-    if (props.token) {
+    async function _setList(url: string) {
+      setListEventDisabled(true);
+      const tid = toast.loading("Добавляем в список...", {
+        position: "bottom-center",
+        hideProgressBar: true,
+        closeOnClick: false,
+        pauseOnHover: false,
+        draggable: false,
+        theme: theme.mode == "light" ? "light" : "dark",
+      });
+      const { data, error } = await tryCatchAPI(fetch(url));
+
+      if (error) {
+        toast.update(tid, {
+          render: `Ошибка добавления в список: ${lists[list].name}`,
+          type: "error",
+          autoClose: 2500,
+          isLoading: false,
+          closeOnClick: true,
+          draggable: true,
+        });
+        setListEventDisabled(false);
+        return;
+      }
+
+      toast.update(tid, {
+        render: `Добавлено в список: ${lists[list].name}`,
+        type: "success",
+        autoClose: 2500,
+        isLoading: false,
+        closeOnClick: true,
+        draggable: true,
+      });
+
+      setListEventDisabled(false);
       props.setUserList(list);
-      fetch(
+    }
+
+    if (props.token) {
+      _setList(
         `${ENDPOINTS.user.bookmark}/add/${list}/${props.release_id}?token=${props.token}`
       );
     }
@@ -134,6 +171,7 @@ export const ReleaseInfoUserList = (props: {
               theme={DropdownTheme}
               color="blue"
               size="sm"
+              disabled={listEventDisabled}
             >
               {lists.map((list) => (
                 <Dropdown.Item
