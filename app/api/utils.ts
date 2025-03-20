@@ -31,16 +31,16 @@ export async function tryCatch<T, E = Error>(
 
 export async function tryCatchAPI<T, E = Error>(
   promise: Promise<any>
-): Promise<Result<any, E>> {
+): Promise<Result<any, any>> {
   try {
     const res: Awaited<Response> = await promise;
     if (!res.ok) {
       return {
         data: null,
-        error: JSON.stringify({
+        error: {
           message: res.statusText,
           code: res.status,
-        }) as E,
+        },
       };
     }
 
@@ -53,7 +53,7 @@ export async function tryCatchAPI<T, E = Error>(
         error: {
           message: "Not Found",
           code: 404,
-        } as E,
+        },
       };
     }
 
@@ -64,13 +64,13 @@ export async function tryCatchAPI<T, E = Error>(
         error: {
           message: "API Returned an Error",
           code: data.code || 500,
-        } as E,
+        },
       };
     }
 
     return { data, error: null };
   } catch (error) {
-    return { data: null, error: error as E };
+    return { data: null, error: error};
   }
 }
 

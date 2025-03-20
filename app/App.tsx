@@ -113,6 +113,7 @@ export const App = (props) => {
         />
       )}
       <ToastContainer
+        className={"mx-2 mb-20 sm:mb-0"}
         position="bottom-center"
         autoClose={5000}
         hideProgressBar={false}

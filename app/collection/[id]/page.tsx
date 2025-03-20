@@ -15,8 +15,8 @@ export async function generateMetadata(
 
   if (error) {
     return {
-      title: "Ошибка",
-      description: "Ошибка",
+      title: "Приватная коллекция",
+      description: "Приватная коллекция",
     };
   }
 

@@ -13,18 +13,27 @@ import {
   FileInput,
   Label,
   Modal,
+  useThemeMode,
 } from "flowbite-react";
 import { ReleaseLink } from "#/components/ReleaseLink/ReleaseLink";
 import { CropModal } from "#/components/CropModal/CropModal";
-import { b64toBlob } from "#/api/utils";
+import { b64toBlob, tryCatchAPI } from "#/api/utils";
 
 import { useSWRfetcher } from "#/api/utils";
 import { Spinner } from "#/components/Spinner/Spinner";
+import { toast } from "react-toastify";
 
 export const CreateCollectionPage = () => {
   const userStore = useUserStore();
   const searchParams = useSearchParams();
   const router = useRouter();
+  const theme = useThemeMode();
+
+  useEffect(() => {
+    if (userStore.state === "finished" && !userStore.token) {
+      router.push("/login?redirect=/collections/create");
+    }
+  }, [userStore]);
 
   const [edit, setEdit] = useState(false);
 
@@ -138,25 +147,50 @@ export const CreateCollectionPage = () => {
     e.preventDefault();
 
     async function _createCollection() {
+      setIsSending(true);
+      const tid = toast.loading(
+        mode === "edit" ? "Редактируем коллекцию..." : "Создаём коллекцию...",
+        {
+          position: "bottom-center",
+          hideProgressBar: true,
+          closeOnClick: false,
+          pauseOnHover: false,
+          draggable: false,
+          theme: theme.mode == "light" ? "light" : "dark",
+        }
+      );
       const url =
         mode === "edit" ?
           `${ENDPOINTS.collection.edit}/${collection_id}?token=${userStore.token}`
         : `${ENDPOINTS.collection.create}?token=${userStore.token}`;
 
-      const res = await fetch(url, {
-        method: "POST",
-        body: JSON.stringify({
-          ...collectionInfo,
-          is_private: isPrivate,
-          private: isPrivate,
-          releases: addedReleasesIds,
-        }),
-      });
+      const { data, error } = await tryCatchAPI(
+        fetch(url, {
+          method: "POST",
+          body: JSON.stringify({
+            ...collectionInfo,
+            is_private: isPrivate,
+            private: isPrivate,
+            releases: addedReleasesIds,
+          }),
+        })
+      );
 
-      const data = await res.json();
-
-      if (data.code == 5) {
-        alert("Вы превысили допустимый еженедельный лимит создания коллекций!");
+      if (error) {
+        let message = error.message;
+        if (error.code == 5) {
+          message =
+            "Вы превысили допустимый еженедельный лимит создания коллекций";
+        }
+        toast.update(tid, {
+          render: message,
+          type: "error",
+          autoClose: 2500,
+          isLoading: false,
+          closeOnClick: true,
+          draggable: true,
+        });
+        setIsSending(false);
         return;
       }
 
@@ -169,33 +203,54 @@ export const CreateCollectionPage = () => {
         const formData = new FormData();
         formData.append("image", blob, "cropped.jpg");
         formData.append("name", "image");
-        const uploadRes = await fetch(
+        await fetch(
           `${ENDPOINTS.collection.editImage}/${data.collection.id}?token=${userStore.token}`,
           {
             method: "POST",
             body: formData,
           }
         );
-        const uploadData = await uploadRes.json();
       }
 
+      toast.update(tid, {
+        render: mode === "edit" ? `Коллекция ${collectionInfo.title} обновлена` : `Коллекция ${collectionInfo.title} создана`,
+        type: "success",
+        autoClose: 2500,
+        isLoading: false,
+        closeOnClick: true,
+        draggable: true,
+      });
       router.push(`/collection/${data.collection.id}`);
+      setIsSending(false);
     }
 
-    if (
-      collectionInfo.title.length >= 10 &&
-      addedReleasesIds.length >= 1 &&
-      userStore.token
-    ) {
-      // setIsSending(true);
-      _createCollection();
-    } else if (collectionInfo.title.length < 10) {
-      alert("Необходимо ввести название коллекции не менее 10 символов");
-    } else if (!userStore.token) {
-      alert("Для создания коллекции необходимо войти в аккаунт");
-    } else if (addedReleasesIds.length < 1) {
-      alert("Необходимо добавить хотя бы один релиз в коллекцию");
+    if (collectionInfo.title.length < 10) {
+      toast.error("Необходимо ввести название коллекции не менее 10 символов", {
+        position: "bottom-center",
+        hideProgressBar: true,
+        type: "error",
+        autoClose: 2500,
+        isLoading: false,
+        closeOnClick: true,
+        draggable: true,
+      });
+      return;
     }
+
+    if (addedReleasesIds.length < 1) {
+      toast.error("Необходимо добавить хотя бы один релиз в коллекцию", {
+        position: "bottom-center",
+        hideProgressBar: true,
+        type: "error",
+        autoClose: 2500,
+        isLoading: false,
+        closeOnClick: true,
+        draggable: true,
+      });
+      return;
+    }
+
+    _createCollection();
   }
 
   function _deleteRelease(release: any) {
