@@ -18,19 +18,8 @@ import { ReleaseLink } from "#/components/ReleaseLink/ReleaseLink";
 import { CropModal } from "#/components/CropModal/CropModal";
 import { b64toBlob } from "#/api/utils";
 
-const fetcher = async (url: string) => {
-  const res = await fetch(url);
-
-  if (!res.ok) {
-    const error = new Error(
-      `An error occurred while fetching the data. status: ${res.status}`
-    );
-    error.message = await res.json();
-    throw error;
-  }
-
-  return res.json();
-};
+import { useSWRfetcher } from "#/api/utils";
+import { Spinner } from "#/components/Spinner/Spinner";
 
 export const CreateCollectionPage = () => {
   const userStore = useUserStore();
@@ -150,9 +139,9 @@ export const CreateCollectionPage = () => {
 
     async function _createCollection() {
       const url =
-        mode === "edit"
-          ? `${ENDPOINTS.collection.edit}/${collection_id}?token=${userStore.token}`
-          : `${ENDPOINTS.collection.create}?token=${userStore.token}`;
+        mode === "edit" ?
+          `${ENDPOINTS.collection.edit}/${collection_id}?token=${userStore.token}`
+        : `${ENDPOINTS.collection.create}?token=${userStore.token}`;
 
       const res = await fetch(url, {
         method: "POST",
@@ -239,39 +228,42 @@ export const CreateCollectionPage = () => {
             className="flex flex-col items-center w-full sm:max-w-[600px] h-[337px] border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100 dark:border-gray-600 dark:bg-gray-700 dark:hover:border-gray-500 dark:hover:bg-gray-600"
           >
             <div className="flex flex-col items-center justify-center max-w-[595px] h-[inherit] rounded-[inherit] pt-5 pb-6 overflow-hidden">
-              {!imageUrl ? (
-                <>
-                  <svg
-                    className="w-8 h-8 mb-4 text-gray-500 dark:text-gray-400"
-                    aria-hidden="true"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 20 16"
-                  >
-                    <path
-                      stroke="currentColor"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"
-                    />
-                  </svg>
-                  <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
-                    <span className="font-semibold">Нажмите для загрузки</span>{" "}
-                    или перетащите файл
-                  </p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">
-                    PNG или JPG (Макс. 600x337 пикселей)
-                  </p>
-                </>
-              ) : (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={imageUrl}
-                  className="object-cover w-[inherit] h-[inherit]"
-                  alt=""
-                />
-              )}
+              {
+                !imageUrl ?
+                  <>
+                    <svg
+                      className="w-8 h-8 mb-4 text-gray-500 dark:text-gray-400"
+                      aria-hidden="true"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 20 16"
+                    >
+                      <path
+                        stroke="currentColor"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"
+                      />
+                    </svg>
+                    <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
+                      <span className="font-semibold">
+                        Нажмите для загрузки
+                      </span>{" "}
+                      или перетащите файл
+                    </p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                      PNG или JPG (Макс. 600x337 пикселей)
+                    </p>
+                  </>
+                  // eslint-disable-next-line @next/next/no-img-element
+                : <img
+                    src={imageUrl}
+                    className="object-cover w-[inherit] h-[inherit]"
+                    alt=""
+                  />
+
+              }
             </div>
             <FileInput
               id="dropzone-file"
@@ -428,7 +420,7 @@ export const ReleasesEditModal = (props: {
 
   const { data, error, isLoading, size, setSize } = useSWRInfinite(
     getKey,
-    fetcher,
+    useSWRfetcher,
     { initialSize: 2, revalidateFirstPage: false }
   );
 
@@ -554,6 +546,8 @@ export const ReleasesEditModal = (props: {
           {content.length == 1 && <div></div>}
         </div>
       </div>
+      {isLoading && <Spinner />}
+      {error && <div>Произошла ошибка</div>}
     </Modal>
   );
 };
