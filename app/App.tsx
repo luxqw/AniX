@@ -8,6 +8,7 @@ import { Button, Modal } from "flowbite-react";
 import { Spinner } from "./components/Spinner/Spinner";
 import { ChangelogModal } from "#/components/ChangelogModal/ChangelogModal";
 import PlausibleProvider from "next-plausible";
+import { Bounce, ToastContainer } from "react-toastify";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -111,6 +112,19 @@ export const App = (props) => {
           enabled={true}
         />
       )}
+      <ToastContainer
+        position="bottom-center"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={true}
+        closeOnClick={true}
+        rtl={false}
+        pauseOnFocusLoss={false}
+        draggable={true}
+        pauseOnHover={true}
+        theme="colored"
+        transition={Bounce}
+      />
     </body>
   );
 };

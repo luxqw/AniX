@@ -3,7 +3,9 @@ import { ENDPOINTS } from "#/api/config";
 import Link from "next/link";
 import useSWRInfinite from "swr/infinite";
 import { useCallback, useEffect, useState } from "react";
-import { useSWRfetcher } from "#/api/utils";
+import { tryCatchAPI, useSWRfetcher } from "#/api/utils";
+import { toast } from "react-toastify";
+import { useThemeMode } from "flowbite-react";
 
 const lists = [
   { list: 0, name: "Не смотрю" },
@@ -32,18 +34,64 @@ export const ReleaseInfoUserList = (props: {
 }) => {
   const [AddReleaseToCollectionModalOpen, setAddReleaseToCollectionModalOpen] =
     useState(false);
+  const [favButtonDisabled, setFavButtonDisabled] = useState(false);
+  const [listEventDisabledd, setListEventDisabled] = useState(false);
+  const theme = useThemeMode();
+
   function _addToFavorite() {
-    if (props.token) {
-      props.setIsFavorite(!props.isFavorite);
-      if (props.isFavorite) {
-        fetch(
-          `${ENDPOINTS.user.favorite}/delete/${props.release_id}?token=${props.token}`
-        );
-      } else {
-        fetch(
-          `${ENDPOINTS.user.favorite}/add/${props.release_id}?token=${props.token}`
-        );
+    async function _setFav(url: string) {
+      setFavButtonDisabled(true);
+      const tid = toast.loading(
+        !props.isFavorite ?
+          "Добавляем в избранное..."
+        : "Удаляем из избранное...",
+        {
+          position: "bottom-center",
+          hideProgressBar: true,
+          closeOnClick: false,
+          pauseOnHover: false,
+          draggable: false,
+          theme: theme.mode == "light" ? "light" : "dark",
+        }
+      );
+      const { data, error } = await tryCatchAPI(fetch(url));
+
+      if (error) {
+        toast.update(tid, {
+          render:
+            !props.isFavorite ?
+              "Ошибка добавления в избранное"
+            : "Ошибка удаления из избранного",
+          type: "error",
+          autoClose: 2500,
+          isLoading: false,
+          closeOnClick: true,
+          draggable: true,
+        });
+        setFavButtonDisabled(false);
+        return;
       }
+
+      toast.update(tid, {
+        render:
+          !props.isFavorite ? "Добавлено в избранное" : "Удалено из избранного",
+        type: "success",
+        autoClose: 2500,
+        isLoading: false,
+        closeOnClick: true,
+        draggable: true,
+      });
+
+      props.setIsFavorite(!props.isFavorite);
+      setFavButtonDisabled(false);
+    }
+
+    if (props.token) {
+      let url = `${ENDPOINTS.user.favorite}/add/${props.release_id}?token=${props.token}`;
+      if (props.isFavorite) {
+        url = `${ENDPOINTS.user.favorite}/delete/${props.release_id}?token=${props.token}`;
+      }
+      _setFav(url);
     }
   }
 
@@ -78,7 +126,7 @@ export const ReleaseInfoUserList = (props: {
             <span className="w-6 h-6 iconify mdi--bookmark-add "></span>
           </Button>
         )}
-        {props.token ? (
+        {props.token ?
           <>
             <Dropdown
               label={lists[props.userList].name}
@@ -102,6 +150,7 @@ export const ReleaseInfoUserList = (props: {
                 _addToFavorite();
               }}
               size="sm"
+              disabled={favButtonDisabled}
             >
               <span
                 className={`iconify w-6 h-6 ${
@@ -110,9 +159,7 @@ export const ReleaseInfoUserList = (props: {
               ></span>
             </Button>
           </>
-        ) : (
-          <p>Войдите что-бы добавить в список, избранное или коллекцию</p>
-        )}
+        : <p>Войдите что-бы добавить в список, избранное или коллекцию</p>}
       </div>
       <AddReleaseToCollectionModal
         isOpen={AddReleaseToCollectionModalOpen}
@@ -175,7 +222,6 @@ const AddReleaseToCollectionModal = (props: {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [scrollPosition]);
 
-
   function _addToCollection(collection_id: number) {
     if (props.token) {
       fetch(
@@ -212,25 +258,25 @@ const AddReleaseToCollectionModal = (props: {
         onScroll={handleScroll}
         ref={modalRef}
       >
-        {content && content.length > 0
-          ? content.map((collection) => (
-              <button
-                className="relative w-full h-64 overflow-hidden bg-center bg-no-repeat bg-cover rounded-sm group-hover:animate-bg_zoom animate-bg_zoom_rev group-hover:[background-size:110%] "
-                style={{
-                  backgroundImage: `linear-gradient(to bottom, rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0.9) 100%), url(${collection.image})`,
-                }}
-                key={`collection_${collection.id}`}
-                onClick={() => _addToCollection(collection.id)}
-              >
-                <div className="absolute bottom-0 left-0 gap-1 p-2">
-                  <p className="text-xl font-bold text-white">
-                    {collection.title}
-                  </p>
-                  <p className="text-gray-400">{collection.description}</p>
-                </div>
-              </button>
-            ))
-          : "коллекций не найдено"}
+        {content && content.length > 0 ?
+          content.map((collection) => (
+            <button
+              className="relative w-full h-64 overflow-hidden bg-center bg-no-repeat bg-cover rounded-sm group-hover:animate-bg_zoom animate-bg_zoom_rev group-hover:[background-size:110%] "
+              style={{
+                backgroundImage: `linear-gradient(to bottom, rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0.9) 100%), url(${collection.image})`,
+              }}
+              key={`collection_${collection.id}`}
+              onClick={() => _addToCollection(collection.id)}
+            >
+              <div className="absolute bottom-0 left-0 gap-1 p-2">
+                <p className="text-xl font-bold text-white">
+                  {collection.title}
+                </p>
+                <p className="text-gray-400">{collection.description}</p>
+              </div>
+            </button>
+          ))
+        : "коллекций не найдено"}
       </div>
     </Modal>
   );
