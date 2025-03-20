@@ -1,8 +1,10 @@
 "use client";
 import { ENDPOINTS } from "#/api/config";
-import { Card, Button } from "flowbite-react";
+import { tryCatchAPI } from "#/api/utils";
+import { Card, Button, useThemeMode } from "flowbite-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { toast } from "react-toastify";
 import useSWR, { useSWRConfig } from "swr";
 
 // null - не друзья
@@ -24,11 +26,12 @@ export const ProfileActions = (props: {
   edit_isOpen: boolean;
   edit_setIsOpen: any;
 }) => {
-  const router = useRouter();
   const profileIdIsSmaller = props.my_profile_id < props.profile_id;
-  const [friendRequestDisabled, setFriendRequestDisabled] = useState(false);
-  const [blockRequestDisabled, setBlockRequestDisabled] = useState(false);
+  const theme = useThemeMode();
+
   const { mutate } = useSWRConfig();
+  const [actionsDisabled, setActionsDisabled] = useState(false);
+
   function _getFriendStatus() {
     const num = props.friendStatus;
 
@@ -54,53 +57,119 @@ export const ProfileActions = (props: {
   }
   const FriendStatus = _getFriendStatus();
   const isRequestedStatus =
-    FriendStatus != null
-      ? profileIdIsSmaller
-        ? profileIdIsSmaller && FriendStatus != 0
-        : !profileIdIsSmaller && FriendStatus == 2
-      : null;
+    FriendStatus != null ?
+      profileIdIsSmaller ? profileIdIsSmaller && FriendStatus != 0
+      : !profileIdIsSmaller && FriendStatus == 2
+    : null;
   // ^ This is some messed up shit
 
-  function _addToFriends() {
-    let url = `${ENDPOINTS.user.profile}/friend/request`;
-    setFriendRequestDisabled(true);
-    setBlockRequestDisabled(true);
+  async function _addToFriends() {
+    setActionsDisabled(true);
 
-    FriendStatus == 1
-      ? (url += "/remove/")
-      : isRequestedStatus
-      ? (url += "/remove/")
-      : (url += "/send/");
-
-    url += `${props.profile_id}?token=${props.token}`;
-    fetch(url).then((res) => {
-      mutate(
-        `${ENDPOINTS.user.profile}/${props.profile_id}?token=${props.token}`
-      );
-      setTimeout(() => {
-        setBlockRequestDisabled(false);
-        setFriendRequestDisabled(false);
-      }, 100);
+    const tid = toast.loading("Добавляем в друзья...", {
+      position: "bottom-center",
+      hideProgressBar: true,
+      closeOnClick: false,
+      pauseOnHover: false,
+      draggable: false,
+      theme: theme.mode == "light" ? "light" : "dark",
     });
+
+    let url = `${ENDPOINTS.user.profile}/friend/request`;
+    FriendStatus == 1 ? (url += "/remove/")
+    : isRequestedStatus ? (url += "/remove/")
+    : (url += "/send/");
+    url += `${props.profile_id}?token=${props.token}`;
+
+    const { data, error } = await tryCatchAPI(fetch(url));
+
+    if (error) {
+      toast.update(tid, {
+        render:
+          FriendStatus == 1 || isRequestedStatus ?
+            "Ошибка удаления из друзей"
+          : "Ошибка добавления в друзья",
+        type: "error",
+        autoClose: 2500,
+        isLoading: false,
+        closeOnClick: true,
+        draggable: true,
+      });
+      setActionsDisabled(false);
+      return;
+    }
+
+    mutate(
+      `${ENDPOINTS.user.profile}/${props.profile_id}?token=${props.token}`
+    );
+
+    toast.update(tid, {
+      render:
+        FriendStatus == 1 || isRequestedStatus ?
+          "Удален из друзей"
+        : "Добавлен в друзья",
+      type: "success",
+      autoClose: 2500,
+      isLoading: false,
+      closeOnClick: true,
+      draggable: true,
+    });
+
+    setActionsDisabled(false);
   }
 
-  function _addToBlocklist() {
+  async function _addToBlocklist() {
+    setActionsDisabled(true);
+
+    const tid = toast.loading(
+      !props.is_blocked ?
+        "Блокируем пользователя..."
+      : "Разблокируем пользователя...",
+      {
+        position: "bottom-center",
+        hideProgressBar: true,
+        closeOnClick: false,
+        pauseOnHover: false,
+        draggable: false,
+        theme: theme.mode == "light" ? "light" : "dark",
+      }
+    );
+
     let url = `${ENDPOINTS.user.profile}/blocklist`;
-    setBlockRequestDisabled(true);
-    setFriendRequestDisabled(true);
-
     !props.is_blocked ? (url += "/add/") : (url += "/remove/");
-
     url += `${props.profile_id}?token=${props.token}`;
-    fetch(url).then((res) => {
-      mutate(
-        `${ENDPOINTS.user.profile}/${props.profile_id}?token=${props.token}`
-      );
-      setTimeout(() => {
-        setBlockRequestDisabled(false);
-        setFriendRequestDisabled(false);
-      }, 100);
+
+    const { data, error } = await tryCatchAPI(fetch(url));
+    if (error) {
+      toast.update(tid, {
+        render: !props.is_blocked ? "Ошибка блокировки" : "Ошибка разблокировки",
+        type: "error",
+        autoClose: 2500,
+        isLoading: false,
+        closeOnClick: true,
+        draggable: true,
+      });
+      setActionsDisabled(false);
+      return;
+    }
+
+    mutate(
+      `${ENDPOINTS.user.profile}/${props.profile_id}?token=${props.token}`
+    );
+
+    toast.update(tid, {
+      render:
+        !props.is_blocked ?
+          "Пользователь заблокирован"
+        : "Пользователь разблокирован",
+      type: "success",
+      autoClose: 2500,
+      isLoading: false,
+      closeOnClick: true,
+      draggable: true,
     });
+
+    setActionsDisabled(false);
   }
 
   return (
@@ -109,7 +178,14 @@ export const ProfileActions = (props: {
         <p>Отправил(-а) вам заявку в друзья</p>
       )}
       <div className="flex gap-2">
-        {props.isMyProfile && <Button color={"blue"} onClick={() => props.edit_setIsOpen(!props.edit_isOpen)}>Редактировать</Button>}
+        {props.isMyProfile && (
+          <Button
+            color={"blue"}
+            onClick={() => props.edit_setIsOpen(!props.edit_isOpen)}
+          >
+            Редактировать
+          </Button>
+        )}
         {!props.isMyProfile && (
           <>
             {(!props.isFriendRequestsDisallowed ||
@@ -118,26 +194,25 @@ export const ProfileActions = (props: {
               !props.is_me_blocked &&
               !props.is_blocked && (
                 <Button
-                  disabled={friendRequestDisabled}
+                  disabled={actionsDisabled}
                   color={
-                    FriendStatus == 1
-                      ? "red"
-                      : isRequestedStatus
-                      ? "light"
-                      : "blue"
+                    FriendStatus == 1 ? "red"
+                    : isRequestedStatus ?
+                      "light"
+                    : "blue"
                   }
                   onClick={() => _addToFriends()}
                 >
-                  {FriendStatus == 1
-                    ? "Удалить из друзей"
-                    : isRequestedStatus
-                    ? "Заявка отправлена"
-                    : "Добавить в друзья"}
+                  {FriendStatus == 1 ?
+                    "Удалить из друзей"
+                  : isRequestedStatus ?
+                    "Заявка отправлена"
+                  : "Добавить в друзья"}
                 </Button>
               )}
             <Button
               color={!props.is_blocked ? "red" : "blue"}
-              disabled={blockRequestDisabled}
+              disabled={actionsDisabled}
               onClick={() => _addToBlocklist()}
             >
               {!props.is_blocked ? "Заблокировать" : "Разблокировать"}
