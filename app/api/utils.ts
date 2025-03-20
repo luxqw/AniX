@@ -4,6 +4,84 @@ export const HEADERS = {
   "Content-Type": "application/json; charset=UTF-8",
 };
 
+// Types for the result object with discriminated union
+type Success<T> = {
+  data: T;
+  error: null;
+};
+
+type Failure<E> = {
+  data: null;
+  error: E;
+};
+
+type Result<T, E = Error> = Success<T> | Failure<E>;
+
+// Main wrapper function
+export async function tryCatch<T, E = Error>(
+  promise: Promise<T>
+): Promise<Result<T, E>> {
+  try {
+    const data = await promise;
+    return { data, error: null };
+  } catch (error) {
+    return { data: null, error: error as E };
+  }
+}
+
+export async function tryCatchAPI<T, E = Error>(
+  promise: Promise<any>
+): Promise<Result<any, E>> {
+  try {
+    const res: Awaited<Response> = await promise;
+    if (!res.ok) {
+      return {
+        data: null,
+        error: JSON.stringify({
+          message: res.statusText,
+          code: res.status,
+        }) as E,
+      };
+    }
+
+    if (
+      res.headers.get("content-length") &&
+      Number(res.headers.get("content-length")) == 0
+    ) {
+      return {
+        data: null,
+        error: {
+          message: "Not Found",
+          code: 404,
+        } as E,
+      };
+    }
+
+    const data: Awaited<any> = await res.json();
+    if (data.code != 0) {
+      return {
+        data: null,
+        error: {
+          message: "API Returned an Error",
+          code: data.code || 500,
+        } as E,
+      };
+    }
+
+    return { data, error: null };
+  } catch (error) {
+    return { data: null, error: error as E };
+  }
+}
+
+export const useSWRfetcher = async (url: string) => {
+  const { data, error } = await tryCatchAPI(fetch(url));
+  if (error) {
+    throw error;
+  }
+  return data;
+};
+
 export const fetchDataViaGet = async (
   url: string,
   API_V2: string | boolean = false
@@ -11,18 +89,14 @@ export const fetchDataViaGet = async (
   if (API_V2) {
     HEADERS["API-Version"] = "v2";
   }
-  try {
-    const response = await fetch(url, {
+
+  const { data, error } = await tryCatchAPI(
+    fetch(url, {
       headers: HEADERS,
-    });
-    if (response.status !== 200) {
-      return null;
-    }
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.log(error);
-  }
+    })
+  );
+
+  return { data, error };
 };
 
 export const fetchDataViaPost = async (

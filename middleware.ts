@@ -18,10 +18,13 @@ export default async function middleware(
     }
     let path = url.pathname.match(/\/api\/proxy\/(.*)/)?.[1] + url.search;
 
-    const data = await fetchDataViaGet(`${API_URL}/${path}`, isApiV2);
+    const { data, error } = await fetchDataViaGet(
+      `${API_URL}/${path}`,
+      isApiV2
+    );
 
-    if (!data) {
-      return new Response(JSON.stringify({ message: "Error Fetching Data" }), {
+    if (error) {
+      return new Response(JSON.stringify(error), {
         status: 500,
         headers: {
           "Content-Type": "application/json",

@@ -5,10 +5,10 @@ import { Spinner } from "#/components/Spinner/Spinner";
 import { useState, useEffect } from "react";
 import { useScrollPosition } from "#/hooks/useScrollPosition";
 import { useUserStore } from "../store/auth";
-import { Dropdown, Button, Tabs } from "flowbite-react";
+import { Dropdown, Button } from "flowbite-react";
 import { sort } from "./common";
 import { ENDPOINTS } from "#/api/config";
-import { BookmarksList } from "#/api/utils";
+import { BookmarksList, useSWRfetcher } from "#/api/utils";
 import { useRouter } from "next/navigation";
 
 const DropdownTheme = {
@@ -17,25 +17,10 @@ const DropdownTheme = {
   },
 };
 
-const fetcher = async (url: string) => {
-  const res = await fetch(url);
-
-  if (!res.ok) {
-    const error = new Error(
-      `An error occurred while fetching the data. status: ${res.status}`
-    );
-    error.message = await res.json();
-    throw error;
-  }
-
-  return res.json();
-};
-
 export function BookmarksCategoryPage(props: any) {
   const token = useUserStore((state) => state.token);
   const authState = useUserStore((state) => state.state);
   const [selectedSort, setSelectedSort] = useState(0);
-  const [isLoadingEnd, setIsLoadingEnd] = useState(false);
   const [searchVal, setSearchVal] = useState("");
   const router = useRouter();
 
@@ -61,7 +46,7 @@ export function BookmarksCategoryPage(props: any) {
 
   const { data, error, isLoading, size, setSize } = useSWRInfinite(
     getKey,
-    fetcher,
+    useSWRfetcher,
     { initialSize: 2 }
   );
 
@@ -73,7 +58,6 @@ export function BookmarksCategoryPage(props: any) {
         allReleases.push(...data[i].content);
       }
       setContent(allReleases);
-      setIsLoadingEnd(true);
     }
   }, [data]);
 
@@ -92,9 +76,31 @@ export function BookmarksCategoryPage(props: any) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [authState, token]);
 
+  if (isLoading) {
+    return (
+      <div className="flex flex-col items-center justify-center min-w-full min-h-screen">
+        <Spinner />
+      </div>
+    );
+  };
+
+  if (error) {
+    return (
+      <main className="flex items-center justify-center min-h-screen">
+        <div className="flex flex-col gap-2">
+          <h1 className="text-2xl font-bold">Ошибка</h1>
+          <p className="text-lg">
+            Произошла ошибка при загрузке закладок. Попробуйте обновить страницу
+            или зайдите позже.
+          </p>
+        </div>
+      </main>
+    );
+  }
+
   return (
     <>
-      {!props.profile_id ? (
+      {!props.profile_id ?
         <form
           className="flex-1 max-w-full mx-4"
           onSubmit={(e) => {
@@ -143,9 +149,7 @@ export function BookmarksCategoryPage(props: any) {
             </button>
           </div>
         </form>
-      ) : (
-        ""
-      )}
+      : ""}
       <div className="m-4 overflow-auto">
         <Button.Group>
           <Button
@@ -154,9 +158,9 @@ export function BookmarksCategoryPage(props: any) {
             color="light"
             onClick={() =>
               router.push(
-                props.profile_id
-                  ? `/profile/${props.profile_id}/bookmarks/watching`
-                  : "/bookmarks/watching"
+                props.profile_id ?
+                  `/profile/${props.profile_id}/bookmarks/watching`
+                : "/bookmarks/watching"
               )
             }
           >
@@ -168,9 +172,9 @@ export function BookmarksCategoryPage(props: any) {
             color="light"
             onClick={() =>
               router.push(
-                props.profile_id
-                  ? `/profile/${props.profile_id}/bookmarks/planned`
-                  : "/bookmarks/planned"
+                props.profile_id ?
+                  `/profile/${props.profile_id}/bookmarks/planned`
+                : "/bookmarks/planned"
               )
             }
           >
@@ -182,9 +186,9 @@ export function BookmarksCategoryPage(props: any) {
             color="light"
             onClick={() =>
               router.push(
-                props.profile_id
-                  ? `/profile/${props.profile_id}/bookmarks/watched`
-                  : "/bookmarks/watched"
+                props.profile_id ?
+                  `/profile/${props.profile_id}/bookmarks/watched`
+                : "/bookmarks/watched"
               )
             }
           >
@@ -196,9 +200,9 @@ export function BookmarksCategoryPage(props: any) {
             color="light"
             onClick={() =>
               router.push(
-                props.profile_id
-                  ? `/profile/${props.profile_id}/bookmarks/delayed`
-                  : "/bookmarks/delayed"
+                props.profile_id ?
+                  `/profile/${props.profile_id}/bookmarks/delayed`
+                : "/bookmarks/delayed"
               )
             }
           >
@@ -210,9 +214,9 @@ export function BookmarksCategoryPage(props: any) {
             color="light"
             onClick={() =>
               router.push(
-                props.profile_id
-                  ? `/profile/${props.profile_id}/bookmarks/abandoned`
-                  : "/bookmarks/abandoned"
+                props.profile_id ?
+                  `/profile/${props.profile_id}/bookmarks/abandoned`
+                : "/bookmarks/abandoned"
               )
             }
           >
@@ -236,9 +240,9 @@ export function BookmarksCategoryPage(props: any) {
             <Dropdown.Item key={index} onClick={() => setSelectedSort(index)}>
               <span
                 className={`w-6 h-6 iconify ${
-                  sort.values[index].value.split("_")[1] == "descending"
-                    ? sort.descendingIcon
-                    : sort.ascendingIcon
+                  sort.values[index].value.split("_")[1] == "descending" ?
+                    sort.descendingIcon
+                  : sort.ascendingIcon
                 }`}
               ></span>
               {item.name}
@@ -246,20 +250,15 @@ export function BookmarksCategoryPage(props: any) {
           ))}
         </Dropdown>
       </div>
-      {content && content.length > 0 ? (
+      {content && content.length > 0 ?
         <ReleaseSection content={content} />
-      ) : !isLoadingEnd || isLoading ? (
-        <div className="flex flex-col items-center justify-center min-w-full min-h-screen">
-          <Spinner />
-        </div>
-      ) : (
-        <div className="flex flex-col items-center justify-center min-w-full gap-4 mt-12 text-xl">
+      : <div className="flex flex-col items-center justify-center min-w-full gap-4 mt-12 text-xl">
           <span className="w-24 h-24 iconify-color twemoji--broken-heart"></span>
           <p>
             В списке {props.SectionTitleMapping[props.slug]} пока ничего нет...
           </p>
         </div>
-      )}
+      }
       {data &&
         data[data.length - 1].current_page <
           data[data.length - 1].total_page_count && (
