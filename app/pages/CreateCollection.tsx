@@ -213,7 +213,10 @@ export const CreateCollectionPage = () => {
       }
 
       toast.update(tid, {
-        render: mode === "edit" ? `Коллекция ${collectionInfo.title} обновлена` : `Коллекция ${collectionInfo.title} создана`,
+        render:
+          mode === "edit" ?
+            `Коллекция ${collectionInfo.title} обновлена`
+          : `Коллекция ${collectionInfo.title} создана`,
         type: "success",
         autoClose: 2500,
         isLoading: false,
@@ -511,12 +514,31 @@ export const ReleasesEditModal = (props: {
 
   function _addRelease(release: any) {
     if (props.releasesIds.length == 100) {
-      alert("Достигнуто максимальное количество релизов в коллекции - 100");
+      toast.error(
+        "Достигнуто максимальное количество релизов в коллекции - 100",
+        {
+          position: "bottom-center",
+          hideProgressBar: true,
+          type: "error",
+          autoClose: 2500,
+          isLoading: false,
+          closeOnClick: true,
+          draggable: true,
+        }
+      );
       return;
     }
 
     if (props.releasesIds.includes(release.id)) {
-      alert("Релиз уже добавлен в коллекцию");
+      toast.error("Релиз уже добавлен в коллекцию", {
+        position: "bottom-center",
+        hideProgressBar: true,
+        type: "error",
+        autoClose: 2500,
+        isLoading: false,
+        closeOnClick: true,
+        draggable: true,
+      });
       return;
     }
 
@@ -541,7 +563,7 @@ export const ReleasesEditModal = (props: {
           className="max-w-full mx-auto"
           onSubmit={(e) => {
             e.preventDefault();
-            props.setReleases([]);
+            setContent([]);
             setQuery(e.target[0].value.trim());
           }}
         >
@@ -586,12 +608,12 @@ export const ReleasesEditModal = (props: {
           </div>
         </form>
 
-        <div className="flex flex-wrap gap-1 mt-2">
+        <div className="grid grid-cols-2 gap-2 mt-2 md:grid-cols-4">
           {content.map((release) => {
             return (
               <button
                 key={release.id}
-                className=""
+                className="overflow-hidden"
                 onClick={() => _addRelease(release)}
               >
                 <ReleaseLink type="poster" {...release} isLinkDisabled={true} />
@@ -600,7 +622,11 @@ export const ReleasesEditModal = (props: {
           })}
           {content.length == 1 && <div></div>}
         </div>
-        {isLoading && <Spinner />}
+        {isLoading && (
+          <div className="flex items-center justify-center h-full min-h-24">
+            <Spinner />
+          </div>
+        )}
         {error && <div>Произошла ошибка</div>}
       </div>
     </Modal>
