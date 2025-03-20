@@ -545,9 +545,9 @@ export const ReleasesEditModal = (props: {
           })}
           {content.length == 1 && <div></div>}
         </div>
+        {isLoading && <Spinner />}
+        {error && <div>Произошла ошибка</div>}
       </div>
-      {isLoading && <Spinner />}
-      {error && <div>Произошла ошибка</div>}
     </Modal>
   );
 };

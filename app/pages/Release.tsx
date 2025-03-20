@@ -2,8 +2,7 @@
 
 import useSWR from "swr";
 import { Spinner } from "#/components/Spinner/Spinner";
-const fetcher = (...args: any) =>
-  fetch([...args] as any).then((res) => res.json());
+import { useSWRfetcher } from "#/api/utils";
 import { useUserStore } from "#/store/auth";
 import { useEffect, useState } from "react";
 
@@ -33,7 +32,7 @@ export const ReleasePage = (props: any) => {
     if (userStore.token) {
       url += `?token=${userStore.token}`;
     }
-    const { data, isLoading, error } = useSWR(url, fetcher);
+    const { data, isLoading, error } = useSWR(url, useSWRfetcher);
     return [data, isLoading, error];
   }
   const [data, isLoading, error] = useFetch(props.id);
@@ -49,7 +48,29 @@ export const ReleasePage = (props: any) => {
     }
   }, [data]);
 
-  return data ? (
+  if (isLoading) {
+    return (
+      <main className="flex items-center justify-center min-h-screen">
+        <Spinner />
+      </main>
+    );
+  }
+
+  if (error) {
+    return (
+      <main className="flex items-center justify-center min-h-screen">
+        <div className="flex flex-col gap-2">
+          <h1 className="text-2xl font-bold">Ошибка</h1>
+          <p className="text-lg">
+            Произошла ошибка при загрузке релиза. Попробуйте обновить страницу
+            или зайдите позже.
+          </p>
+        </div>
+      </main>
+    );
+  }
+
+  return (
     <>
       <div className="flex flex-col lg:grid lg:grid-cols-[70%_30%] gap-2 grid-flow-row-dense">
         <div className="[grid-column:1] [grid-row:span_2]">
@@ -99,11 +120,9 @@ export const ReleasePage = (props: any) => {
         {data.release.status &&
           data.release.status.name.toLowerCase() != "анонс" && (
             <div className="[grid-column:1] [grid-row:span_12]">
-              {preferenceStore.params.experimental.newPlayer ? (
+              {preferenceStore.params.experimental.newPlayer ?
                 <ReleasePlayerCustom id={props.id} token={userStore.token} />
-              ) : (
-                <ReleasePlayer id={props.id} />
-              )}
+              : <ReleasePlayer id={props.id} />}
             </div>
           )}
         {data.release.status &&
@@ -160,9 +179,5 @@ export const ReleasePage = (props: any) => {
         </div>
       </div>
     </>
-  ) : (
-    <div className="flex h-[100dvh] w-full justify-center items-center">
-      <Spinner />
-    </div>
   );
 };
