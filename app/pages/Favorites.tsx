@@ -9,6 +9,7 @@ import { Dropdown, Button } from "flowbite-react";
 import { sort } from "./common";
 import { ENDPOINTS } from "#/api/config";
 import { useRouter } from "next/navigation";
+import { useSWRfetcher } from "#/api/utils";
 
 const DropdownTheme = {
   floating: {
@@ -16,25 +17,10 @@ const DropdownTheme = {
   },
 };
 
-const fetcher = async (url: string) => {
-  const res = await fetch(url);
-
-  if (!res.ok) {
-    const error = new Error(
-      `An error occurred while fetching the data. status: ${res.status}`
-    );
-    error.message = await res.json();
-    throw error;
-  }
-
-  return res.json();
-};
-
 export function FavoritesPage() {
   const token = useUserStore((state) => state.token);
   const authState = useUserStore((state) => state.state);
   const [selectedSort, setSelectedSort] = useState(0);
-  const [isLoadingEnd, setIsLoadingEnd] = useState(false);
   const router = useRouter();
   const [searchVal, setSearchVal] = useState("");
 
@@ -47,7 +33,7 @@ export function FavoritesPage() {
 
   const { data, error, isLoading, size, setSize } = useSWRInfinite(
     getKey,
-    fetcher,
+    useSWRfetcher,
     { initialSize: 2 }
   );
 
@@ -59,7 +45,6 @@ export function FavoritesPage() {
         allReleases.push(...data[i].content);
       }
       setContent(allReleases);
-      setIsLoadingEnd(true);
     }
   }, [data]);
 
@@ -156,7 +141,7 @@ export function FavoritesPage() {
       </div>
       {content && content.length > 0 ? (
         <ReleaseSection content={content} />
-      ) : !isLoadingEnd || isLoading ? (
+      ) : isLoading ? (
         <div className="flex flex-col items-center justify-center min-w-full min-h-screen">
           <Spinner />
         </div>

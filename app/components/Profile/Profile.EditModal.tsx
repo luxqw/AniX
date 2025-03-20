@@ -5,7 +5,7 @@ import { Spinner } from "../Spinner/Spinner";
 import useSWR from "swr";
 import { ENDPOINTS } from "#/api/config";
 import { useEffect, useState } from "react";
-import { b64toBlob, unixToDate } from "#/api/utils";
+import { b64toBlob, unixToDate, useSWRfetcher } from "#/api/utils";
 import { ProfileEditPrivacyModal } from "./Profile.EditPrivacyModal";
 import { ProfileEditStatusModal } from "./Profile.EditStatusModal";
 import { ProfileEditSocialModal } from "./Profile.EditSocialModal";
@@ -13,20 +13,6 @@ import { CropModal } from "../CropModal/CropModal";
 import { useSWRConfig } from "swr";
 import { useUserStore } from "#/store/auth";
 import { ProfileEditLoginModal } from "./Profile.EditLoginModal";
-
-const fetcher = async (url: string) => {
-  const res = await fetch(url);
-
-  if (!res.ok) {
-    const error = new Error(
-      `An error occurred while fetching the data. status: ${res.status}`
-    );
-    error.message = await res.json();
-    throw error;
-  }
-
-  return res.json();
-};
 
 export const ProfileEditModal = (props: {
   isOpen: boolean;
@@ -70,7 +56,7 @@ export const ProfileEditModal = (props: {
   };
 
   function useFetchInfo(url: string) {
-    const { data, isLoading, error } = useSWR(url, fetcher);
+    const { data, isLoading, error } = useSWR(url, useSWRfetcher);
     return [data, isLoading, error];
   }
 

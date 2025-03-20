@@ -6,22 +6,11 @@ import { useScrollPosition } from "#/hooks/useScrollPosition";
 import { useUserStore } from "../store/auth";
 import { ENDPOINTS } from "#/api/config";
 import { ReleaseLink169Related } from "#/components/ReleaseLink/ReleaseLink.16_9Related";
+import { useSWRfetcher } from "#/api/utils";
 
-const fetcher = async (url: string) => {
-  const res = await fetch(url);
-
-  if (!res.ok) {
-    const error = new Error(`An error occurred while fetching the data. status: ${res.status}`);
-    error.message = await res.json();
-    throw error;
-  }
-
-  return res.json();
-};
 
 export function RelatedPage(props: {id: number|string, title: string}) {
   const token = useUserStore((state) => state.token);
-  const [isLoadingEnd, setIsLoadingEnd] = useState(false);
 
   const getKey = (pageIndex: number, previousPageData: any) => {
     if (previousPageData && !previousPageData.content.length) return null;
@@ -33,7 +22,7 @@ export function RelatedPage(props: {id: number|string, title: string}) {
 
   const { data, error, isLoading, size, setSize } = useSWRInfinite(
     getKey,
-    fetcher,
+    useSWRfetcher,
     { initialSize: 1 }
   );
 
@@ -45,7 +34,6 @@ export function RelatedPage(props: {id: number|string, title: string}) {
         allReleases.push(...data[i].content);
       }
       setContent(allReleases);
-      setIsLoadingEnd(true);
     }
   }, [data]);
 
@@ -70,7 +58,7 @@ export function RelatedPage(props: {id: number|string, title: string}) {
             return <ReleaseLink169Related {...release} key={release.id} _position={index + 1} />
           })}
         </div>
-      ) : !isLoadingEnd || isLoading ? (
+      ) : isLoading ? (
         <div className="flex flex-col items-center justify-center min-w-full min-h-screen">
           <Spinner />
         </div>

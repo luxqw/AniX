@@ -3,6 +3,7 @@ import { ENDPOINTS } from "#/api/config";
 import Link from "next/link";
 import useSWRInfinite from "swr/infinite";
 import { useCallback, useEffect, useState } from "react";
+import { useSWRfetcher } from "#/api/utils";
 
 const lists = [
   { list: 0, name: "Не смотрю" },
@@ -124,20 +125,6 @@ export const ReleaseInfoUserList = (props: {
   );
 };
 
-const fetcher = async (url: string) => {
-  const res = await fetch(url);
-
-  if (!res.ok) {
-    const error = new Error(
-      `An error occurred while fetching the data. status: ${res.status}`
-    );
-    error.message = await res.json();
-    throw error;
-  }
-
-  return res.json();
-};
-
 const AddReleaseToCollectionModal = (props: {
   isOpen: boolean;
   setIsOpen: (isopen: boolean) => void;
@@ -153,7 +140,7 @@ const AddReleaseToCollectionModal = (props: {
 
   const { data, error, isLoading, size, setSize } = useSWRInfinite(
     getKey,
-    fetcher,
+    useSWRfetcher,
     { initialSize: 2 }
   );
 
