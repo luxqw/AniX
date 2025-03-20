@@ -177,7 +177,7 @@ export const CreateCollectionPage = () => {
       );
 
       if (error) {
-        let message = error.message;
+        let message = `${error.message}, code: ${error.code}`;
         if (error.code == 5) {
           message =
             "Вы превысили допустимый еженедельный лимит создания коллекций";

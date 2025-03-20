@@ -34,15 +34,15 @@ export async function tryCatchAPI<T, E = Error>(
 ): Promise<Result<any, any>> {
   try {
     const res: Awaited<Response> = await promise;
-    if (!res.ok) {
-      return {
-        data: null,
-        error: {
-          message: res.statusText,
-          code: res.status,
-        },
-      };
-    }
+    // if (!res.ok) {
+    //   return {
+    //     data: null,
+    //     error: {
+    //       message: res.statusText,
+    //       code: res.status,
+    //     },
+    //   };
+    // }
 
     if (
       res.headers.get("content-length") &&

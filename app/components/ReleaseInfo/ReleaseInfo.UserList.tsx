@@ -222,6 +222,7 @@ const AddReleaseToCollectionModal = (props: {
     if (previousPageData && !previousPageData.content.length) return null;
     return `${ENDPOINTS.collection.userCollections}/${props.profile_id}/${pageIndex}?token=${props.token}`;
   };
+  const theme = useThemeMode();
 
   const { data, error, isLoading, size, setSize } = useSWRInfinite(
     getKey,
@@ -260,27 +261,53 @@ const AddReleaseToCollectionModal = (props: {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [scrollPosition]);
 
-  function _addToCollection(collection_id: number) {
-    if (props.token) {
-      fetch(
-        `${ENDPOINTS.collection.addRelease}/${collection_id}?release_id=${props.release_id}&token=${props.token}`
-      )
-        .then((res) => {
-          if (!res.ok) {
-            alert("Ошибка добавления релиза в коллекцию.");
-          } else {
-            return res.json();
-          }
-        })
-        .then((data) => {
-          if (data.code != 0) {
-            alert(
-              "Не удалось добавить релиз в коллекцию, возможно он уже в ней находится."
-            );
-          } else {
-            props.setIsOpen(false);
-          }
+  function _addToCollection(collection: any) {
+    async function _ToCollection(url: string) {
+      const tid = toast.loading(
+        `Добавление в коллекцию ${collection.title}... `,
+        {
+          position: "bottom-center",
+          hideProgressBar: true,
+          closeOnClick: false,
+          pauseOnHover: false,
+          draggable: false,
+          theme: theme.mode == "light" ? "light" : "dark",
+        }
+      );
+      const { data, error } = await tryCatchAPI(fetch(url));
+
+      if (error) {
+        let message = `${error.message}, code: ${error.code}`;
+        if (error.code == 5) {
+          message = "Релиз уже есть в коллекции";
+        }
+        toast.update(tid, {
+          render: message,
+          type: "error",
+          autoClose: 2500,
+          isLoading: false,
+          closeOnClick: true,
+          draggable: true,
+          theme: theme.mode == "light" ? "light" : "dark",
         });
+        return;
+      }
+
+      toast.update(tid, {
+        render: "Релиз добавлен в коллекцию",
+        type: "success",
+        autoClose: 2500,
+        isLoading: false,
+        closeOnClick: true,
+        draggable: true,
+        theme: theme.mode == "light" ? "light" : "dark",
+      });
+    }
+
+    if (props.token) {
+      _ToCollection(
+        `${ENDPOINTS.collection.addRelease}/${collection.id}?release_id=${props.release_id}&token=${props.token}`
+      );
     }
   }
 
@@ -304,7 +331,7 @@ const AddReleaseToCollectionModal = (props: {
                 backgroundImage: `linear-gradient(to bottom, rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0.9) 100%), url(${collection.image})`,
               }}
               key={`collection_${collection.id}`}
-              onClick={() => _addToCollection(collection.id)}
+              onClick={() => _addToCollection(collection)}
             >
               <div className="absolute bottom-0 left-0 gap-1 p-2">
                 <p className="text-xl font-bold text-white">
