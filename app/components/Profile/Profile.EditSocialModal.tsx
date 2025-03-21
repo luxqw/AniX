@@ -1,10 +1,12 @@
 "use client";
 
-import { Button, Modal, Label, TextInput } from "flowbite-react";
+import { Button, Modal, Label, TextInput, useThemeMode } from "flowbite-react";
 import { Spinner } from "../Spinner/Spinner";
 import { ENDPOINTS } from "#/api/config";
 import { useEffect, useState } from "react";
 import { useSWRConfig } from "swr";
+import { toast } from "react-toastify";
+import { tryCatchAPI } from "#/api/utils";
 
 export const ProfileEditSocialModal = (props: {
   isOpen: boolean;
@@ -22,6 +24,7 @@ export const ProfileEditSocialModal = (props: {
     ttPage: "",
   });
   const { mutate } = useSWRConfig();
+  const theme = useThemeMode();
 
   function _addUrl(username: string, social: string) {
     if (!username) {
@@ -52,37 +55,51 @@ export const ProfileEditSocialModal = (props: {
   }
 
   useEffect(() => {
-    setLoading(true);
-    fetch(`${ENDPOINTS.user.settings.socials.info}?token=${props.token}`)
-      .then((res) => {
-        if (res.ok) {
-          return res.json();
-        }
-      })
-      .then((data) => {
-        setSocials({
-          vkPage: data.vk_page,
-          tgPage: data.tg_page,
-          discordPage: data.discord_page,
-          instPage: data.inst_page,
-          ttPage: data.tt_page,
-        });
-        setLoading(false);
-      });
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [props.isOpen]);
+    async function _fetchSettings() {
+      setLoading(true);
 
+      const { data, error } = await tryCatchAPI(
+        fetch(`${ENDPOINTS.user.settings.socials.info}?token=${props.token}`)
+      );
+
+      if (error) {
+        toast.error("Ошибка получения соц. сетей", {
+          type: "error",
+          autoClose: 2500,
+          isLoading: false,
+          closeOnClick: true,
+          draggable: true,
+        });
+
+        setLoading(false);
+        props.setIsOpen(false);
+        return;
+      }
+
+      setSocials({
+        vkPage: data.vk_page,
+        tgPage: data.tg_page,
+        discordPage: data.discord_page,
+        instPage: data.inst_page,
+        ttPage: data.tt_page,
+      });
+      setLoading(false);
+    }
+    _fetchSettings();
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [props.isOpen]);
 
   function handleInput(e: any) {
     const social = {
       ...socials,
-      [e.target.name]: e.target.value
-    }
+      [e.target.name]: e.target.value,
+    };
     setSocials(social);
   }
 
-  function _setSocialSetting() {
-    const data = {
+  async function _setSocialSetting() {
+    const body = {
       vkPage: _removeUrl(socials.vkPage),
       tgPage: _removeUrl(socials.tgPage),
       discordPage: _removeUrl(socials.discordPage),
@@ -91,28 +108,53 @@ export const ProfileEditSocialModal = (props: {
     };
 
     setUpdating(true);
-    fetch(`${ENDPOINTS.user.settings.socials.edit}?token=${props.token}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    })
-      .then((res) => {
-        if (res.ok) {
-          mutate(
-            `${ENDPOINTS.user.profile}/${props.profile_id}?token=${props.token}`
-          );
-          setUpdating(false);
-          props.setIsOpen(false);
-        } else {
-          new Error("failed to send data");
-        }
+    const tid = toast.loading("Обновление соц. сетей...", {
+      position: "bottom-center",
+      hideProgressBar: true,
+      closeOnClick: false,
+      pauseOnHover: false,
+      draggable: false,
+      theme: theme.mode == "light" ? "light" : "dark",
+    });
+
+    const { data, error } = await tryCatchAPI(
+      fetch(`${ENDPOINTS.user.settings.socials.edit}?token=${props.token}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(body),
       })
-      .catch((err) => {
-        console.log(err);
-        setUpdating(false);
+    );
+
+    if (error) {
+      toast.update(tid, {
+        render: "Ошибка обновления соц. сетей",
+        type: "error",
+        autoClose: 2500,
+        isLoading: false,
+        closeOnClick: true,
+        draggable: true,
       });
+
+      setUpdating(false);
+      return;
+    }
+
+    toast.update(tid, {
+      render: "Соц. сети обновлены",
+      type: "success",
+      autoClose: 2500,
+      isLoading: false,
+      closeOnClick: true,
+      draggable: true,
+    });
+
+    mutate(
+      `${ENDPOINTS.user.profile}/${props.profile_id}?token=${props.token}`
+    );
+    setUpdating(false);
+    props.setIsOpen(false);
   }
 
   return (
@@ -128,12 +170,11 @@ export const ProfileEditSocialModal = (props: {
           Укажите ссылки на свои социальные сети, чтобы другие пользователи
           могли с вами связаться
         </p>
-        {loading ? (
+        {loading ?
           <div className="flex items-center justify-center py-8">
             <Spinner />
           </div>
-        ) : (
-          <div className="flex flex-col gap-4 py-4">
+        : <div className="flex flex-col gap-4 py-4">
             <div>
               <div className="block mb-2">
                 <Label htmlFor="vk-page" value="ВКонтакте" />
@@ -195,7 +236,7 @@ export const ProfileEditSocialModal = (props: {
               />
             </div>
           </div>
-        )}
+        }
       </Modal.Body>
       <Modal.Footer>
         <Button
@@ -205,7 +246,11 @@ export const ProfileEditSocialModal = (props: {
         >
           Сохранить
         </Button>
-        <Button color="red" onClick={() => props.setIsOpen(false)}>
+        <Button
+          color="red"
+          onClick={() => props.setIsOpen(false)}
+          disabled={updating}
+        >
           Отмена
         </Button>
       </Modal.Footer>
