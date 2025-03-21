@@ -50,9 +50,6 @@ export const CreateCollectionPage = () => {
   const [addedReleasesIds, setAddedReleasesIds] = useState([]);
   const [releasesEditModalOpen, setReleasesEditModalOpen] = useState(false);
 
-  // const [tempImageUrl, setTempImageUrl] = useState<string>(null);
-  // const [cropModalOpen, setCropModalOpen] = useState(false);
-
   const [imageModalProps, setImageModalProps] = useState({
     isOpen: false,
     isActionsDisabled: false,

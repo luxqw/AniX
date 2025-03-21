@@ -176,6 +176,7 @@ export const ProfileEditModal = (props: {
       mutate(
         `${ENDPOINTS.user.profile}/${props.profile_id}?token=${props.token}`
       );
+      userStore.checkAuth();
     }
 
     if (avatarModalProps.croppedImage) {
