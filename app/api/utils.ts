@@ -4,7 +4,6 @@ export const HEADERS = {
   "Content-Type": "application/json; charset=UTF-8",
 };
 
-// Types for the result object with discriminated union
 type Success<T> = {
   data: T;
   error: null;
@@ -17,7 +16,6 @@ type Failure<E> = {
 
 type Result<T, E = Error> = Success<T> | Failure<E>;
 
-// Main wrapper function
 export async function tryCatch<T, E = Error>(
   promise: Promise<T>
 ): Promise<Result<T, E>> {
@@ -70,7 +68,7 @@ export async function tryCatchAPI<T, E = Error>(
 
     return { data, error: null };
   } catch (error) {
-    return { data: null, error: error};
+    return { data: null, error: error };
   }
 }
 
@@ -84,7 +82,8 @@ export const useSWRfetcher = async (url: string) => {
 
 export const fetchDataViaGet = async (
   url: string,
-  API_V2: string | boolean = false
+  API_V2: string | boolean = false,
+  addHeaders?: Record<string, any>
 ) => {
   if (API_V2) {
     HEADERS["API-Version"] = "v2";
@@ -92,7 +91,7 @@ export const fetchDataViaGet = async (
 
   const { data, error } = await tryCatchAPI(
     fetch(url, {
-      headers: HEADERS,
+      headers: { ...HEADERS, ...addHeaders },
     })
   );
 
@@ -103,54 +102,21 @@ export const fetchDataViaPost = async (
   url: string,
   body: string,
   API_V2: string | boolean = false,
-  contentType: string = ""
+  addHeaders?: Record<string, any>
 ) => {
   if (API_V2) {
     HEADERS["API-Version"] = "v2";
   }
-  if (contentType != "") {
-    HEADERS["Content-Type"] = contentType;
-  }
 
-  try {
-    const response = await fetch(url, {
+  const { data, error } = await tryCatchAPI(
+    fetch(url, {
       method: "POST",
-      headers: HEADERS,
       body: body,
-    });
-    if (response.status !== 200) {
-      return null;
-    }
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.log(error);
-  }
-};
+      headers: { ...HEADERS, ...addHeaders },
+    })
+  );
 
-export const authorize = async (
-  url: string,
-  data: { login: string; password: string }
-) => {
-  try {
-    const response = await fetch(
-      `${url}?login=${data.login}&password=${data.password}`,
-      {
-        method: "POST",
-        headers: {
-          "User-Agent": USER_AGENT,
-          Sign: "9aa5c7af74e8cd70c86f7f9587bde23d",
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-      }
-    );
-    if (response.status !== 200) {
-      throw new Error("Error authorizing user");
-    }
-    return await response.json();
-  } catch (error) {
-    return error;
-  }
+  return { data, error };
 };
 
 export function setJWT(user_id: number | string, jwt: string) {

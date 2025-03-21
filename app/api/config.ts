@@ -13,6 +13,7 @@ export const ENDPOINTS = {
     licensed: `${API_PREFIX}/release/streaming/platform`,
   },
   user: {
+    auth: `${API_PREFIX}/auth/signIn`,
     profile: `${API_PREFIX}/profile`,
     bookmark: `${API_PREFIX}/profile/list`,
     history: `${API_PREFIX}/history`,
