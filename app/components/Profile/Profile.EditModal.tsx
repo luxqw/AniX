@@ -62,6 +62,10 @@ export const ProfileEditModal = (props: {
   };
 
   function useFetchInfo(url: string) {
+    if (!props.token) {
+      url = "";
+    }
+
     const { data, isLoading, error } = useSWR(url, useSWRfetcher);
     return [data, isLoading, error];
   }
@@ -183,6 +187,10 @@ export const ProfileEditModal = (props: {
       _uploadAvatar();
     }
   }, [avatarModalProps.croppedImage]);
+
+  if (!prefData || !loginData || prefError || loginError) {
+    return <></>;
+  }
 
   return (
     <>
@@ -381,46 +389,50 @@ export const ProfileEditModal = (props: {
           }
         </Modal.Body>
       </Modal>
-      <ProfileEditPrivacyModal
-        isOpen={privacyModalOpen}
-        setIsOpen={setPrivacyModalOpen}
-        token={props.token}
-        setting={privacyModalSetting}
-        privacySettings={privacySettings}
-        setPrivacySettings={setPrivacySettings}
-      />
-      <ProfileEditStatusModal
-        isOpen={statusModalOpen}
-        setIsOpen={setStatusModalOpen}
-        token={props.token}
-        status={status}
-        setStatus={setStatus}
-        profile_id={props.profile_id}
-      />
-      <ProfileEditSocialModal
-        isOpen={socialModalOpen}
-        setIsOpen={setSocialModalOpen}
-        token={props.token}
-        profile_id={props.profile_id}
-      />
-      <CropModal
-        {...avatarModalProps}
-        cropParams={{
-          aspectRatio: 1 / 1,
-          forceAspect: true,
-          guides: true,
-          width: 600,
-          height: 600,
-        }}
-        setCropModalProps={setAvatarModalProps}
-      />
-      <ProfileEditLoginModal
-        isOpen={loginModalOpen}
-        setIsOpen={setLoginModalOpen}
-        token={props.token}
-        setLogin={setLogin}
-        profile_id={props.profile_id}
-      />
+      {props.token ?
+        <>
+          <ProfileEditPrivacyModal
+            isOpen={privacyModalOpen}
+            setIsOpen={setPrivacyModalOpen}
+            token={props.token}
+            setting={privacyModalSetting}
+            privacySettings={privacySettings}
+            setPrivacySettings={setPrivacySettings}
+          />
+          <ProfileEditStatusModal
+            isOpen={statusModalOpen}
+            setIsOpen={setStatusModalOpen}
+            token={props.token}
+            status={status}
+            setStatus={setStatus}
+            profile_id={props.profile_id}
+          />
+          <ProfileEditSocialModal
+            isOpen={socialModalOpen}
+            setIsOpen={setSocialModalOpen}
+            token={props.token}
+            profile_id={props.profile_id}
+          />
+          <CropModal
+            {...avatarModalProps}
+            cropParams={{
+              aspectRatio: 1 / 1,
+              forceAspect: true,
+              guides: true,
+              width: 600,
+              height: 600,
+            }}
+            setCropModalProps={setAvatarModalProps}
+          />
+          <ProfileEditLoginModal
+            isOpen={loginModalOpen}
+            setIsOpen={setLoginModalOpen}
+            token={props.token}
+            setLogin={setLogin}
+            profile_id={props.profile_id}
+          />
+        </>
+      : ""}
     </>
   );
 };
