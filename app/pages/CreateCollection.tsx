@@ -37,8 +37,6 @@ export const CreateCollectionPage = () => {
 
   const [edit, setEdit] = useState(false);
 
-  const [imageUrl, setImageUrl] = useState<string>(null);
-  const [tempImageUrl, setTempImageUrl] = useState<string>(null);
   const [isPrivate, setIsPrivate] = useState(false);
   const [collectionInfo, setCollectionInfo] = useState({
     title: "",
@@ -51,7 +49,17 @@ export const CreateCollectionPage = () => {
   const [addedReleases, setAddedReleases] = useState([]);
   const [addedReleasesIds, setAddedReleasesIds] = useState([]);
   const [releasesEditModalOpen, setReleasesEditModalOpen] = useState(false);
-  const [cropModalOpen, setCropModalOpen] = useState(false);
+
+  // const [tempImageUrl, setTempImageUrl] = useState<string>(null);
+  // const [cropModalOpen, setCropModalOpen] = useState(false);
+
+  const [imageModalProps, setImageModalProps] = useState({
+    isOpen: false,
+    isActionsDisabled: false,
+    selectedImage: null,
+    croppedImage: null,
+  });
+  const [imageUrl, setImageUrl] = useState<string>(null);
 
   const collection_id = searchParams.get("id") || null;
   const mode = searchParams.get("mode") || null;
@@ -118,15 +126,29 @@ export const CreateCollectionPage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userStore.user]);
 
-  const handleFileRead = (e, fileReader) => {
-    const content = fileReader.result;
-    setTempImageUrl(content);
-  };
+  useEffect(() => {
+    if (imageModalProps.croppedImage) {
+      setImageUrl(imageModalProps.croppedImage);
+      setImageModalProps({
+        isOpen: false,
+        isActionsDisabled: false,
+        selectedImage: null,
+        croppedImage: null,
+      });
+    }
+  }, [imageModalProps.croppedImage]);
 
-  const handleFilePreview = (file) => {
+  const handleImagePreview = (e: any) => {
+    const file = e.target.files[0];
     const fileReader = new FileReader();
-    fileReader.onloadend = (e) => {
-      handleFileRead(e, fileReader);
+    fileReader.onloadend = () => {
+      const content = fileReader.result;
+      setImageModalProps({
+        ...imageModalProps,
+        isOpen: true,
+        selectedImage: content,
+      });
+      e.target.value = "";
     };
     fileReader.readAsDataURL(file);
   };
@@ -203,13 +225,48 @@ export const CreateCollectionPage = () => {
         const formData = new FormData();
         formData.append("image", blob, "cropped.jpg");
         formData.append("name", "image");
-        await fetch(
-          `${ENDPOINTS.collection.editImage}/${data.collection.id}?token=${userStore.token}`,
+
+        const tiid = toast.loading(
+          `Обновление обложки коллекции ${collectionInfo.title}...`,
           {
-            method: "POST",
-            body: formData,
+            position: "bottom-center",
+            hideProgressBar: true,
+            closeOnClick: false,
+            pauseOnHover: false,
+            draggable: false,
+            theme: theme.mode == "light" ? "light" : "dark",
           }
         );
+
+        const { data: imageData, error } = await tryCatchAPI(
+          fetch(
+            `${ENDPOINTS.collection.editImage}/${data.collection.id}?token=${userStore.token}`,
+            {
+              method: "POST",
+              body: formData,
+            }
+          )
+        );
+
+        if (error) {
+          toast.update(tiid, {
+            render: "Не удалось обновить постер коллекции",
+            type: "error",
+            autoClose: 2500,
+            isLoading: false,
+            closeOnClick: true,
+            draggable: true,
+          });
+        } else {
+          toast.update(tiid, {
+            render: "Постер коллекции обновлён",
+            type: "success",
+            autoClose: 2500,
+            isLoading: false,
+            closeOnClick: true,
+            draggable: true,
+          });
+        }
       }
 
       toast.update(tid, {
@@ -328,8 +385,7 @@ export const CreateCollectionPage = () => {
               className="hidden"
               accept="image/jpg, image/jpeg, image/png"
               onChange={(e) => {
-                handleFilePreview(e.target.files[0]);
-                setCropModalOpen(true);
+                handleImagePreview(e);
               }}
             />
           </Label>
@@ -439,18 +495,15 @@ export const CreateCollectionPage = () => {
         setReleasesIds={setAddedReleasesIds}
       />
       <CropModal
-        src={tempImageUrl}
-        setSrc={setImageUrl}
-        setTempSrc={setTempImageUrl}
-        // setImageData={setImageData}
-        aspectRatio={600 / 337}
-        guides={false}
-        quality={100}
-        isOpen={cropModalOpen}
-        setIsOpen={setCropModalOpen}
-        forceAspect={true}
-        width={600}
-        height={337}
+        {...imageModalProps}
+        cropParams={{
+          aspectRatio: 600 / 337,
+          forceAspect: true,
+          guides: true,
+          width: 600,
+          height: 337,
+        }}
+        setCropModalProps={setImageModalProps}
       />
     </>
   );

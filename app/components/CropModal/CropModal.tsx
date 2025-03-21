@@ -3,56 +3,86 @@ import Cropper, { ReactCropperElement } from "react-cropper";
 import "cropperjs/dist/cropper.css";
 import { Button, Modal } from "flowbite-react";
 
-type Props = {
-  src: string;
-  setSrc: (src: string) => void;
-  setTempSrc: (src: string) => void;
+type CropModalProps = {
   isOpen: boolean;
-  setIsOpen: (isOpen: boolean) => void;
-  height: number;
-  width: number;
-  aspectRatio: number;
-  guides: boolean;
-  quality: number;
-  forceAspect?: boolean;
+  isActionsDisabled: boolean;
+  selectedImage: any | null;
+  croppedImage: any | null;
+  setCropModalProps: (props: {
+    isOpen: boolean;
+    isActionsDisabled: boolean;
+    selectedImage: any | null;
+    croppedImage: any | null;
+  }) => void;
+  cropParams: {
+    guides?: boolean;
+    width?: number;
+    height?: number;
+    quality?: number;
+    aspectRatio?: number;
+    forceAspect?: boolean;
+  };
 };
 
-export const CropModal: React.FC<Props> = (props) => {
+export const CropModal: React.FC<CropModalProps> = ({
+  isOpen,
+  setCropModalProps,
+  cropParams,
+  selectedImage,
+  croppedImage,
+  isActionsDisabled,
+}) => {
   const cropperRef = useRef<ReactCropperElement>(null);
 
   const getCropData = () => {
     if (typeof cropperRef.current?.cropper !== "undefined") {
-      props.setSrc(
-        cropperRef.current?.cropper
-          .getCroppedCanvas({
-            width: props.width,
-            height: props.height,
-            maxWidth: props.width,
-            maxHeight: props.height,
-          })
-          .toDataURL("image/jpeg", props.quality)
-      );
-      props.setTempSrc("");
+      const croppedImage = cropperRef.current?.cropper
+        .getCroppedCanvas({
+          width: cropParams.width,
+          height: cropParams.height,
+          maxWidth: cropParams.width,
+          maxHeight: cropParams.height,
+        })
+        .toDataURL(
+          "image/jpeg",
+          cropParams.quality || false ? cropParams.quality : 100
+        );
+
+      setCropModalProps({
+        isOpen: true,
+        isActionsDisabled: false,
+        selectedImage: selectedImage,
+        croppedImage: croppedImage,
+      });
     }
   };
 
   return (
     <Modal
       dismissible
-      show={props.isOpen}
-      onClose={() => props.setIsOpen(false)}
+      show={isOpen}
+      onClose={() => {
+        setCropModalProps({
+          isOpen: false,
+          isActionsDisabled: false,
+          selectedImage: null,
+          croppedImage: null,
+        });
+      }}
       size={"7xl"}
     >
       <Modal.Header>Обрезать изображение</Modal.Header>
       <Modal.Body>
         <Cropper
-          src={props.src}
+          src={selectedImage}
           style={{ height: 400, width: "100%" }}
           responsive={true}
           // Cropper.js options
-          initialAspectRatio={props.aspectRatio}
-          aspectRatio={props.forceAspect ? props.aspectRatio : undefined}
-          guides={props.guides}
+          initialAspectRatio={cropParams.aspectRatio || 1 / 1}
+          aspectRatio={
+            cropParams.forceAspect || false ? cropParams.aspectRatio : undefined
+          }
+          guides={cropParams.guides || false}
           ref={cropperRef}
         />
 
@@ -69,23 +99,26 @@ export const CropModal: React.FC<Props> = (props) => {
       <Modal.Footer>
         <Button
           color={"blue"}
+          disabled={isActionsDisabled}
           onClick={() => {
             getCropData();
-            props.setIsOpen(false);
           }}
         >
           Сохранить
         </Button>
         <Button
           color={"red"}
+          disabled={isActionsDisabled}
           onClick={() => {
-            props.setSrc(null);
-            props.setTempSrc(null);
-            // props.setImageData(null);
-            props.setIsOpen(false);
+            setCropModalProps({
+              isOpen: false,
+              isActionsDisabled: false,
+              selectedImage: null,
+              croppedImage: null,
+            });
           }}
         >
-          Удалить
+          Отменить
         </Button>
       </Modal.Footer>
     </Modal>
