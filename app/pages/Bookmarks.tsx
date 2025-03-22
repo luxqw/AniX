@@ -49,7 +49,6 @@ export function BookmarksPage(props: { profile_id?: number }) {
 
     // eslint-disable-next-line react-hooks/rules-of-hooks
     const { data, error } = useSWR(url, useSWRfetcher);
-    console.log(data, error);
     return [data, error];
   }
 

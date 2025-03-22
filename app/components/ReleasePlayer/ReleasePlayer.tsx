@@ -157,7 +157,6 @@ export const ReleasePlayer = (props: { id: number }) => {
         }
       })
       .catch((err) => {
-        console.log(err);
         _setError("Ошибка получение ответа от сервера");
         return;
       });
