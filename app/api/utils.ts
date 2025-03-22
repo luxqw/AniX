@@ -27,6 +27,46 @@ export async function tryCatch<T, E = Error>(
   }
 }
 
+export async function tryCatchPlayer<T, E = Error>(
+  promise: Promise<any>
+): Promise<Result<any, any>> {
+  try {
+    const res: Awaited<Response> = await promise;
+    const data = await res.json();
+    if (!res.ok) {
+      if (data.message) {
+        return {
+          data: null,
+          error: {
+            message: data.message,
+            code: res.status,
+          },
+        };
+      } else if (data.detail) {
+        return {
+          data: null,
+          error: {
+            message: data.detail,
+            code: res.status,
+          },
+        };
+      } else {
+        return {
+          data: null,
+          error: {
+            message: res.statusText,
+            code: res.status,
+          },
+        };
+      }
+    }
+
+    return { data, error: null };
+  } catch (error) {
+    return { data: null, error: error as E };
+  }
+}
+
 export async function tryCatchAPI<T, E = Error>(
   promise: Promise<any>
 ): Promise<Result<any, any>> {
