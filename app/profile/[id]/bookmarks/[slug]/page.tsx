@@ -16,19 +16,26 @@ export async function generateMetadata(
   parent: ResolvingMetadata
 ): Promise<Metadata> {
   const id: string = params.id;
-  const profile: any = await fetchDataViaGet(
+  const { data, error } = await fetchDataViaGet(
     `https://api.anixart.tv/profile/${id}`
   );
   const previousOG = (await parent).openGraph;
 
+  if (error) {
+    return {
+      title: "Ошибка",
+      description: "Ошибка",
+    };
+  };
+
   return {
-    title: SectionTitleMapping[params.slug] + " - " + profile.profile.login,
-    description: profile.profile.status,
+    title:"Закладки Пользователя - " + data.profile.login + " - " + SectionTitleMapping[params.slug],
+    description: "Закладки Пользователя - " + data.profile.login + " - " + SectionTitleMapping[params.slug],
     openGraph: {
       ...previousOG,
       images: [
         {
-          url: profile.profile.avatar, // Must be an absolute URL
+          url: data.profile.avatar, // Must be an absolute URL
           width: 600,
           height: 600,
         },

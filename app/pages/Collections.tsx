@@ -2,8 +2,7 @@
 import useSWR from "swr";
 import { CollectionCourusel } from "#/components/CollectionCourusel/CollectionCourusel";
 import { Spinner } from "#/components/Spinner/Spinner";
-const fetcher = (...args: any) =>
-  fetch([...args] as any).then((res) => res.json());
+import { useSWRfetcher } from "#/api/utils";
 import { useUserStore } from "#/store/auth";
 import { ENDPOINTS } from "#/api/config";
 import { useRouter } from "next/navigation";
@@ -25,12 +24,15 @@ export function CollectionsPage() {
       }
     }
 
-    const { data } = useSWR(url, fetcher);
-    return [data];
+    const { data, error } = useSWR(url, useSWRfetcher);
+    return [data, error];
   }
 
-  const [userCollections] = useFetchReleases("userCollections");
-  const [favoriteCollections] = useFetchReleases("userFavoriteCollections");
+  const [userCollections, userCollectionsError] =
+    useFetchReleases("userCollections");
+  const [favoriteCollections, favoriteCollectionsError] = useFetchReleases(
+    "userFavoriteCollections"
+  );
 
   useEffect(() => {
     if (userStore.state === "finished" && !userStore.token) {
@@ -114,6 +116,18 @@ export function CollectionsPage() {
             content={favoriteCollections.content}
           />
         )}
+
+      {(userCollectionsError || favoriteCollectionsError) && (
+        <main className="flex items-center justify-center min-h-screen">
+          <div className="flex flex-col gap-2">
+            <h1 className="text-2xl font-bold">Ошибка</h1>
+            <p className="text-lg">
+              Произошла ошибка при загрузке коллекций. Попробуйте обновить
+              страницу или зайдите позже.
+            </p>
+          </div>
+        </main>
+      )}
     </>
   );
 }

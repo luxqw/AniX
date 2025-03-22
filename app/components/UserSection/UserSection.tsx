@@ -17,7 +17,7 @@ export const UserSection = (props: { sectionTitle?: string; content: any }) => {
             return (
               <Link href={`/profile/${user.id}`} key={user.id} className="w-full max-w-[234px] h-full max-h-[234px] aspect-square flex-shrink-0">
                 <Card className="items-center justify-center w-full h-full">
-                  <Avatar img={user.avatar} alt={user.login} size="lg" rounded={true} />
+                  <Avatar img={user.avatar} alt={user.login || ""} size="lg" rounded={true} />
                   <h5 className="mb-1 text-xl font-medium text-gray-900 dark:text-white">
                     {user.login}
                   </h5>

@@ -4,6 +4,7 @@ import { Modal, Accordion } from "flowbite-react";
 import Markdown from "markdown-to-jsx";
 import { useEffect, useState } from "react";
 import Styles from "./ChangelogModal.module.css";
+import { tryCatch } from "#/api/utils";
 
 export const ChangelogModal = (props: {
   isOpen: boolean;
@@ -17,27 +18,18 @@ export const ChangelogModal = (props: {
   >({});
 
   async function _fetchVersionChangelog(version: string) {
-    const res = await fetch(`/changelog/${version}.md`);
-    return await res.text();
+    const { data, error } = await tryCatch(fetch(`/changelog/${version}.md`));
+    if (error) {
+      return "Нет списка изменений";
+    }
+    return await data.text();
   }
 
   useEffect(() => {
     if (props.version != "" && currentVersionChangelog == "") {
+      setCurrentVersionChangelog("Загрузка ...");
       _fetchVersionChangelog(props.version).then((data) => {
         setCurrentVersionChangelog(data);
-      });
-    }
-
-    if (props.previousVersions.length > 0) {
-      props.previousVersions.forEach((version) => {
-        _fetchVersionChangelog(version).then((data) => {
-          setPreviousVersionsChangelog((prev) => {
-            return {
-              ...prev,
-              [version]: data,
-            };
-          });
-        });
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -50,20 +42,38 @@ export const ChangelogModal = (props: {
         <Markdown className={Styles.markdown}>
           {currentVersionChangelog}
         </Markdown>
-        {Object.keys(previousVersionsChangelog).length == props.previousVersions.length && (
-          <Accordion collapseAll={true} className="mt-4">
-            {props.previousVersions.map(
-              (version) => (
+        <Accordion collapseAll={true} className="mt-4">
+          {props.previousVersions.length > 0 &&
+            props.previousVersions.map((version) => {
+              return (
                 <Accordion.Panel key={version}>
-                  <Accordion.Title>Список изменений v{version}</Accordion.Title>
+                  <Accordion.Title
+                    onClickCapture={(e) => {
+                      if (!previousVersionsChangelog.hasOwnProperty(version)) {
+                        _fetchVersionChangelog(version).then((data) => {
+                          setPreviousVersionsChangelog((prev) => {
+                            return {
+                              ...prev,
+                              [version]: data,
+                            };
+                          });
+                        });
+                      }
+                    }}
+                  >
+                    Список изменений v{version}
+                  </Accordion.Title>
                   <Accordion.Content>
-                    <Markdown className={Styles.markdown}>{previousVersionsChangelog[version]}</Markdown>
+                    {previousVersionsChangelog.hasOwnProperty(version) ?
+                      <Markdown className={Styles.markdown}>
+                        {previousVersionsChangelog[version]}
+                      </Markdown>
+                    : <div>Загрузка ...</div>}
                   </Accordion.Content>
                 </Accordion.Panel>
-              )
-            )}
-          </Accordion>
-        )}
+              );
+            })}
+        </Accordion>
       </Modal.Body>
     </Modal>
   );

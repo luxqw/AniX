@@ -4,79 +4,159 @@ export const HEADERS = {
   "Content-Type": "application/json; charset=UTF-8",
 };
 
+type Success<T> = {
+  data: T;
+  error: null;
+};
+
+type Failure<E> = {
+  data: null;
+  error: E;
+};
+
+type Result<T, E = Error> = Success<T> | Failure<E>;
+
+export async function tryCatch<T, E = Error>(
+  promise: Promise<T>
+): Promise<Result<T, E>> {
+  try {
+    const data = await promise;
+    return { data, error: null };
+  } catch (error) {
+    return { data: null, error: error as E };
+  }
+}
+
+export async function tryCatchPlayer<T, E = Error>(
+  promise: Promise<any>
+): Promise<Result<any, any>> {
+  try {
+    const res: Awaited<Response> = await promise;
+    const data = await res.json();
+    if (!res.ok) {
+      if (data.message) {
+        return {
+          data: null,
+          error: {
+            message: data.message,
+            code: res.status,
+          },
+        };
+      } else if (data.detail) {
+        return {
+          data: null,
+          error: {
+            message: data.detail,
+            code: res.status,
+          },
+        };
+      } else {
+        return {
+          data: null,
+          error: {
+            message: res.statusText,
+            code: res.status,
+          },
+        };
+      }
+    }
+
+    return { data, error: null };
+  } catch (error) {
+    return { data: null, error: error as E };
+  }
+}
+
+export async function tryCatchAPI<T, E = Error>(
+  promise: Promise<any>
+): Promise<Result<any, any>> {
+  try {
+    const res: Awaited<Response> = await promise;
+    // if (!res.ok) {
+    //   return {
+    //     data: null,
+    //     error: {
+    //       message: res.statusText,
+    //       code: res.status,
+    //     },
+    //   };
+    // }
+
+    if (
+      res.headers.get("content-length") &&
+      Number(res.headers.get("content-length")) == 0
+    ) {
+      return {
+        data: null,
+        error: {
+          message: "Not Found",
+          code: 404,
+        },
+      };
+    }
+
+    const data: Awaited<any> = await res.json();
+    if (data.code != 0) {
+      return {
+        data: null,
+        error: {
+          message: "API Returned an Error",
+          code: data.code || 500,
+        },
+      };
+    }
+
+    return { data, error: null };
+  } catch (error) {
+    return { data: null, error: error };
+  }
+}
+
+export const useSWRfetcher = async (url: string) => {
+  const { data, error } = await tryCatchAPI(fetch(url));
+  if (error) {
+    throw error;
+  }
+  return data;
+};
+
 export const fetchDataViaGet = async (
   url: string,
-  API_V2: string | boolean = false
+  API_V2: string | boolean = false,
+  addHeaders?: Record<string, any>
 ) => {
   if (API_V2) {
     HEADERS["API-Version"] = "v2";
   }
-  try {
-    const response = await fetch(url, {
-      headers: HEADERS,
-    });
-    if (response.status !== 200) {
-      return null;
-    }
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.log(error);
-  }
+
+  const { data, error } = await tryCatchAPI(
+    fetch(url, {
+      headers: { ...HEADERS, ...addHeaders },
+    })
+  );
+
+  return { data, error };
 };
 
 export const fetchDataViaPost = async (
   url: string,
   body: string,
   API_V2: string | boolean = false,
-  contentType: string = ""
+  addHeaders?: Record<string, any>
 ) => {
   if (API_V2) {
     HEADERS["API-Version"] = "v2";
   }
-  if (contentType != "") {
-    HEADERS["Content-Type"] = contentType;
-  }
 
-  try {
-    const response = await fetch(url, {
+  const { data, error } = await tryCatchAPI(
+    fetch(url, {
       method: "POST",
-      headers: HEADERS,
       body: body,
-    });
-    if (response.status !== 200) {
-      return null;
-    }
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.log(error);
-  }
-};
+      headers: { ...HEADERS, ...addHeaders },
+    })
+  );
 
-export const authorize = async (
-  url: string,
-  data: { login: string; password: string }
-) => {
-  try {
-    const response = await fetch(
-      `${url}?login=${data.login}&password=${data.password}`,
-      {
-        method: "POST",
-        headers: {
-          "User-Agent": USER_AGENT,
-          Sign: "9aa5c7af74e8cd70c86f7f9587bde23d",
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-      }
-    );
-    if (response.status !== 200) {
-      throw new Error("Error authorizing user");
-    }
-    return await response.json();
-  } catch (error) {
-    return error;
-  }
+  return { data, error };
 };
 
 export function setJWT(user_id: number | string, jwt: string) {

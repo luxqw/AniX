@@ -13,7 +13,7 @@ export const ReleaseInfoBasics = (props: {
   const [isFullDescription, setIsFullDescription] = useState(false);
 
   return (
-    <Card className="h-full">
+    <Card className="h-full row-span-2">
       <div className="flex flex-col w-full h-full gap-4 lg:flex-row">
         <Image
           className="w-[285px] max-h-[385px] object-cover border border-gray-200 rounded-lg shadow-md dark:border-gray-700"

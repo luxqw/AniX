@@ -1,11 +1,13 @@
 "use client";
 
-import { Button, Modal, Textarea } from "flowbite-react";
+import { Button, Modal, Textarea, useThemeMode } from "flowbite-react";
 import { ENDPOINTS } from "#/api/config";
 import { useEffect, useState } from "react";
 import { useSWRConfig } from "swr";
 import { Spinner } from "../Spinner/Spinner";
 import { unixToDate } from "#/api/utils";
+import { toast } from "react-toastify";
+import { tryCatchAPI } from "#/api/utils";
 import { useUserStore } from "#/store/auth";
 
 export const ProfileEditLoginModal = (props: {
@@ -29,21 +31,33 @@ export const ProfileEditLoginModal = (props: {
   const [_loginLength, _setLoginLength] = useState(0);
   const { mutate } = useSWRConfig();
   const userStore = useUserStore();
+  const theme = useThemeMode();
 
   useEffect(() => {
-    setLoading(true);
-    fetch(`${ENDPOINTS.user.settings.login.info}?token=${props.token}`)
-      .then((res) => {
-        if (res.ok) {
-          return res.json();
-        }
-      })
-      .then((data) => {
-        _setLoginData(data);
-        _setLogin(data.login);
-        _setLoginLength(data.login.length);
+    async function _fetchLogin() {
+      setLoading(true);
+
+      const { data, error } = await tryCatchAPI(
+        fetch(`${ENDPOINTS.user.settings.login.info}?token=${props.token}`)
+      );
+
+      if (error) {
+        toast.error("Ошибка получения текущего никнейма", {
+          autoClose: 2500,
+          isLoading: false,
+          closeOnClick: true,
+          draggable: true,
+        });
         setLoading(false);
-      });
+        props.setIsOpen(false);
+        return;
+      }
+      _setLoginData(data);
+      _setLogin(data.login);
+      _setLoginLength(data.login.length);
+      setLoading(false);
+    }
+    _fetchLogin();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.isOpen]);
 
@@ -52,43 +66,69 @@ export const ProfileEditLoginModal = (props: {
     _setLoginLength(e.target.value.length);
   }
 
-  function _setLoginSetting() {
-    setSending(true);
+  async function _setLoginSetting() {
     if (!_login || _login == "") {
-      alert("Никнейм не может быть пустым");
+      toast.error("Никнейм не может быть пустым", {
+        autoClose: 2500,
+        isLoading: false,
+        closeOnClick: true,
+        draggable: true,
+      });
       return;
     }
-    fetch(
-      `${ENDPOINTS.user.settings.login.change}?login=${encodeURIComponent(
-        _login
-      )}&token=${props.token}`
-    )
-      .then((res) => {
-        if (res.ok) {
-          return res.json();
-        } else {
-          new Error("failed to send data");
-        }
-      })
-      .then((data) => {
-        if (data.code == 3) {
-          alert("Данный никнейм уже существует, попробуйте другой");
-          setSending(false);
-          return;
-        }
 
-        mutate(
-          `${ENDPOINTS.user.profile}/${props.profile_id}?token=${props.token}`
-        );
-        userStore.checkAuth();
-        props.setLogin(_login);
-        setSending(false);
-        props.setIsOpen(false);
-      })
-      .catch((err) => {
-        console.log(err);
-        setSending(false);
+    setSending(true);
+
+    const tid = toast.loading("Обновляем никнейм...", {
+      position: "bottom-center",
+      hideProgressBar: true,
+      closeOnClick: false,
+      pauseOnHover: false,
+      draggable: false,
+      theme: theme.mode == "light" ? "light" : "dark",
+    });
+
+    const { data, error } = await tryCatchAPI(
+      fetch(
+        `${ENDPOINTS.user.settings.login.change}?login=${encodeURIComponent(
+          _login
+        )}&token=${props.token}`
+      )
+    );
+
+    if (error) {
+      let message = `Ошибка обновления никнейма: ${error.code}`;
+      if (error.code == 3) {
+        message = "Данный никнейм уже существует, попробуйте другой";
+      }
+      toast.update(tid, {
+        render: message,
+        type: "error",
+        autoClose: 2500,
+        isLoading: false,
+        closeOnClick: true,
+        draggable: true,
       });
+      setSending(false);
+      return;
+    }
+
+    toast.update(tid, {
+      render: "Никнейм обновлён",
+      type: "success",
+      autoClose: 2500,
+      isLoading: false,
+      closeOnClick: true,
+      draggable: true,
+    });
+
+    mutate(
+      `${ENDPOINTS.user.profile}/${props.profile_id}?token=${props.token}`
+    );
+    userStore.checkAuth();
+    props.setLogin(_login);
+    setSending(false);
+    props.setIsOpen(false);
   }
 
   return (
@@ -100,13 +140,12 @@ export const ProfileEditLoginModal = (props: {
     >
       <Modal.Header>Изменить никнейм</Modal.Header>
       <Modal.Body>
-        {loading ? (
+        {loading ?
           <div className="flex items-center justify-center py-8">
             <Spinner />
           </div>
-        ) : (
-          <>
-            {!_loginData.is_change_available ? (
+        : <>
+            {!_loginData.is_change_available ?
               <>
                 <p>Вы недавно изменили никнейм</p>
                 <p>
@@ -116,8 +155,7 @@ export const ProfileEditLoginModal = (props: {
                   </span>
                 </p>
               </>
-            ) : (
-              <>
+            : <>
                 <Textarea
                   disabled={sending}
                   rows={1}
@@ -132,9 +170,9 @@ export const ProfileEditLoginModal = (props: {
                   {_loginLength}/20
                 </p>
               </>
-            )}
+            }
           </>
-        )}
+        }
       </Modal.Body>
       <Modal.Footer>
         {_loginData.is_change_available && (
@@ -146,7 +184,11 @@ export const ProfileEditLoginModal = (props: {
             Сохранить
           </Button>
         )}
-        <Button color="red" onClick={() => props.setIsOpen(false)}>
+        <Button
+          color="red"
+          onClick={() => props.setIsOpen(false)}
+          disabled={sending || loading}
+        >
           Отмена
         </Button>
       </Modal.Footer>

@@ -18,10 +18,13 @@ export default async function middleware(
     }
     let path = url.pathname.match(/\/api\/proxy\/(.*)/)?.[1] + url.search;
 
-    const data = await fetchDataViaGet(`${API_URL}/${path}`, isApiV2);
+    const { data, error } = await fetchDataViaGet(
+      `${API_URL}/${path}`,
+      isApiV2
+    );
 
-    if (!data) {
-      return new Response(JSON.stringify({ message: "Error Fetching Data" }), {
+    if (error) {
+      return new Response(JSON.stringify(error), {
         status: 500,
         headers: {
           "Content-Type": "application/json",
@@ -46,26 +49,33 @@ export default async function middleware(
     const path = url.pathname.match(/\/api\/proxy\/(.*)/)?.[1] + url.search;
 
     const ReqContentTypeHeader = request.headers.get("Content-Type") || "";
+    const ReqSignHeader = request.headers.get("Sign") || null;
     let ResContentTypeHeader = "";
     let body = null;
 
     if (ReqContentTypeHeader.split(";")[0] == "multipart/form-data") {
       ResContentTypeHeader = ReqContentTypeHeader;
       body = await request.arrayBuffer();
+    } else if (ReqContentTypeHeader == "application/x-www-form-urlencoded") {
+      ResContentTypeHeader = ReqContentTypeHeader;
     } else {
       ResContentTypeHeader = "application/json; charset=UTF-8";
       body = JSON.stringify(await request.json());
     }
 
-    const data = await fetchDataViaPost(
+    let resHeaders = {};
+    resHeaders["Content-Type"] = ResContentTypeHeader;
+    ReqSignHeader && (resHeaders["Sign"] = ReqSignHeader);
+
+    const { data, error } = await fetchDataViaPost(
       `${API_URL}/${path}`,
       body,
       isApiV2,
-      ResContentTypeHeader
+      resHeaders
     );
 
-    if (!data) {
-      return new Response(JSON.stringify({ message: "Error Fetching Data" }), {
+    if (error) {
+      return new Response(JSON.stringify(error), {
         status: 500,
         headers: {
           "Content-Type": "application/json",

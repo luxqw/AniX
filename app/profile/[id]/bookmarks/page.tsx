@@ -1,26 +1,33 @@
 import { BookmarksPage } from "#/pages/Bookmarks";
 import { fetchDataViaGet } from "#/api/utils";
 import type { Metadata, ResolvingMetadata } from "next";
-export const dynamic = 'force-static';
+export const dynamic = "force-static";
 
 export async function generateMetadata(
   { params },
   parent: ResolvingMetadata
 ): Promise<Metadata> {
   const id: string = params.id;
-  const profile: any = await fetchDataViaGet(
+  const { data, error } = await fetchDataViaGet(
     `https://api.anixart.tv/profile/${id}`
   );
   const previousOG = (await parent).openGraph;
 
+  if (error) {
+    return {
+      title: "Ошибка",
+      description: "Ошибка",
+    };
+  };
+
   return {
-    title: "Закладки - " + profile.profile.login,
-    description: profile.profile.status,
+    title: "Закладки Пользователя - " + data.profile.login,
+    description: "Закладки Пользователя - " + data.profile.login,
     openGraph: {
       ...previousOG,
       images: [
         {
-          url: profile.profile.avatar, // Must be an absolute URL
+          url: data.profile.avatar, // Must be an absolute URL
           width: 600,
           height: 600,
         },
@@ -30,5 +37,5 @@ export async function generateMetadata(
 }
 
 export default function Index({ params }) {
-  return <BookmarksPage profile_id={params.id}/>;
+  return <BookmarksPage profile_id={params.id} />;
 }

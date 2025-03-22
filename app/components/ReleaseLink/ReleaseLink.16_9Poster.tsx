@@ -33,7 +33,7 @@ export const ReleaseLink169Poster = (props: any) => {
               src={props.image}
               height={250}
               width={250}
-              alt={props.title}
+              alt={props.title || ""}
               className="object-cover aspect-[9/16] h-auto w-24 md:w-32 lg:w-48 rounded-md"
             />
           </div>

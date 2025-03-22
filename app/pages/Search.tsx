@@ -11,20 +11,7 @@ import { useUserStore } from "../store/auth";
 import { Button, Dropdown, Modal } from "flowbite-react";
 import { CollectionsSection } from "#/components/CollectionsSection/CollectionsSection";
 import { UserSection } from "#/components/UserSection/UserSection";
-
-const fetcher = async (url: string) => {
-  const res = await fetch(url);
-
-  if (!res.ok) {
-    const error = new Error(
-      `An error occurred while fetching the data. status: ${res.status}`
-    );
-    error.message = await res.json();
-    throw error;
-  }
-
-  return res.json();
-};
+import { useSWRfetcher } from "#/api/utils";
 
 const ListsMapping = {
   watching: {
@@ -128,7 +115,7 @@ export function SearchPage() {
 
   const { data, error, isLoading, size, setSize } = useSWRInfinite(
     getKey,
-    fetcher,
+    useSWRfetcher,
     { initialSize: 2, revalidateFirstPage: false }
   );
 
@@ -174,7 +161,18 @@ export function SearchPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchVal]);
 
-  if (error) return <div>failed to load: {error.message}</div>;
+  if (error)
+    return (
+      <main className="flex items-center justify-center min-h-screen">
+        <div className="flex flex-col gap-2">
+          <h1 className="text-2xl font-bold">Ошибка</h1>
+          <p className="text-lg">
+            Произошла ошибка поиска. Попробуйте обновить страницу или зайдите
+            позже.
+          </p>
+        </div>
+      </main>
+    );
 
   return (
     <>
@@ -237,39 +235,35 @@ export function SearchPage() {
       </div>
       <div className="mt-2">
         {data && data[0].related && <RelatedSection {...data[0].related} />}
-        {content ? (
-          content.length > 0 ? (
+        {content ?
+          content.length > 0 ?
             <>
-              {where == "collections" ? (
+              {where == "collections" ?
                 <CollectionsSection
                   sectionTitle="Найденные Коллекции"
                   content={content}
                 />
-              ) : where == "profiles" ? (
+              : where == "profiles" ?
                 <UserSection
                   sectionTitle="Найденные Пользователи"
                   content={content}
                 />
-              ) : (
-                <ReleaseSection
+              : <ReleaseSection
                   sectionTitle="Найденные релизы"
                   content={content}
                 />
-              )}
+              }
             </>
-          ) : (
-            <div className="flex flex-col items-center justify-center min-w-full gap-4 mt-12 text-xl">
+          : <div className="flex flex-col items-center justify-center min-w-full gap-4 mt-12 text-xl">
               <span className="w-24 h-24 iconify-color twemoji--crying-cat"></span>
               <p>Странно, аниме не найдено, попробуйте другой запрос...</p>
             </div>
-          )
-        ) : (
-          isLoading && (
+        : isLoading && (
             <div className="flex items-center justify-center min-w-full min-h-screen">
               <Spinner />
             </div>
           )
-        )}
+        }
         {!content && !isLoading && !query && (
           <div className="flex flex-col items-center justify-center min-w-full gap-2 mt-12 text-xl">
             <span className="w-16 h-16 iconify mdi--arrow-up animate-bounce"></span>
@@ -277,11 +271,13 @@ export function SearchPage() {
           </div>
         )}
       </div>
-      {data &&
-      data.length > 1 &&
-      (where == "releases"
-        ? data[data.length - 1].releases.length == 25
-        : data[data.length - 1].content.length == 25) ? (
+      {(
+        data &&
+        data.length > 1 &&
+        (where == "releases" ?
+          data[data.length - 1].releases.length == 25
+        : data[data.length - 1].content.length == 25)
+      ) ?
         <Button
           className="w-full"
           color={"light"}
@@ -292,9 +288,7 @@ export function SearchPage() {
             <span className="text-lg">Загрузить ещё</span>
           </div>
         </Button>
-      ) : (
-        ""
-      )}
+      : ""}
       <FiltersModal
         isOpen={filtersModalOpen}
         setIsOpen={setFiltersModalOpen}
@@ -394,9 +388,7 @@ const FiltersModal = (props: {
             </Dropdown>
           </div>
         </div>
-        {props.isAuth &&
-        where == "list" &&
-        ListsMapping.hasOwnProperty(list) ? (
+        {props.isAuth && where == "list" && ListsMapping.hasOwnProperty(list) ?
           <div className="my-4">
             <div className="flex items-center justify-between">
               <p className="font-bold dark:text-white">Список</p>
@@ -414,10 +406,8 @@ const FiltersModal = (props: {
               </Dropdown>
             </div>
           </div>
-        ) : (
-          ""
-        )}
-        {!["profiles", "collections"].includes(where) ? (
+        : ""}
+        {!["profiles", "collections"].includes(where) ?
           <div className="my-4">
             <div className="flex items-center justify-between">
               <p className="font-bold dark:text-white">Искать по</p>
@@ -435,9 +425,7 @@ const FiltersModal = (props: {
               </Dropdown>
             </div>
           </div>
-        ) : (
-          ""
-        )}
+        : ""}
       </Modal.Body>
       <Modal.Footer>
         <div className="flex justify-end w-full gap-2">

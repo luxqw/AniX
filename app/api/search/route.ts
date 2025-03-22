@@ -49,16 +49,26 @@ export async function GET(request: NextRequest) {
   if (token) {
     url.searchParams.set("token", token);
   }
-  const data = { query, searchBy };
+  const body = { query, searchBy };
 
-  const response = await fetchDataViaPost(
+  const { data, error } = await fetchDataViaPost(
     url.toString(),
-    JSON.stringify(data),
+    JSON.stringify(body),
     true
   );
-  if (!response) {
-    return NextResponse.json({ message: "Bad request" }, { status: 400 });
+  if (error) {
+    return new Response(JSON.stringify(error), {
+      status: 500,
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
   }
 
-  return NextResponse.json(response);
+  return new Response(JSON.stringify(data), {
+    status: 200,
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
 }

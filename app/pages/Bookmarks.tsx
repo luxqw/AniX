@@ -2,11 +2,9 @@
 import useSWR from "swr";
 import { ReleaseCourusel } from "#/components/ReleaseCourusel/ReleaseCourusel";
 import { Spinner } from "#/components/Spinner/Spinner";
-const fetcher = (...args: any) =>
-  fetch([...args] as any).then((res) => res.json());
 import { useUserStore } from "#/store/auth";
 import { usePreferencesStore } from "#/store/preferences";
-import { BookmarksList } from "#/api/utils";
+import { BookmarksList, useSWRfetcher } from "#/api/utils";
 import { ENDPOINTS } from "#/api/config";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
@@ -35,7 +33,7 @@ export function BookmarksPage(props: { profile_id?: number }) {
   function useFetchReleases(listName: string) {
     let url: string;
     if (preferenceStore.params.skipToCategory.enabled) {
-      return [null];
+      return [null, null];
     }
 
     if (props.profile_id) {
@@ -50,8 +48,9 @@ export function BookmarksPage(props: { profile_id?: number }) {
     }
 
     // eslint-disable-next-line react-hooks/rules-of-hooks
-    const { data } = useSWR(url, fetcher);
-    return [data];
+    const { data, error } = useSWR(url, useSWRfetcher);
+    console.log(data, error);
+    return [data, error];
   }
 
   useEffect(() => {
@@ -61,11 +60,11 @@ export function BookmarksPage(props: { profile_id?: number }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [authState, token]);
 
-  const [watchingData] = useFetchReleases("watching");
-  const [plannedData] = useFetchReleases("planned");
-  const [watchedData] = useFetchReleases("watched");
-  const [delayedData] = useFetchReleases("delayed");
-  const [abandonedData] = useFetchReleases("abandoned");
+  const [watchingData, watchingError] = useFetchReleases("watching");
+  const [plannedData, plannedError] = useFetchReleases("planned");
+  const [watchedData, watchedError] = useFetchReleases("watched");
+  const [delayedData, delayedError] = useFetchReleases("delayed");
+  const [abandonedData, abandonedError] = useFetchReleases("abandoned");
 
   return (
     <>
@@ -85,9 +84,9 @@ export function BookmarksPage(props: { profile_id?: number }) {
           <ReleaseCourusel
             sectionTitle="Смотрю"
             showAllLink={
-              !props.profile_id
-                ? "/bookmarks/watching"
-                : `/profile/${props.profile_id}/bookmarks/watching`
+              !props.profile_id ?
+                "/bookmarks/watching"
+              : `/profile/${props.profile_id}/bookmarks/watching`
             }
             content={watchingData.content}
           />
@@ -96,9 +95,9 @@ export function BookmarksPage(props: { profile_id?: number }) {
         <ReleaseCourusel
           sectionTitle="В планах"
           showAllLink={
-            !props.profile_id
-              ? "/bookmarks/planned"
-              : `/profile/${props.profile_id}/bookmarks/planned`
+            !props.profile_id ? "/bookmarks/planned" : (
+              `/profile/${props.profile_id}/bookmarks/planned`
+            )
           }
           content={plannedData.content}
         />
@@ -107,9 +106,9 @@ export function BookmarksPage(props: { profile_id?: number }) {
         <ReleaseCourusel
           sectionTitle="Просмотрено"
           showAllLink={
-            !props.profile_id
-              ? "/bookmarks/watched"
-              : `/profile/${props.profile_id}/bookmarks/watched`
+            !props.profile_id ? "/bookmarks/watched" : (
+              `/profile/${props.profile_id}/bookmarks/watched`
+            )
           }
           content={watchedData.content}
         />
@@ -118,9 +117,9 @@ export function BookmarksPage(props: { profile_id?: number }) {
         <ReleaseCourusel
           sectionTitle="Отложено"
           showAllLink={
-            !props.profile_id
-              ? "/bookmarks/delayed"
-              : `/profile/${props.profile_id}/bookmarks/delayed`
+            !props.profile_id ? "/bookmarks/delayed" : (
+              `/profile/${props.profile_id}/bookmarks/delayed`
+            )
           }
           content={delayedData.content}
         />
@@ -131,13 +130,28 @@ export function BookmarksPage(props: { profile_id?: number }) {
           <ReleaseCourusel
             sectionTitle="Заброшено"
             showAllLink={
-              !props.profile_id
-                ? "/bookmarks/abandoned"
-                : `/profile/${props.profile_id}/bookmarks/abandoned`
+              !props.profile_id ?
+                "/bookmarks/abandoned"
+              : `/profile/${props.profile_id}/bookmarks/abandoned`
             }
             content={abandonedData.content}
           />
         )}
+      {(watchingError ||
+        plannedError ||
+        watchedError ||
+        delayedError ||
+        abandonedError) && (
+        <main className="flex items-center justify-center min-h-screen">
+          <div className="flex flex-col gap-2">
+            <h1 className="text-2xl font-bold">Ошибка</h1>
+            <p className="text-lg">
+              Произошла ошибка при загрузке закладок. Попробуйте обновить
+              страницу или зайдите позже.
+            </p>
+          </div>
+        </main>
+      )}
     </>
   );
 }

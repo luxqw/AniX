@@ -1,9 +1,12 @@
 "use client";
 
-import { Button, Modal, Textarea } from "flowbite-react";
+import { Button, Modal, Textarea, useThemeMode } from "flowbite-react";
 import { ENDPOINTS } from "#/api/config";
 import { useEffect, useState } from "react";
 import { useSWRConfig } from "swr";
+import { toast } from "react-toastify";
+import { tryCatchAPI } from "#/api/utils";
+import { useUserStore } from "#/store/auth";
 
 export const ProfileEditStatusModal = (props: {
   isOpen: boolean;
@@ -17,6 +20,8 @@ export const ProfileEditStatusModal = (props: {
   const [_status, _setStatus] = useState("");
   const [_stringLength, _setStringLength] = useState(0);
   const { mutate } = useSWRConfig();
+  const theme = useThemeMode();
+  const userStore = useUserStore();
 
   useEffect(() => {
     _setStatus(props.status);
@@ -29,33 +34,59 @@ export const ProfileEditStatusModal = (props: {
     _setStringLength(e.target.value.length);
   }
 
-  function _setStatusSetting() {
+  async function _setStatusSetting() {
     setLoading(true);
-    fetch(`${ENDPOINTS.user.settings.status}?token=${props.token}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        status: _status,
-      }),
-    })
-      .then((res) => {
-        if (res.ok) {
-          mutate(
-            `${ENDPOINTS.user.profile}/${props.profile_id}?token=${props.token}`
-          );
-          setLoading(false);
-          props.setStatus(_status);
-          props.setIsOpen(false);
-        } else {
-          new Error("failed to send data");
-        }
+
+    const tid = toast.loading("Обновление статуса...", {
+      position: "bottom-center",
+      hideProgressBar: true,
+      closeOnClick: false,
+      pauseOnHover: false,
+      draggable: false,
+      theme: theme.mode == "light" ? "light" : "dark",
+    });
+
+    const { data, error } = await tryCatchAPI(
+      fetch(`${ENDPOINTS.user.settings.status}?token=${props.token}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          status: _status,
+        }),
       })
-      .catch((err) => {
-        console.log(err);
-        setLoading(false);
+    );
+
+    if (error) {
+      toast.update(tid, {
+        render: "Ошибка обновления статуса",
+        type: "error",
+        autoClose: 2500,
+        isLoading: false,
+        closeOnClick: true,
+        draggable: true,
       });
+      setLoading(false);
+      return;
+    }
+
+    toast.update(tid, {
+      render: "Статус обновлён",
+      type: "success",
+      autoClose: 2500,
+      isLoading: false,
+      closeOnClick: true,
+      draggable: true,
+    });
+
+    props.setStatus(_status);
+    mutate(
+      `${ENDPOINTS.user.profile}/${props.profile_id}?token=${props.token}`
+    );
+    userStore.checkAuth();
+    setLoading(false);
+    props.setIsOpen(false);
   }
 
   return (
@@ -82,7 +113,13 @@ export const ProfileEditStatusModal = (props: {
         </p>
       </Modal.Body>
       <Modal.Footer>
-        <Button color="blue" onClick={() => _setStatusSetting()} disabled={loading}>Сохранить</Button>
+        <Button
+          color="blue"
+          onClick={() => _setStatusSetting()}
+          disabled={loading}
+        >
+          Сохранить
+        </Button>
         <Button color="red" onClick={() => props.setIsOpen(false)}>
           Отмена
         </Button>

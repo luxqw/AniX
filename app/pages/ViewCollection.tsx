@@ -6,7 +6,6 @@ import { useState, useEffect } from "react";
 import { useScrollPosition } from "#/hooks/useScrollPosition";
 import { useUserStore } from "../store/auth";
 import { ENDPOINTS } from "#/api/config";
-import { useRouter } from "next/navigation";
 import { ReleaseSection } from "#/components/ReleaseSection/ReleaseSection";
 
 import { CollectionInfoBasics } from "#/components/CollectionInfo/CollectionInfo.Basics";
@@ -14,24 +13,10 @@ import { InfoLists } from "#/components/InfoLists/InfoLists";
 import { CollectionInfoControls } from "#/components/CollectionInfo/CollectionInfoControls";
 import { CommentsMain } from "#/components/Comments/Comments.Main";
 
-const fetcher = async (url: string) => {
-  const res = await fetch(url);
-
-  if (!res.ok) {
-    const error = new Error(
-      `An error occurred while fetching the data. status: ${res.status}`
-    );
-    error.message = await res.json();
-    throw error;
-  }
-
-  return res.json();
-};
+import { useSWRfetcher } from "#/api/utils";
 
 export const ViewCollectionPage = (props: { id: number }) => {
   const userStore = useUserStore();
-  const [isLoadingEnd, setIsLoadingEnd] = useState(false);
-  const router = useRouter();
 
   function useFetchCollectionInfo(type: "info" | "comments") {
     let url: string;
@@ -46,8 +31,8 @@ export const ViewCollectionPage = (props: { id: number }) => {
       url += `${type != "info" ? "&" : "?"}token=${userStore.token}`;
     }
 
-    const { data, isLoading } = useSWR(url, fetcher);
-    return [data, isLoading];
+    const { data, error, isLoading } = useSWR(url, useSWRfetcher);
+    return [data, error, isLoading];
   }
   const getKey = (pageIndex: number, previousPageData: any) => {
     if (previousPageData && !previousPageData.content.length) return null;
@@ -58,14 +43,17 @@ export const ViewCollectionPage = (props: { id: number }) => {
     return url;
   };
 
-  const [collectionInfo, collectionInfoIsLoading] =
+  const [collectionInfo, collectionInfoError, collectionInfoIsLoading] =
     useFetchCollectionInfo("info");
-  const [collectionComments, collectionCommentsIsLoading] =
-    useFetchCollectionInfo("comments");
+  const [
+    collectionComments,
+    collectionCommentsError,
+    collectionCommentsIsLoading,
+  ] = useFetchCollectionInfo("comments");
 
   const { data, error, isLoading, size, setSize } = useSWRInfinite(
     getKey,
-    fetcher,
+    useSWRfetcher,
     { initialSize: 2 }
   );
 
@@ -77,7 +65,6 @@ export const ViewCollectionPage = (props: { id: number }) => {
         allReleases.push(...data[i].content);
       }
       setContent(allReleases);
-      setIsLoadingEnd(true);
     }
   }, [data]);
 
@@ -89,14 +76,35 @@ export const ViewCollectionPage = (props: { id: number }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [scrollPosition]);
 
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center w-full h-screen">
+        <Spinner />
+      </div>
+    );
+  }
+
+  if (error || collectionInfoError) {
+    return (
+      <main className="flex items-center justify-center min-h-screen">
+        <div className="flex flex-col gap-2">
+          <h1 className="text-2xl font-bold">Ошибка</h1>
+          <p className="text-lg">
+            Произошла ошибка при загрузке коллекции. Попробуйте обновить
+            страницу или зайдите позже.
+          </p>
+        </div>
+      </main>
+    );
+  }
+
   return (
     <>
-      {collectionInfoIsLoading ? (
+      {collectionInfoIsLoading ?
         <div className="flex items-center justify-center w-full h-screen">
           <Spinner />
         </div>
-      ) : (
-        collectionInfo && (
+      : collectionInfo && (
           <>
             <div className="flex flex-col flex-wrap gap-2 px-2 pb-2 sm:flex-row">
               <CollectionInfoBasics
@@ -138,11 +146,7 @@ export const ViewCollectionPage = (props: { id: number }) => {
                 )}
               </div>
             </div>
-            {isLoading || !content || !isLoadingEnd ? (
-              <div className="flex items-center justify-center w-full h-screen">
-                <Spinner />
-              </div>
-            ) : (
+            {content && (
               <ReleaseSection
                 sectionTitle={"Релизов в коллекции: " + data[0].total_count}
                 content={content}
@@ -150,7 +154,7 @@ export const ViewCollectionPage = (props: { id: number }) => {
             )}
           </>
         )
-      )}
+      }
     </>
   );
 };

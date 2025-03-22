@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { ENDPOINTS } from "#/api/config";
 import useSWRInfinite from "swr/infinite";
 import { CommentsAddModal } from "./Comments.Add";
+import { useSWRfetcher } from "#/api/utils";
 
 export const CommentsMain = (props: {
   release_id: number;
@@ -82,20 +83,6 @@ export const CommentsMain = (props: {
   );
 };
 
-const fetcher = async (url: string) => {
-  const res = await fetch(url);
-
-  if (!res.ok) {
-    const error = new Error(
-      `An error occurred while fetching the data. status: ${res.status}`
-    );
-    error.message = await res.json();
-    throw error;
-  }
-
-  return res.json();
-};
-
 const CommentsAllModal = (props: {
   isOpen: boolean;
   setIsOpen: any;
@@ -103,7 +90,6 @@ const CommentsAllModal = (props: {
   token: string | null;
   type?: "release" | "collection";
 }) => {
-  const [isLoadingEnd, setIsLoadingEnd] = useState(false);
   const [currentRef, setCurrentRef] = useState<any>(null);
   const modalRef = useCallback((ref) => {
     setCurrentRef(ref);
@@ -127,7 +113,7 @@ const CommentsAllModal = (props: {
 
   const { data, error, isLoading, size, setSize } = useSWRInfinite(
     getKey,
-    fetcher,
+    useSWRfetcher,
     { initialSize: 2 }
   );
 
@@ -139,7 +125,6 @@ const CommentsAllModal = (props: {
         allReleases.push(...data[i].content);
       }
       setContent(allReleases);
-      setIsLoadingEnd(true);
     }
   }, [data]);
 
@@ -170,7 +155,7 @@ const CommentsAllModal = (props: {
             Все комментарии
           </h2>
           <p className="text-sm font-light text-gray-600 dark:text-gray-300">
-            всего: {!isLoadingEnd ? "загрузка..." : data[0].total_count}
+            всего: {isLoading ? "загрузка..." : data[0].total_count}
           </p>
         </div>
       </Modal.Header>
@@ -179,7 +164,7 @@ const CommentsAllModal = (props: {
         onScroll={handleScroll}
         ref={modalRef}
       >
-        {!isLoadingEnd ? (
+        {isLoading ? (
           <Spinner />
         ) : content ? (
           content.map((comment: any) => (
