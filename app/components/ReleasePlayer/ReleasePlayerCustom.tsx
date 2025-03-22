@@ -282,7 +282,7 @@ export const ReleasePlayerCustom = (props: {
   }, [episode.selected]);
 
   return (
-    <Card className="h-full">
+    <Card className="aspect-video min-h-min-h-[300px] sm:min-h-[466px] md:min-h-[540px] lg:min-h-[512px] xl:min-h-[608px] 2xl:min-h-[712px]">
       {(
         !voiceover.selected ||
         !source.selected ||
