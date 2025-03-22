@@ -144,7 +144,7 @@ export const ReleaseInfoUserList = (props: {
   return (
     <Card className="h-full">
       <div className="flex flex-wrap gap-1">
-        <Button color={"blue"} size="sm" className={props.token ? "w-full sm:w-[49%] lg:w-full xl:w-[60%]" : "w-full"}>
+        <Button color={"blue"} size="sm" className={props.token ? "w-full sm:w-[49%] lg:w-full 2xl:w-[60%]" : "w-full"}>
           <Link href={`/release/${props.release_id}/collections`}>
             Показать в коллекциях{" "}
             <span className="p-1 ml-1 text-gray-500 rounded bg-gray-50">
@@ -156,7 +156,7 @@ export const ReleaseInfoUserList = (props: {
           <Button
             color={"blue"}
             size="sm"
-            className="w-full sm:w-1/2 lg:w-full xl:w-[39%]"
+            className="w-full sm:w-1/2 lg:w-full 2xl:w-[39%]"
             onClick={() => setAddReleaseToCollectionModalOpen(true)}
           >
             В коллекцию{" "}
