@@ -1,11 +1,11 @@
 "use client";
 
-import { FileInput, Label, Modal } from "flowbite-react";
+import { FileInput, Label, Modal, useThemeMode } from "flowbite-react";
 import { Spinner } from "../Spinner/Spinner";
 import useSWR from "swr";
 import { ENDPOINTS } from "#/api/config";
 import { useEffect, useState } from "react";
-import { b64toBlob, unixToDate } from "#/api/utils";
+import { b64toBlob, tryCatchAPI, unixToDate, useSWRfetcher } from "#/api/utils";
 import { ProfileEditPrivacyModal } from "./Profile.EditPrivacyModal";
 import { ProfileEditStatusModal } from "./Profile.EditStatusModal";
 import { ProfileEditSocialModal } from "./Profile.EditSocialModal";
@@ -13,20 +13,7 @@ import { CropModal } from "../CropModal/CropModal";
 import { useSWRConfig } from "swr";
 import { useUserStore } from "#/store/auth";
 import { ProfileEditLoginModal } from "./Profile.EditLoginModal";
-
-const fetcher = async (url: string) => {
-  const res = await fetch(url);
-
-  if (!res.ok) {
-    const error = new Error(
-      `An error occurred while fetching the data. status: ${res.status}`
-    );
-    error.message = await res.json();
-    throw error;
-  }
-
-  return res.json();
-};
+import { toast } from "react-toastify";
 
 export const ProfileEditModal = (props: {
   isOpen: boolean;
@@ -37,10 +24,7 @@ export const ProfileEditModal = (props: {
   const [privacyModalOpen, setPrivacyModalOpen] = useState(false);
   const [statusModalOpen, setStatusModalOpen] = useState(false);
   const [socialModalOpen, setSocialModalOpen] = useState(false);
-  const [avatarModalOpen, setAvatarModalOpen] = useState(false);
   const [loginModalOpen, setLoginModalOpen] = useState(false);
-  const [avatarUri, setAvatarUri] = useState(null);
-  const [tempAvatarUri, setTempAvatarUri] = useState(null);
   const [privacyModalSetting, setPrivacyModalSetting] = useState("none");
   const [privacySettings, setPrivacySettings] = useState({
     privacy_stats: 9,
@@ -56,6 +40,14 @@ export const ProfileEditModal = (props: {
   const [login, setLogin] = useState("");
   const { mutate } = useSWRConfig();
   const userStore = useUserStore();
+  const theme = useThemeMode();
+
+  const [avatarModalProps, setAvatarModalProps] = useState({
+    isOpen: false,
+    isActionsDisabled: false,
+    selectedImage: null,
+    croppedImage: null,
+  });
 
   const privacy_stat_act_social_text = {
     0: "Все пользователи",
@@ -70,7 +62,11 @@ export const ProfileEditModal = (props: {
   };
 
   function useFetchInfo(url: string) {
-    const { data, isLoading, error } = useSWR(url, fetcher);
+    if (!props.token) {
+      url = "";
+    }
+
+    const { data, isLoading, error } = useSWR(url, useSWRfetcher);
     return [data, isLoading, error];
   }
 
@@ -81,15 +77,17 @@ export const ProfileEditModal = (props: {
     `${ENDPOINTS.user.settings.login.info}?token=${props.token}`
   );
 
-  const handleFileRead = (e, fileReader) => {
-    const content = fileReader.result;
-    setTempAvatarUri(content);
-  };
-
-  const handleFilePreview = (file) => {
+  const handleAvatarPreview = (e: any) => {
+    const file = e.target.files[0];
     const fileReader = new FileReader();
-    fileReader.onloadend = (e) => {
-      handleFileRead(e, fileReader);
+    fileReader.onloadend = () => {
+      const content = fileReader.result;
+      setAvatarModalProps({
+        ...avatarModalProps,
+        isOpen: true,
+        selectedImage: content,
+      });
+      e.target.value = "";
     };
     fileReader.readAsDataURL(file);
   };
@@ -117,8 +115,8 @@ export const ProfileEditModal = (props: {
   }, [loginData]);
 
   useEffect(() => {
-    if (avatarUri) {
-      let block = avatarUri.split(";");
+    async function _uploadAvatar() {
+      let block = avatarModalProps.croppedImage.split(";");
       let contentType = block[0].split(":")[1];
       let realData = block[1].split(",")[1];
       const blob = b64toBlob(realData, contentType);
@@ -126,23 +124,73 @@ export const ProfileEditModal = (props: {
       const formData = new FormData();
       formData.append("image", blob, "cropped.jpg");
       formData.append("name", "image");
-      const uploadRes = fetch(
-        `${ENDPOINTS.user.settings.avatar}?token=${props.token}`,
-        {
+
+      setAvatarModalProps(
+        (state) => (state = { ...state, isActionsDisabled: true })
+      );
+
+      const tid = toast.loading("Обновление аватара...", {
+        position: "bottom-center",
+        hideProgressBar: true,
+        closeOnClick: false,
+        pauseOnHover: false,
+        draggable: false,
+        theme: theme.mode == "light" ? "light" : "dark",
+      });
+
+      const { data, error } = await tryCatchAPI(
+        fetch(`${ENDPOINTS.user.settings.avatar}?token=${props.token}`, {
           method: "POST",
           body: formData,
-        }
-      ).then((res) => {
-        if (res.ok) {
-          mutate(
-            `${ENDPOINTS.user.profile}/${props.profile_id}?token=${props.token}`
-          );
-          userStore.checkAuth();
-        }
+        })
+      );
+
+      if (error) {
+        toast.update(tid, {
+          render: "Ошибка обновления аватара",
+          type: "error",
+          autoClose: 2500,
+          isLoading: false,
+          closeOnClick: true,
+          draggable: true,
+        });
+        setAvatarModalProps(
+          (state) => (state = { ...state, isActionsDisabled: false })
+        );
+        return;
+      }
+
+      toast.update(tid, {
+        render: "Аватар обновлён",
+        type: "success",
+        autoClose: 2500,
+        isLoading: false,
+        closeOnClick: true,
+        draggable: true,
       });
+      setAvatarModalProps(
+        (state) =>
+          (state = {
+            isOpen: false,
+            isActionsDisabled: false,
+            selectedImage: null,
+            croppedImage: null,
+          })
+      );
+      mutate(
+        `${ENDPOINTS.user.profile}/${props.profile_id}?token=${props.token}`
+      );
+      userStore.checkAuth();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [avatarUri]);
+
+    if (avatarModalProps.croppedImage) {
+      _uploadAvatar();
+    }
+  }, [avatarModalProps.croppedImage]);
+
+  if (!prefData || !loginData || prefError || loginError) {
+    return <></>;
+  }
 
   return (
     <>
@@ -153,10 +201,9 @@ export const ProfileEditModal = (props: {
       >
         <Modal.Header>Редактирование профиля</Modal.Header>
         <Modal.Body>
-          {prefLoading ? (
+          {prefLoading ?
             <Spinner />
-          ) : (
-            <div className="flex flex-col gap-4">
+          : <div className="flex flex-col gap-4">
               <div className="flex flex-col gap-2 pb-4 border-b-2 border-gray-300 border-solid">
                 <div className="flex flex-col">
                   <div className="flex items-center gap-2">
@@ -174,19 +221,18 @@ export const ProfileEditModal = (props: {
                       className="hidden"
                       accept="image/jpg, image/jpeg, image/png"
                       onChange={(e) => {
-                        handleFilePreview(e.target.files[0]);
-                        setAvatarModalOpen(true);
+                        handleAvatarPreview(e);
                       }}
                     />
                     <div>
                       <p className="text-lg">Изменить фото профиля</p>
                       <p className="text-base text-gray-500 dark:text-gray-400">
-                        {prefData.is_change_avatar_banned
-                          ? `Заблокировано до ${unixToDate(
-                              prefData.ban_change_avatar_expires,
-                              "full"
-                            )}`
-                          : "Загрузить с устройства"}
+                        {prefData.is_change_avatar_banned ?
+                          `Заблокировано до ${unixToDate(
+                            prefData.ban_change_avatar_expires,
+                            "full"
+                          )}`
+                        : "Загрузить с устройства"}
                       </p>
                     </div>
                   </Label>
@@ -211,12 +257,12 @@ export const ProfileEditModal = (props: {
                 >
                   <p className="text-lg">Изменить никнейм</p>
                   <p className="text-base text-gray-500 dark:text-gray-400">
-                    {prefData.is_change_login_banned
-                      ? `Заблокировано до ${unixToDate(
-                          prefData.ban_change_login_expires,
-                          "full"
-                        )}`
-                      : login}
+                    {prefData.is_change_login_banned ?
+                      `Заблокировано до ${unixToDate(
+                        prefData.ban_change_login_expires,
+                        "full"
+                      )}`
+                    : login}
                   </p>
                 </button>
                 <button
@@ -330,9 +376,9 @@ export const ProfileEditModal = (props: {
                 <div className="p-2 mt-2 cursor-not-allowed">
                   <p className="text-lg">Связанные аккаунты</p>
                   <p className="text-base text-gray-500 dark:text-gray-400">
-                    {socialBounds.vk || socialBounds.google
-                      ? "Аккаунт привязан к:"
-                      : "не привязан к сервисам"}{" "}
+                    {socialBounds.vk || socialBounds.google ?
+                      "Аккаунт привязан к:"
+                    : "не привязан к сервисам"}{" "}
                     {socialBounds.vk && "ВК"}
                     {socialBounds.vk && socialBounds.google && ", "}
                     {socialBounds.google && "Google"}
@@ -340,51 +386,53 @@ export const ProfileEditModal = (props: {
                 </div>
               </div>
             </div>
-          )}
+          }
         </Modal.Body>
       </Modal>
-      <ProfileEditPrivacyModal
-        isOpen={privacyModalOpen}
-        setIsOpen={setPrivacyModalOpen}
-        token={props.token}
-        setting={privacyModalSetting}
-        privacySettings={privacySettings}
-        setPrivacySettings={setPrivacySettings}
-      />
-      <ProfileEditStatusModal
-        isOpen={statusModalOpen}
-        setIsOpen={setStatusModalOpen}
-        token={props.token}
-        status={status}
-        setStatus={setStatus}
-        profile_id={props.profile_id}
-      />
-      <ProfileEditSocialModal
-        isOpen={socialModalOpen}
-        setIsOpen={setSocialModalOpen}
-        token={props.token}
-        profile_id={props.profile_id}
-      />
-      <CropModal
-        src={tempAvatarUri}
-        setSrc={setAvatarUri}
-        setTempSrc={setTempAvatarUri}
-        aspectRatio={1 / 1}
-        guides={true}
-        quality={100}
-        isOpen={avatarModalOpen}
-        setIsOpen={setAvatarModalOpen}
-        forceAspect={true}
-        width={600}
-        height={600}
-      />
-      <ProfileEditLoginModal
-        isOpen={loginModalOpen}
-        setIsOpen={setLoginModalOpen}
-        token={props.token}
-        setLogin={setLogin}
-        profile_id={props.profile_id}
-      />
+      {props.token ?
+        <>
+          <ProfileEditPrivacyModal
+            isOpen={privacyModalOpen}
+            setIsOpen={setPrivacyModalOpen}
+            token={props.token}
+            setting={privacyModalSetting}
+            privacySettings={privacySettings}
+            setPrivacySettings={setPrivacySettings}
+          />
+          <ProfileEditStatusModal
+            isOpen={statusModalOpen}
+            setIsOpen={setStatusModalOpen}
+            token={props.token}
+            status={status}
+            setStatus={setStatus}
+            profile_id={props.profile_id}
+          />
+          <ProfileEditSocialModal
+            isOpen={socialModalOpen}
+            setIsOpen={setSocialModalOpen}
+            token={props.token}
+            profile_id={props.profile_id}
+          />
+          <CropModal
+            {...avatarModalProps}
+            cropParams={{
+              aspectRatio: 1 / 1,
+              forceAspect: true,
+              guides: true,
+              width: 600,
+              height: 600,
+            }}
+            setCropModalProps={setAvatarModalProps}
+          />
+          <ProfileEditLoginModal
+            isOpen={loginModalOpen}
+            setIsOpen={setLoginModalOpen}
+            token={props.token}
+            setLogin={setLogin}
+            profile_id={props.profile_id}
+          />
+        </>
+      : ""}
     </>
   );
 };

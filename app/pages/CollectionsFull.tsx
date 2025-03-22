@@ -8,20 +8,7 @@ import { useUserStore } from "../store/auth";
 import { Button } from "flowbite-react";
 import { ENDPOINTS } from "#/api/config";
 import { useRouter } from "next/navigation";
-
-const fetcher = async (url: string) => {
-  const res = await fetch(url);
-
-  if (!res.ok) {
-    const error = new Error(
-      `An error occurred while fetching the data. status: ${res.status}`
-    );
-    error.message = await res.json();
-    throw error;
-  }
-
-  return res.json();
-};
+import { useSWRfetcher } from "#/api/utils";
 
 export function CollectionsFullPage(props: {
   type: "favorites" | "profile" | "release";
@@ -30,13 +17,12 @@ export function CollectionsFullPage(props: {
   release_id?: number;
 }) {
   const userStore = useUserStore();
-  const [isLoadingEnd, setIsLoadingEnd] = useState(false);
   const router = useRouter();
 
   const getKey = (pageIndex: number, previousPageData: any) => {
     if (previousPageData && !previousPageData.content.length) return null;
 
-    let url;
+    let url: string;
 
     if (props.type == "favorites") {
       url = `${ENDPOINTS.collection.favoriteCollections}/all/${pageIndex}`;
@@ -55,7 +41,7 @@ export function CollectionsFullPage(props: {
 
   const { data, error, isLoading, size, setSize } = useSWRInfinite(
     getKey,
-    fetcher,
+    useSWRfetcher,
     { initialSize: 2 }
   );
 
@@ -67,7 +53,6 @@ export function CollectionsFullPage(props: {
         allReleases.push(...data[i].content);
       }
       setContent(allReleases);
-      setIsLoadingEnd(true);
     }
   }, [data]);
 
@@ -90,26 +75,45 @@ export function CollectionsFullPage(props: {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userStore.state, userStore.token]);
 
+  if (isLoading) {
+    return (
+      <div className="flex flex-col items-center justify-center min-w-full min-h-screen">
+        <Spinner />
+      </div>
+    );
+  };
+
+  if (error) {
+    return (
+      <main className="flex items-center justify-center min-h-screen">
+        <div className="flex flex-col gap-2">
+          <h1 className="text-2xl font-bold">Ошибка</h1>
+          <p className="text-lg">
+            Произошла ошибка при загрузке коллекций. Попробуйте обновить страницу
+            или зайдите позже.
+          </p>
+        </div>
+      </main>
+    );
+  };
+
   return (
     <>
-      {content && content.length > 0 ? (
+      {content && content.length > 0 ?
         <CollectionsSection
           sectionTitle={props.title}
           content={content}
           isMyCollections={
-            props.type == "profile" && userStore.user && props.profile_id == userStore.user.id
+            props.type == "profile" &&
+            userStore.user &&
+            props.profile_id == userStore.user.id
           }
         />
-      ) : !isLoadingEnd || isLoading ? (
-        <div className="flex flex-col items-center justify-center min-w-full min-h-screen">
-          <Spinner />
-        </div>
-      ) : (
-        <div className="flex flex-col items-center justify-center min-w-full gap-4 mt-12 text-xl">
+      : <div className="flex flex-col items-center justify-center min-w-full gap-4 mt-12 text-xl">
           <span className="w-24 h-24 iconify-color twemoji--broken-heart"></span>
           <p>Тут пока ничего нет...</p>
         </div>
-      )}
+      }
       {data &&
         data[data.length - 1].current_page <
           data[data.length - 1].total_page_count && (

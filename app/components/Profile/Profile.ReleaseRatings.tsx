@@ -11,7 +11,7 @@ import type {
   FlowbiteCarouselControlTheme,
 } from "flowbite-react";
 import Image from "next/image";
-import { unixToDate } from "#/api/utils";
+import { unixToDate, useSWRfetcher } from "#/api/utils";
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { ENDPOINTS } from "#/api/config";
@@ -95,7 +95,6 @@ const ProfileReleaseRatingsModal = (props: {
   profile_id: number;
   token: string | null;
 }) => {
-  const [isLoadingEnd, setIsLoadingEnd] = useState(false);
   const [currentRef, setCurrentRef] = useState<any>(null);
   const modalRef = useCallback((ref) => {
     setCurrentRef(ref);
@@ -110,23 +109,9 @@ const ProfileReleaseRatingsModal = (props: {
     return url;
   };
 
-  const fetcher = async (url: string) => {
-    const res = await fetch(url);
-
-    if (!res.ok) {
-      const error = new Error(
-        `An error occurred while fetching the data. status: ${res.status}`
-      );
-      error.message = await res.json();
-      throw error;
-    }
-
-    return res.json();
-  };
-
   const { data, error, isLoading, size, setSize } = useSWRInfinite(
     getKey,
-    fetcher,
+    useSWRfetcher,
     { initialSize: 2 }
   );
 
@@ -138,7 +123,6 @@ const ProfileReleaseRatingsModal = (props: {
         allReleases.push(...data[i].content);
       }
       setContent(allReleases);
-      setIsLoadingEnd(true);
     }
   }, [data]);
 
@@ -170,8 +154,8 @@ const ProfileReleaseRatingsModal = (props: {
         onScroll={handleScroll}
         ref={modalRef}
       >
-        {!isLoadingEnd && isLoading && <Spinner />}
-        {isLoadingEnd && !isLoading && content.length > 0 ? (
+        {isLoading && <Spinner />}
+        {content && content.length > 0 ? (
           content.map((release) => {
             return (
               <Link

@@ -8,25 +8,12 @@ import { useUserStore } from "../store/auth";
 import { ENDPOINTS } from "#/api/config";
 import { Button } from "flowbite-react";
 import { useRouter } from "next/navigation";
+import { useSWRfetcher } from "#/api/utils";
 
-const fetcher = async (url: string) => {
-  const res = await fetch(url);
-
-  if (!res.ok) {
-    const error = new Error(
-      `An error occurred while fetching the data. status: ${res.status}`
-    );
-    error.message = await res.json();
-    throw error;
-  }
-
-  return res.json();
-};
 
 export function HistoryPage() {
   const token = useUserStore((state) => state.token);
   const authState = useUserStore((state) => state.state);
-  const [isLoadingEnd, setIsLoadingEnd] = useState(false);
   const router = useRouter();
   const [searchVal, setSearchVal] = useState("");
 
@@ -39,7 +26,7 @@ export function HistoryPage() {
 
   const { data, error, isLoading, size, setSize } = useSWRInfinite(
     getKey,
-    fetcher,
+    useSWRfetcher,
     { initialSize: 2 }
   );
 
@@ -51,7 +38,6 @@ export function HistoryPage() {
         allReleases.push(...data[i].content);
       }
       setContent(allReleases);
-      setIsLoadingEnd(true);
     }
   }, [data]);
 
@@ -136,7 +122,7 @@ export function HistoryPage() {
             </Button>
           )}
         </>
-      ) : !isLoadingEnd || isLoading ? (
+      ) : isLoading ? (
         <div className="flex flex-col items-center justify-center min-w-full min-h-[100dvh]">
           <Spinner />
         </div>

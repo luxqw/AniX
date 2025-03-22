@@ -21,6 +21,7 @@
     "react": "^18",
     "react-cropper": "^2.3.3",
     "react-dom": "^18",
+    "react-toastify": "^11.0.5",
     "swiper": "^11.1.4",
     "swr": "^2.2.5",
     "videojs-video-element": "^1.4.1",

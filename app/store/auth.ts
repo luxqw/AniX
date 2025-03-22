@@ -44,14 +44,16 @@ export const useUserStore = create<userState>((set, get) => ({
     const jwt = getJWT();
     if (jwt) {
       const _checkAuth = async () => {
-        const data = await fetchDataViaGet(
+        const { data, error } = await fetchDataViaGet(
           `${ENDPOINTS.user.profile}/${jwt.user_id}?token=${jwt.jwt}`
         );
-        if (data && data.is_my_profile) {
-          get().login(data.profile, jwt.jwt);
-        } else {
+
+        if (error || !data.is_my_profile) {
           get().logout();
+          return;
         }
+
+        get().login(data.profile, jwt.jwt);
       };
       _checkAuth();
     } else {

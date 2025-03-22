@@ -3,6 +3,9 @@ import { ENDPOINTS } from "#/api/config";
 import Link from "next/link";
 import useSWRInfinite from "swr/infinite";
 import { useCallback, useEffect, useState } from "react";
+import { tryCatchAPI, useSWRfetcher } from "#/api/utils";
+import { toast } from "react-toastify";
+import { useThemeMode } from "flowbite-react";
 
 const lists = [
   { list: 0, name: "Не смотрю" },
@@ -31,25 +34,108 @@ export const ReleaseInfoUserList = (props: {
 }) => {
   const [AddReleaseToCollectionModalOpen, setAddReleaseToCollectionModalOpen] =
     useState(false);
+  const [favButtonDisabled, setFavButtonDisabled] = useState(false);
+  const [listEventDisabled, setListEventDisabled] = useState(false);
+  const theme = useThemeMode();
+
   function _addToFavorite() {
-    if (props.token) {
-      props.setIsFavorite(!props.isFavorite);
-      if (props.isFavorite) {
-        fetch(
-          `${ENDPOINTS.user.favorite}/delete/${props.release_id}?token=${props.token}`
-        );
-      } else {
-        fetch(
-          `${ENDPOINTS.user.favorite}/add/${props.release_id}?token=${props.token}`
-        );
+    async function _setFav(url: string) {
+      setFavButtonDisabled(true);
+      const tid = toast.loading(
+        !props.isFavorite ?
+          "Добавляем в избранное..."
+        : "Удаляем из избранное...",
+        {
+          position: "bottom-center",
+          hideProgressBar: true,
+          closeOnClick: false,
+          pauseOnHover: false,
+          draggable: false,
+          theme: theme.mode == "light" ? "light" : "dark",
+        }
+      );
+      const { data, error } = await tryCatchAPI(fetch(url));
+
+      if (error) {
+        toast.update(tid, {
+          render:
+            !props.isFavorite ?
+              "Ошибка добавления в избранное"
+            : "Ошибка удаления из избранного",
+          type: "error",
+          autoClose: 2500,
+          isLoading: false,
+          closeOnClick: true,
+          draggable: true,
+        });
+        setFavButtonDisabled(false);
+        return;
       }
+
+      toast.update(tid, {
+        render:
+          !props.isFavorite ? "Добавлено в избранное" : "Удалено из избранного",
+        type: "success",
+        autoClose: 2500,
+        isLoading: false,
+        closeOnClick: true,
+        draggable: true,
+      });
+
+      props.setIsFavorite(!props.isFavorite);
+      setFavButtonDisabled(false);
+    }
+
+    if (props.token) {
+      let url = `${ENDPOINTS.user.favorite}/add/${props.release_id}?token=${props.token}`;
+      if (props.isFavorite) {
+        url = `${ENDPOINTS.user.favorite}/delete/${props.release_id}?token=${props.token}`;
+      }
+      _setFav(url);
     }
   }
 
   function _addToList(list: number) {
-    if (props.token) {
+    async function _setList(url: string) {
+      setListEventDisabled(true);
+      const tid = toast.loading("Добавляем в список...", {
+        position: "bottom-center",
+        hideProgressBar: true,
+        closeOnClick: false,
+        pauseOnHover: false,
+        draggable: false,
+        theme: theme.mode == "light" ? "light" : "dark",
+      });
+      const { data, error } = await tryCatchAPI(fetch(url));
+
+      if (error) {
+        toast.update(tid, {
+          render: `Ошибка добавления в список: ${lists[list].name}`,
+          type: "error",
+          autoClose: 2500,
+          isLoading: false,
+          closeOnClick: true,
+          draggable: true,
+        });
+        setListEventDisabled(false);
+        return;
+      }
+
+      toast.update(tid, {
+        render: `Добавлено в список: ${lists[list].name}`,
+        type: "success",
+        autoClose: 2500,
+        isLoading: false,
+        closeOnClick: true,
+        draggable: true,
+      });
+
+      setListEventDisabled(false);
       props.setUserList(list);
-      fetch(
+    }
+
+    if (props.token) {
+      _setList(
         `${ENDPOINTS.user.bookmark}/add/${list}/${props.release_id}?token=${props.token}`
       );
     }
@@ -58,7 +144,7 @@ export const ReleaseInfoUserList = (props: {
   return (
     <Card className="h-full">
       <div className="flex flex-wrap gap-1">
-        <Button color={"blue"} size="sm" className="w-full lg:w-auto ">
+        <Button color={"blue"} size="sm" className={props.token ? "w-full sm:w-[49%] lg:w-full 2xl:w-[60%]" : "w-full"}>
           <Link href={`/release/${props.release_id}/collections`}>
             Показать в коллекциях{" "}
             <span className="p-1 ml-1 text-gray-500 rounded bg-gray-50">
@@ -70,14 +156,14 @@ export const ReleaseInfoUserList = (props: {
           <Button
             color={"blue"}
             size="sm"
-            className="w-full lg:w-auto lg:flex-1"
+            className="w-full sm:w-1/2 lg:w-full 2xl:w-[39%]"
             onClick={() => setAddReleaseToCollectionModalOpen(true)}
           >
             В коллекцию{" "}
             <span className="w-6 h-6 iconify mdi--bookmark-add "></span>
           </Button>
         )}
-        {props.token ? (
+        {props.token ?
           <>
             <Dropdown
               label={lists[props.userList].name}
@@ -85,6 +171,7 @@ export const ReleaseInfoUserList = (props: {
               theme={DropdownTheme}
               color="blue"
               size="sm"
+              disabled={listEventDisabled}
             >
               {lists.map((list) => (
                 <Dropdown.Item
@@ -101,6 +188,7 @@ export const ReleaseInfoUserList = (props: {
                 _addToFavorite();
               }}
               size="sm"
+              disabled={favButtonDisabled}
             >
               <span
                 className={`iconify w-6 h-6 ${
@@ -109,9 +197,11 @@ export const ReleaseInfoUserList = (props: {
               ></span>
             </Button>
           </>
-        ) : (
-          <p>Войдите что-бы добавить в список, избранное или коллекцию</p>
-        )}
+        : <div className="flex items-center justify-center w-full gap-2 px-2 py-2 text-gray-600 bg-gray-200 rounded-lg dark:text-gray-200 dark:bg-gray-600">
+            <span className="w-6 h-6 iconify material-symbols--info-outline"></span>
+            <p>Войдите что-бы добавить в список, избранное или коллекцию</p>
+          </div>
+        }
       </div>
       <AddReleaseToCollectionModal
         isOpen={AddReleaseToCollectionModalOpen}
@@ -122,20 +212,6 @@ export const ReleaseInfoUserList = (props: {
       />
     </Card>
   );
-};
-
-const fetcher = async (url: string) => {
-  const res = await fetch(url);
-
-  if (!res.ok) {
-    const error = new Error(
-      `An error occurred while fetching the data. status: ${res.status}`
-    );
-    error.message = await res.json();
-    throw error;
-  }
-
-  return res.json();
 };
 
 const AddReleaseToCollectionModal = (props: {
@@ -150,10 +226,11 @@ const AddReleaseToCollectionModal = (props: {
     if (previousPageData && !previousPageData.content.length) return null;
     return `${ENDPOINTS.collection.userCollections}/${props.profile_id}/${pageIndex}?token=${props.token}`;
   };
+  const theme = useThemeMode();
 
   const { data, error, isLoading, size, setSize } = useSWRInfinite(
     getKey,
-    fetcher,
+    useSWRfetcher,
     { initialSize: 2 }
   );
 
@@ -188,28 +265,53 @@ const AddReleaseToCollectionModal = (props: {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [scrollPosition]);
 
+  function _addToCollection(collection: any) {
+    async function _ToCollection(url: string) {
+      const tid = toast.loading(
+        `Добавление в коллекцию ${collection.title}... `,
+        {
+          position: "bottom-center",
+          hideProgressBar: true,
+          closeOnClick: false,
+          pauseOnHover: false,
+          draggable: false,
+          theme: theme.mode == "light" ? "light" : "dark",
+        }
+      );
+      const { data, error } = await tryCatchAPI(fetch(url));
 
-  function _addToCollection(collection_id: number) {
-    if (props.token) {
-      fetch(
-        `${ENDPOINTS.collection.addRelease}/${collection_id}?release_id=${props.release_id}&token=${props.token}`
-      )
-        .then((res) => {
-          if (!res.ok) {
-            alert("Ошибка добавления релиза в коллекцию.");
-          } else {
-            return res.json();
-          }
-        })
-        .then((data) => {
-          if (data.code != 0) {
-            alert(
-              "Не удалось добавить релиз в коллекцию, возможно он уже в ней находится."
-            );
-          } else {
-            props.setIsOpen(false);
-          }
+      if (error) {
+        let message = `${error.message}, code: ${error.code}`;
+        if (error.code == 5) {
+          message = "Релиз уже есть в коллекции";
+        }
+        toast.update(tid, {
+          render: message,
+          type: "error",
+          autoClose: 2500,
+          isLoading: false,
+          closeOnClick: true,
+          draggable: true,
+          theme: theme.mode == "light" ? "light" : "dark",
         });
+        return;
+      }
+
+      toast.update(tid, {
+        render: "Релиз добавлен в коллекцию",
+        type: "success",
+        autoClose: 2500,
+        isLoading: false,
+        closeOnClick: true,
+        draggable: true,
+        theme: theme.mode == "light" ? "light" : "dark",
+      });
+    }
+
+    if (props.token) {
+      _ToCollection(
+        `${ENDPOINTS.collection.addRelease}/${collection.id}?release_id=${props.release_id}&token=${props.token}`
+      );
     }
   }
 
@@ -225,25 +327,25 @@ const AddReleaseToCollectionModal = (props: {
         onScroll={handleScroll}
         ref={modalRef}
       >
-        {content && content.length > 0
-          ? content.map((collection) => (
-              <button
-                className="relative w-full h-64 overflow-hidden bg-center bg-no-repeat bg-cover rounded-sm group-hover:animate-bg_zoom animate-bg_zoom_rev group-hover:[background-size:110%] "
-                style={{
-                  backgroundImage: `linear-gradient(to bottom, rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0.9) 100%), url(${collection.image})`,
-                }}
-                key={`collection_${collection.id}`}
-                onClick={() => _addToCollection(collection.id)}
-              >
-                <div className="absolute bottom-0 left-0 gap-1 p-2">
-                  <p className="text-xl font-bold text-white">
-                    {collection.title}
-                  </p>
-                  <p className="text-gray-400">{collection.description}</p>
-                </div>
-              </button>
-            ))
-          : "коллекций не найдено"}
+        {content && content.length > 0 ?
+          content.map((collection) => (
+            <button
+              className="relative w-full h-64 overflow-hidden bg-center bg-no-repeat bg-cover rounded-sm group-hover:animate-bg_zoom animate-bg_zoom_rev group-hover:[background-size:110%] "
+              style={{
+                backgroundImage: `linear-gradient(to bottom, rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0.9) 100%), url(${collection.image})`,
+              }}
+              key={`collection_${collection.id}`}
+              onClick={() => _addToCollection(collection)}
+            >
+              <div className="absolute bottom-0 left-0 gap-1 p-2">
+                <p className="text-xl font-bold text-white">
+                  {collection.title}
+                </p>
+                <p className="text-gray-400">{collection.description}</p>
+              </div>
+            </button>
+          ))
+        : "коллекций не найдено"}
       </div>
     </Modal>
   );

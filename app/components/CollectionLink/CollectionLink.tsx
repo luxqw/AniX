@@ -15,7 +15,7 @@ export const CollectionLink = (props: any) => {
           <Image
             src={props.image}
             fill={true}
-            alt={props.title}
+            alt={props.title || ""}
             className="-z-[1] object-cover"
             sizes="
                   (max-width: 768px) 300px,

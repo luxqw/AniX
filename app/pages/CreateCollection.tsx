@@ -13,34 +13,30 @@ import {
   FileInput,
   Label,
   Modal,
+  useThemeMode,
 } from "flowbite-react";
 import { ReleaseLink } from "#/components/ReleaseLink/ReleaseLink";
 import { CropModal } from "#/components/CropModal/CropModal";
-import { b64toBlob } from "#/api/utils";
+import { b64toBlob, tryCatchAPI } from "#/api/utils";
 
-const fetcher = async (url: string) => {
-  const res = await fetch(url);
-
-  if (!res.ok) {
-    const error = new Error(
-      `An error occurred while fetching the data. status: ${res.status}`
-    );
-    error.message = await res.json();
-    throw error;
-  }
-
-  return res.json();
-};
+import { useSWRfetcher } from "#/api/utils";
+import { Spinner } from "#/components/Spinner/Spinner";
+import { toast } from "react-toastify";
 
 export const CreateCollectionPage = () => {
   const userStore = useUserStore();
   const searchParams = useSearchParams();
   const router = useRouter();
+  const theme = useThemeMode();
+
+  useEffect(() => {
+    if (userStore.state === "finished" && !userStore.token) {
+      router.push("/login?redirect=/collections/create");
+    }
+  }, [userStore]);
 
   const [edit, setEdit] = useState(false);
 
-  const [imageUrl, setImageUrl] = useState<string>(null);
-  const [tempImageUrl, setTempImageUrl] = useState<string>(null);
   const [isPrivate, setIsPrivate] = useState(false);
   const [collectionInfo, setCollectionInfo] = useState({
     title: "",
@@ -53,7 +49,14 @@ export const CreateCollectionPage = () => {
   const [addedReleases, setAddedReleases] = useState([]);
   const [addedReleasesIds, setAddedReleasesIds] = useState([]);
   const [releasesEditModalOpen, setReleasesEditModalOpen] = useState(false);
-  const [cropModalOpen, setCropModalOpen] = useState(false);
+
+  const [imageModalProps, setImageModalProps] = useState({
+    isOpen: false,
+    isActionsDisabled: false,
+    selectedImage: null,
+    croppedImage: null,
+  });
+  const [imageUrl, setImageUrl] = useState<string>(null);
 
   const collection_id = searchParams.get("id") || null;
   const mode = searchParams.get("mode") || null;
@@ -120,15 +123,29 @@ export const CreateCollectionPage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userStore.user]);
 
-  const handleFileRead = (e, fileReader) => {
-    const content = fileReader.result;
-    setTempImageUrl(content);
-  };
+  useEffect(() => {
+    if (imageModalProps.croppedImage) {
+      setImageUrl(imageModalProps.croppedImage);
+      setImageModalProps({
+        isOpen: false,
+        isActionsDisabled: false,
+        selectedImage: null,
+        croppedImage: null,
+      });
+    }
+  }, [imageModalProps.croppedImage]);
 
-  const handleFilePreview = (file) => {
+  const handleImagePreview = (e: any) => {
+    const file = e.target.files[0];
     const fileReader = new FileReader();
-    fileReader.onloadend = (e) => {
-      handleFileRead(e, fileReader);
+    fileReader.onloadend = () => {
+      const content = fileReader.result;
+      setImageModalProps({
+        ...imageModalProps,
+        isOpen: true,
+        selectedImage: content,
+      });
+      e.target.value = "";
     };
     fileReader.readAsDataURL(file);
   };
@@ -149,25 +166,50 @@ export const CreateCollectionPage = () => {
     e.preventDefault();
 
     async function _createCollection() {
+      setIsSending(true);
+      const tid = toast.loading(
+        mode === "edit" ? "Редактируем коллекцию..." : "Создаём коллекцию...",
+        {
+          position: "bottom-center",
+          hideProgressBar: true,
+          closeOnClick: false,
+          pauseOnHover: false,
+          draggable: false,
+          theme: theme.mode == "light" ? "light" : "dark",
+        }
+      );
       const url =
-        mode === "edit"
-          ? `${ENDPOINTS.collection.edit}/${collection_id}?token=${userStore.token}`
-          : `${ENDPOINTS.collection.create}?token=${userStore.token}`;
+        mode === "edit" ?
+          `${ENDPOINTS.collection.edit}/${collection_id}?token=${userStore.token}`
+        : `${ENDPOINTS.collection.create}?token=${userStore.token}`;
 
-      const res = await fetch(url, {
-        method: "POST",
-        body: JSON.stringify({
-          ...collectionInfo,
-          is_private: isPrivate,
-          private: isPrivate,
-          releases: addedReleasesIds,
-        }),
-      });
+      const { data, error } = await tryCatchAPI(
+        fetch(url, {
+          method: "POST",
+          body: JSON.stringify({
+            ...collectionInfo,
+            is_private: isPrivate,
+            private: isPrivate,
+            releases: addedReleasesIds,
+          }),
+        })
+      );
 
-      const data = await res.json();
-
-      if (data.code == 5) {
-        alert("Вы превысили допустимый еженедельный лимит создания коллекций!");
+      if (error) {
+        let message = `${error.message}, code: ${error.code}`;
+        if (error.code == 5) {
+          message =
+            "Вы превысили допустимый еженедельный лимит создания коллекций";
+        }
+        toast.update(tid, {
+          render: message,
+          type: "error",
+          autoClose: 2500,
+          isLoading: false,
+          closeOnClick: true,
+          draggable: true,
+        });
+        setIsSending(false);
         return;
       }
 
@@ -180,33 +222,92 @@ export const CreateCollectionPage = () => {
         const formData = new FormData();
         formData.append("image", blob, "cropped.jpg");
         formData.append("name", "image");
-        const uploadRes = await fetch(
-          `${ENDPOINTS.collection.editImage}/${data.collection.id}?token=${userStore.token}`,
+
+        const tiid = toast.loading(
+          `Обновление обложки коллекции ${collectionInfo.title}...`,
           {
-            method: "POST",
-            body: formData,
+            position: "bottom-center",
+            hideProgressBar: true,
+            closeOnClick: false,
+            pauseOnHover: false,
+            draggable: false,
+            theme: theme.mode == "light" ? "light" : "dark",
           }
         );
-        const uploadData = await uploadRes.json();
+
+        const { data: imageData, error } = await tryCatchAPI(
+          fetch(
+            `${ENDPOINTS.collection.editImage}/${data.collection.id}?token=${userStore.token}`,
+            {
+              method: "POST",
+              body: formData,
+            }
+          )
+        );
+
+        if (error) {
+          toast.update(tiid, {
+            render: "Не удалось обновить постер коллекции",
+            type: "error",
+            autoClose: 2500,
+            isLoading: false,
+            closeOnClick: true,
+            draggable: true,
+          });
+        } else {
+          toast.update(tiid, {
+            render: "Постер коллекции обновлён",
+            type: "success",
+            autoClose: 2500,
+            isLoading: false,
+            closeOnClick: true,
+            draggable: true,
+          });
+        }
       }
 
+      toast.update(tid, {
+        render:
+          mode === "edit" ?
+            `Коллекция ${collectionInfo.title} обновлена`
+          : `Коллекция ${collectionInfo.title} создана`,
+        type: "success",
+        autoClose: 2500,
+        isLoading: false,
+        closeOnClick: true,
+        draggable: true,
+      });
       router.push(`/collection/${data.collection.id}`);
+      setIsSending(false);
     }
 
-    if (
-      collectionInfo.title.length >= 10 &&
-      addedReleasesIds.length >= 1 &&
-      userStore.token
-    ) {
-      // setIsSending(true);
-      _createCollection();
-    } else if (collectionInfo.title.length < 10) {
-      alert("Необходимо ввести название коллекции не менее 10 символов");
-    } else if (!userStore.token) {
-      alert("Для создания коллекции необходимо войти в аккаунт");
-    } else if (addedReleasesIds.length < 1) {
-      alert("Необходимо добавить хотя бы один релиз в коллекцию");
+    if (collectionInfo.title.length < 10) {
+      toast.error("Необходимо ввести название коллекции не менее 10 символов", {
+        position: "bottom-center",
+        hideProgressBar: true,
+        type: "error",
+        autoClose: 2500,
+        isLoading: false,
+        closeOnClick: true,
+        draggable: true,
+      });
+      return;
     }
+
+    if (addedReleasesIds.length < 1) {
+      toast.error("Необходимо добавить хотя бы один релиз в коллекцию", {
+        position: "bottom-center",
+        hideProgressBar: true,
+        type: "error",
+        autoClose: 2500,
+        isLoading: false,
+        closeOnClick: true,
+        draggable: true,
+      });
+      return;
+    }
+
+    _createCollection();
   }
 
   function _deleteRelease(release: any) {
@@ -239,47 +340,49 @@ export const CreateCollectionPage = () => {
             className="flex flex-col items-center w-full sm:max-w-[600px] h-[337px] border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100 dark:border-gray-600 dark:bg-gray-700 dark:hover:border-gray-500 dark:hover:bg-gray-600"
           >
             <div className="flex flex-col items-center justify-center max-w-[595px] h-[inherit] rounded-[inherit] pt-5 pb-6 overflow-hidden">
-              {!imageUrl ? (
-                <>
-                  <svg
-                    className="w-8 h-8 mb-4 text-gray-500 dark:text-gray-400"
-                    aria-hidden="true"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 20 16"
-                  >
-                    <path
-                      stroke="currentColor"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"
-                    />
-                  </svg>
-                  <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
-                    <span className="font-semibold">Нажмите для загрузки</span>{" "}
-                    или перетащите файл
-                  </p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">
-                    PNG или JPG (Макс. 600x337 пикселей)
-                  </p>
-                </>
-              ) : (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={imageUrl}
-                  className="object-cover w-[inherit] h-[inherit]"
-                  alt=""
-                />
-              )}
+              {
+                !imageUrl ?
+                  <>
+                    <svg
+                      className="w-8 h-8 mb-4 text-gray-500 dark:text-gray-400"
+                      aria-hidden="true"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 20 16"
+                    >
+                      <path
+                        stroke="currentColor"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"
+                      />
+                    </svg>
+                    <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
+                      <span className="font-semibold">
+                        Нажмите для загрузки
+                      </span>{" "}
+                      или перетащите файл
+                    </p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                      PNG или JPG (Макс. 600x337 пикселей)
+                    </p>
+                  </>
+                  // eslint-disable-next-line @next/next/no-img-element
+                : <img
+                    src={imageUrl}
+                    className="object-cover w-[inherit] h-[inherit]"
+                    alt=""
+                  />
+
+              }
             </div>
             <FileInput
               id="dropzone-file"
               className="hidden"
               accept="image/jpg, image/jpeg, image/png"
               onChange={(e) => {
-                handleFilePreview(e.target.files[0]);
-                setCropModalOpen(true);
+                handleImagePreview(e);
               }}
             />
           </Label>
@@ -389,18 +492,15 @@ export const CreateCollectionPage = () => {
         setReleasesIds={setAddedReleasesIds}
       />
       <CropModal
-        src={tempImageUrl}
-        setSrc={setImageUrl}
-        setTempSrc={setTempImageUrl}
-        // setImageData={setImageData}
-        aspectRatio={600 / 337}
-        guides={false}
-        quality={100}
-        isOpen={cropModalOpen}
-        setIsOpen={setCropModalOpen}
-        forceAspect={true}
-        width={600}
-        height={337}
+        {...imageModalProps}
+        cropParams={{
+          aspectRatio: 600 / 337,
+          forceAspect: true,
+          guides: true,
+          width: 600,
+          height: 337,
+        }}
+        setCropModalProps={setImageModalProps}
       />
     </>
   );
@@ -428,7 +528,7 @@ export const ReleasesEditModal = (props: {
 
   const { data, error, isLoading, size, setSize } = useSWRInfinite(
     getKey,
-    fetcher,
+    useSWRfetcher,
     { initialSize: 2, revalidateFirstPage: false }
   );
 
@@ -464,12 +564,31 @@ export const ReleasesEditModal = (props: {
 
   function _addRelease(release: any) {
     if (props.releasesIds.length == 100) {
-      alert("Достигнуто максимальное количество релизов в коллекции - 100");
+      toast.error(
+        "Достигнуто максимальное количество релизов в коллекции - 100",
+        {
+          position: "bottom-center",
+          hideProgressBar: true,
+          type: "error",
+          autoClose: 2500,
+          isLoading: false,
+          closeOnClick: true,
+          draggable: true,
+        }
+      );
       return;
     }
 
     if (props.releasesIds.includes(release.id)) {
-      alert("Релиз уже добавлен в коллекцию");
+      toast.error("Релиз уже добавлен в коллекцию", {
+        position: "bottom-center",
+        hideProgressBar: true,
+        type: "error",
+        autoClose: 2500,
+        isLoading: false,
+        closeOnClick: true,
+        draggable: true,
+      });
       return;
     }
 
@@ -494,7 +613,7 @@ export const ReleasesEditModal = (props: {
           className="max-w-full mx-auto"
           onSubmit={(e) => {
             e.preventDefault();
-            props.setReleases([]);
+            setContent([]);
             setQuery(e.target[0].value.trim());
           }}
         >
@@ -539,12 +658,12 @@ export const ReleasesEditModal = (props: {
           </div>
         </form>
 
-        <div className="flex flex-wrap gap-1 mt-2">
+        <div className="grid grid-cols-2 gap-2 mt-2 md:grid-cols-4">
           {content.map((release) => {
             return (
               <button
                 key={release.id}
-                className=""
+                className="overflow-hidden"
                 onClick={() => _addRelease(release)}
               >
                 <ReleaseLink type="poster" {...release} isLinkDisabled={true} />
@@ -553,6 +672,12 @@ export const ReleasesEditModal = (props: {
           })}
           {content.length == 1 && <div></div>}
         </div>
+        {isLoading && (
+          <div className="flex items-center justify-center h-full min-h-24">
+            <Spinner />
+          </div>
+        )}
+        {error && <div>Произошла ошибка</div>}
       </div>
     </Modal>
   );

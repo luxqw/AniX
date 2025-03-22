@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Spinner } from "../components/Spinner/Spinner";
 import { ENDPOINTS } from "#/api/config";
 import useSWR from "swr";
+import { useSWRfetcher } from "#/api/utils";
 
 import { ProfileUser } from "#/components/Profile/Profile.User";
 import { ProfileBannedBanner } from "#/components/Profile/ProfileBannedBanner";
@@ -16,20 +17,6 @@ import { ProfileReleaseRatings } from "#/components/Profile/Profile.ReleaseRatin
 import { ProfileReleaseHistory } from "#/components/Profile/Profile.ReleaseHistory";
 import { ProfileEditModal } from "#/components/Profile/Profile.EditModal";
 
-const fetcher = async (url: string) => {
-  const res = await fetch(url);
-
-  if (!res.ok) {
-    const error = new Error(
-      `An error occurred while fetching the data. status: ${res.status}`
-    );
-    error.message = await res.json();
-    throw error;
-  }
-
-  return res.json();
-};
-
 export const ProfilePage = (props: any) => {
   const authUser = useUserStore();
   const [user, setUser] = useState(null);
@@ -41,7 +28,7 @@ export const ProfilePage = (props: any) => {
   if (authUser.token) {
     url += `?token=${authUser.token}`;
   }
-  const { data } = useSWR(url, fetcher);
+  const { data, error } = useSWR(url, useSWRfetcher);
 
   useEffect(() => {
     if (data) {
@@ -50,10 +37,24 @@ export const ProfilePage = (props: any) => {
     }
   }, [data]);
 
-  if (!user) {
+  if (!user && !error) {
     return (
       <main className="flex items-center justify-center min-h-screen">
         <Spinner />
+      </main>
+    );
+  }
+
+  if (error) {
+    return (
+      <main className="flex items-center justify-center min-h-screen">
+        <div className="flex flex-col gap-2">
+          <h1 className="text-2xl font-bold">Ошибка</h1>
+          <p className="text-lg">
+            Произошла ошибка при загрузке профиля. Попробуйте обновить страницу
+            или зайдите позже.
+          </p>
+        </div>
       </main>
     );
   }
@@ -157,7 +158,11 @@ export const ProfilePage = (props: any) => {
           {!user.is_stats_hidden && (
             <div className="flex-col hidden gap-2 xl:flex">
               {user.votes && user.votes.length > 0 && (
-                <ProfileReleaseRatings ratings={user.votes} token={authUser.token} profile_id={user.id} />
+                <ProfileReleaseRatings
+                  ratings={user.votes}
+                  token={authUser.token}
+                  profile_id={user.id}
+                />
               )}
               {user.history && user.history.length > 0 && (
                 <ProfileReleaseHistory history={user.history} />
@@ -197,7 +202,11 @@ export const ProfilePage = (props: any) => {
               <ProfileWatchDynamic watchDynamic={user.watch_dynamics || []} />
               <div className="flex flex-col gap-2 xl:hidden">
                 {user.votes && user.votes.length > 0 && (
-                  <ProfileReleaseRatings ratings={user.votes} token={authUser.token} profile_id={user.id} />
+                  <ProfileReleaseRatings
+                    ratings={user.votes}
+                    token={authUser.token}
+                    profile_id={user.id}
+                  />
                 )}
                 {user.history && user.history.length > 0 && (
                   <ProfileReleaseHistory history={user.history} />
@@ -207,7 +216,12 @@ export const ProfilePage = (props: any) => {
           )}
         </div>
       </div>
-      <ProfileEditModal isOpen={isOpen && isMyProfile} setIsOpen={setIsOpen} token={authUser.token} profile_id={user.id}/>
+      <ProfileEditModal
+        isOpen={isOpen && isMyProfile}
+        setIsOpen={setIsOpen}
+        token={authUser.token}
+        profile_id={user.id}
+      />
     </>
   );
 };
