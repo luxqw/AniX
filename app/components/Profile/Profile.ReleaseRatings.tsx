@@ -17,6 +17,7 @@ import { useCallback, useEffect, useState } from "react";
 import { ENDPOINTS } from "#/api/config";
 import useSWRInfinite from "swr/infinite";
 import { Spinner } from "../Spinner/Spinner";
+import { Poster } from "../ReleasePoster/Poster";
 
 const CarouselIndicatorsTheme: FlowbiteCarouselIndicatorsTheme = {
   active: {
@@ -33,6 +34,9 @@ const CarouselControlsTheme: FlowbiteCarouselControlTheme = {
 };
 
 const CarouselTheme = {
+  root: {
+    base: "relative h-full w-full max-w-[700px]",
+  },
   indicators: CarouselIndicatorsTheme,
   control: CarouselControlsTheme,
 };
@@ -47,19 +51,15 @@ export const ProfileReleaseRatings = (props: any) => {
           Посмотреть все
         </Button>
       </div>
-      <div className="max-w-[700px] min-h-[200px]">
+      <div className="flex min-h-[200px] items-center justify-center">
         <Carousel theme={CarouselTheme}>
           {props.ratings.map((release) => {
             return (
               <Link href={`/release/${release.id}`} key={`vote-${release.id}`}>
                 <div className="flex gap-4 xl:mx-20">
-                  <Image
-                    src={release.image}
-                    width={100}
-                    height={125}
-                    alt=""
-                    className="object-cover border-gray-200 rounded-lg shadow-md dark:border-gray-700 dark:bg-gray-800 w-[100px] h-[125px]"
-                  />
+                  <div className="max-w-32">
+                    <Poster image={release.image} />
+                  </div>
                   <div className="flex flex-col gap-1 py-4">
                     <h2 className="text-lg">{release.title_ru}</h2>
                     <Rating size="md">
@@ -155,7 +155,7 @@ const ProfileReleaseRatingsModal = (props: {
         ref={modalRef}
       >
         {isLoading && <Spinner />}
-        {content && content.length > 0 ? (
+        {content && content.length > 0 ?
           content.map((release) => {
             return (
               <Link
@@ -163,13 +163,9 @@ const ProfileReleaseRatingsModal = (props: {
                 key={`vote-modal-${release.id}`}
               >
                 <div className="flex gap-4 xl:mx-20">
-                  <Image
-                    src={release.image}
-                    width={100}
-                    height={125}
-                    alt=""
-                    className="object-cover border-gray-200 rounded-lg shadow-md dark:border-gray-700 dark:bg-gray-800 w-[100px] h-[125px]"
-                  />
+                  <div className="flex-shrink-0 max-w-32">
+                    <Poster image={release.image} />
+                  </div>
                   <div className="flex flex-col gap-1 py-2">
                     <h2 className="text-lg">{release.title_ru}</h2>
                     <div className="flex items-center gap-1">
@@ -200,9 +196,7 @@ const ProfileReleaseRatingsModal = (props: {
               </Link>
             );
           })
-        ) : (
-          <h1>Оценок нет</h1>
-        )}
+        : <h1>Оценок нет</h1>}
       </div>
     </Modal>
   );
