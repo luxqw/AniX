@@ -1,7 +1,7 @@
 "use client";
 
 import { Card, Carousel, CustomFlowbiteTheme } from "flowbite-react";
-import { ReleaseLink } from "#/components/ReleaseLink/ReleaseLink";
+import { ReleaseLink } from "#/components/ReleaseLink/ReleaseLinkUpdate";
 import Link from "next/link";
 
 const CarouselTheme: CustomFlowbiteTheme["carousel"] = {
@@ -39,7 +39,11 @@ export const ReleaseInfoRelated = (props: {
             })
             .map((release: any) => {
               return (
-                <ReleaseLink key={release.id} {...release} type={"poster"} />
+                <ReleaseLink
+                  key={release.id}
+                  {...release}
+                  settings={{ showGenres: false, showDescription: false }}
+                />
               );
             })}
         </Carousel>

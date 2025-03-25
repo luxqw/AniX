@@ -21,7 +21,7 @@ export const ReleaseLink169Poster = (props: any) => {
   }
   return (
     <Link
-      href={`/release/${props.id}`}
+      href={`/release/${props.id}`} 
       className={props.isLinkDisabled ? "pointer-events-none" : ""}
       aria-disabled={props.isLinkDisabled}
       tabIndex={props.isLinkDisabled ? -1 : undefined}

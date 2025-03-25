@@ -6,7 +6,7 @@ export const Poster = (props: {
   //   title: { ru: string; original: string };
   //   note: string | null;
   //   description: string;
-  type?: "image_only";
+//   type?: "image_only";
   className?: string;
 }) => {
   return (
