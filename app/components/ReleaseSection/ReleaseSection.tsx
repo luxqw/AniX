@@ -31,16 +31,6 @@ export const ReleaseSection = (props: {
             );
           })}
         </div>
-        {/* <div className="lg:justify-center lg:grid-cols-[repeat(auto-fit,minmax(400px,1fr))] gap-4 lg:gap-2 min-w-full flex flex-col lg:grid">
-          {props.content.map((release) => {
-            return (
-              <div key={release.id} className="w-full h-full lg:aspect-video">
-                <ReleaseLink {...release} />
-              </div>
-            );
-          })}
-          {props.content.length == 1 && <div></div>}
-        </div> */}
       </div>
     </section>
   );
