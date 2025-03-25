@@ -1,5 +1,5 @@
 "use client";
-import { ReleaseLink } from "../ReleaseLink/ReleaseLink";
+import { ReleaseLink } from "../ReleaseLink/ReleaseLinkUpdate";
 import Link from "next/link";
 
 import { Swiper, SwiperSlide } from 'swiper/react';
@@ -42,7 +42,7 @@ export const ReleaseCourusel = (props: {
           allowTouchMove={true}
           breakpoints={{
             1800: {
-              initialSlide: 1,
+              initialSlide: 2,
               centeredSlides: true
             }
           }}
@@ -52,7 +52,8 @@ export const ReleaseCourusel = (props: {
               return (
                 <SwiperSlide
                   key={release.id}
-                  className="xl:max-w-[600px] sm:max-w-[400px] lg:aspect-video"
+                  className="max-w-64 md:max-w-96"
+                  // className="xl:max-w-[600px] sm:max-w-[400px] lg:aspect-video"
                 >
                   <ReleaseLink {...release} />
                 </SwiperSlide>

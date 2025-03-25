@@ -3,10 +3,6 @@ import Image from "next/image";
 export const Poster = (props: {
   image: string;
   alt?: string;
-  //   title: { ru: string; original: string };
-  //   note: string | null;
-  //   description: string;
-//   type?: "image_only";
   className?: string;
 }) => {
   return (
@@ -17,6 +13,10 @@ export const Poster = (props: {
       alt={props.alt || ""}
       width={285}
       height={385}
+      style={{
+        width: "100%",
+        height: "auto",
+      }}
     />
   );
 };

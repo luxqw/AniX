@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { Poster } from "./Poster";
 import { ReleaseChips } from "./Chips";
 
@@ -75,7 +74,7 @@ export const PosterWithStuff = (props: {
   }
 
   return (
-    <div className="relative flex items-center justify-center w-full h-full group">
+    <div className="relative flex items-center justify-center w-full h-full overflow-hidden group">
       <div className="absolute z-20 top-2 left-2 right-2">
         <ReleaseChips
           {...props}
@@ -90,14 +89,12 @@ export const PosterWithStuff = (props: {
             genres.length > 0 &&
             genres.map((genre: string, index: number) => {
               return (
-                <span key={`release_${props.id}_genre_${genre}_${index}`}>
+                <span
+                  key={`release_${props.id}_genre_${genre}_${index}`}
+                  className="font-light text-white md:text-sm lg:text-base xl:text-lg"
+                >
                   {index > 0 && ", "}
-                  <Link
-                    href={`/search?q=${genre}&searchBy=tag`}
-                    className="font-light text-white md:text-sm lg:text-base xl:text-lg"
-                  >
-                    {genre}
-                  </Link>
+                  {genre}
                 </span>
               );
             })}
@@ -113,15 +110,15 @@ export const PosterWithStuff = (props: {
           )}
         </div>
         {settings.showDescription && props.description && (
-            <p className="mt-2 text-sm font-light text-white lg:text-base xl:text-lg line-clamp-4">
-              {props.description}
-            </p>
-          )}
+          <p className="mt-2 text-sm font-light text-white lg:text-base xl:text-lg line-clamp-4">
+            {props.description}
+          </p>
+        )}
       </div>
-      <div className="absolute w-full h-full bg-gradient-to-t from-black to-transparent"></div>
+      <div className="absolute w-full h-full rounded-b-lg bg-gradient-to-t from-black to-transparent"></div>
       <Poster
         image={props.image}
-        className="min-w-full min-h-full flex-grow-1"
+        className="w-auto h-auto min-w-full min-h-full flex-grow-1"
       ></Poster>
     </div>
   );

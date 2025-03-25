@@ -5,7 +5,6 @@ import { useState, useEffect } from "react";
 import { useScrollPosition } from "#/hooks/useScrollPosition";
 import { useUserStore } from "../store/auth";
 import { ENDPOINTS } from "#/api/config";
-// import { ReleaseLink169Related } from "#/components/ReleaseLink/ReleaseLink.16_9Related";
 import { useSWRfetcher } from "#/api/utils";
 import { Card } from "flowbite-react";
 import { Poster } from "#/components/ReleasePoster/Poster";
@@ -97,7 +96,6 @@ export function RelatedPage(props: { id: number | string; title: string }) {
                 genres.push(genre.trim());
               });
             }
-            // return <ReleaseLink169Related {...release} key={release.id} _position={index + 1} />
             return (
               <Link href={`/release/${release.id}`} key={release.id}>
                 <Card>
@@ -112,12 +110,12 @@ export function RelatedPage(props: { id: number | string; title: string }) {
                       </h1>
                     </div>
                     <div className="flex items-center justify-center lg:hidden">
-                      <div className="max-w-96">
+                      <div className="max-w-64">
                         <PosterWithStuff {...release} settings={settings} />
                       </div>
                     </div>
                     <div className="hidden lg:flex">
-                      <Poster image={release.image} />
+                      <Poster image={release.image} className="h-auto" />
                     </div>
                     <div className="flex-col hidden gap-2 lg:flex">
                       <ReleaseChips
@@ -133,14 +131,10 @@ export function RelatedPage(props: { id: number | string; title: string }) {
                             return (
                               <span
                                 key={`release_${props.id}_genre_${genre}_${index}`}
+                                className="font-light dark:text-white md:text-sm lg:text-base xl:text-lg"
                               >
                                 {index > 0 && ", "}
-                                <Link
-                                  href={`/search?q=${genre}&searchBy=tag`}
-                                  className="font-light dark:text-white md:text-sm lg:text-base xl:text-lg"
-                                >
-                                  {genre}
-                                </Link>
+                                {genre}
                               </span>
                             );
                           })}
