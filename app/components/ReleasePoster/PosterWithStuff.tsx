@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { Poster } from "./Poster";
-import { Chip } from "../Chip/Chip";
 import { ReleaseChips } from "./Chips";
 
 const profile_lists = {
@@ -71,7 +70,7 @@ export const PosterWithStuff = (props: {
   if (props.genres) {
     const genres_array = props.genres.split(",");
     genres_array.forEach((genre) => {
-      genres.push(genre);
+      genres.push(genre.trim());
     });
   }
 

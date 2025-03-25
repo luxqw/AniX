@@ -5,11 +5,25 @@ import { useState, useEffect } from "react";
 import { useScrollPosition } from "#/hooks/useScrollPosition";
 import { useUserStore } from "../store/auth";
 import { ENDPOINTS } from "#/api/config";
-import { ReleaseLink169Related } from "#/components/ReleaseLink/ReleaseLink.16_9Related";
+// import { ReleaseLink169Related } from "#/components/ReleaseLink/ReleaseLink.16_9Related";
 import { useSWRfetcher } from "#/api/utils";
+import { Card } from "flowbite-react";
+import { Poster } from "#/components/ReleasePoster/Poster";
+import { ReleaseChips } from "#/components/ReleasePoster/Chips";
+import { PosterWithStuff } from "#/components/ReleasePoster/PosterWithStuff";
+import Link from "next/link";
 
+const profile_lists = {
+  // 0: "Не смотрю",
+  1: { name: "Смотрю", bg_color: "bg-green-500" },
+  2: { name: "В планах", bg_color: "bg-purple-500" },
+  3: { name: "Просмотрено", bg_color: "bg-blue-500" },
+  4: { name: "Отложено", bg_color: "bg-yellow-500" },
+  5: { name: "Брошено", bg_color: "bg-red-500" },
+};
+const YearSeason = ["_", "Зима", "Весна", "Лето", "Осень"];
 
-export function RelatedPage(props: {id: number|string, title: string}) {
+export function RelatedPage(props: { id: number | string; title: string }) {
   const token = useUserStore((state) => state.token);
 
   const getKey = (pageIndex: number, previousPageData: any) => {
@@ -52,22 +66,114 @@ export function RelatedPage(props: {id: number|string, title: string}) {
           Франшиза {props.title}
         </h1>
       </div>
-      {content && content.length > 0 ? (
+      {content && content.length > 0 ?
         <div className="flex flex-col gap-4 my-4">
           {content.map((release, index) => {
-            return <ReleaseLink169Related {...release} key={release.id} _position={index + 1} />
+            const genres = [];
+            const settings = {
+              showGenres: true,
+              showDescription: true,
+              chips: {
+                enabled: true,
+                gradeHidden: false,
+                statusHidden: false,
+                categoryHidden: false,
+                episodesHidden: false,
+                listHidden: false,
+                favHidden: false,
+                lastWatchedHidden: false,
+              },
+            };
+            const grade =
+              release.grade ? Number(release.grade.toFixed(1)) : null;
+            const profile_list_status = release.profile_list_status || null;
+            let user_list = null;
+            if (profile_list_status != null || profile_list_status != 0) {
+              user_list = profile_lists[profile_list_status];
+            }
+            if (release.genres) {
+              const genres_array = release.genres.split(",");
+              genres_array.forEach((genre) => {
+                genres.push(genre.trim());
+              });
+            }
+            // return <ReleaseLink169Related {...release} key={release.id} _position={index + 1} />
+            return (
+              <Card>
+                <div className="grid grid-cols-1 justify-center lg:grid-cols-[1fr_1fr_2fr] gap-4">
+                  <div className="flex items-center justify-center">
+                    <h1 className="inline-block text-6xl font-bold text-center text-transparent bg-gradient-to-r from-blue-600 via-purple-500 to-indigo-500 dark:from-blue-500 dark:via-purple-400 dark:to-indigo-300 bg-clip-text ">
+                      {release.season ? YearSeason[release.season] : ""}
+                      {release.season ?
+                        <br />
+                      : ""}
+                      {release.year ? release.year : ""}
+                    </h1>
+                  </div>
+                  <div className="flex items-center justify-center lg:hidden">
+                    <div className="max-w-96">
+                      <PosterWithStuff {...release} settings={settings} />
+                    </div>
+                  </div>
+                  <div className="hidden lg:flex">
+                    <Poster image={release.image} />
+                  </div>
+                  <div className="flex-col hidden gap-2 lg:flex">
+                    <ReleaseChips
+                      {...release}
+                      user_list={user_list}
+                      grade={grade}
+                      settings={settings}
+                    />
+                    <div>
+                      {settings.showGenres &&
+                        genres.length > 0 &&
+                        genres.map((genre: string, index: number) => {
+                          return (
+                            <span
+                              key={`release_${props.id}_genre_${genre}_${index}`}
+                            >
+                              {index > 0 && ", "}
+                              <Link
+                                href={`/search?q=${genre}&searchBy=tag`}
+                                className="font-light dark:text-white md:text-sm lg:text-base xl:text-lg"
+                              >
+                                {genre}
+                              </Link>
+                            </span>
+                          );
+                        })}
+                    </div>
+                    {release.title_ru && (
+                      <p className="text-xl font-bold dark:text-white md:text-2xl">
+                        {release.title_ru}
+                      </p>
+                    )}
+                    {release.title_original && (
+                      <p className="text-sm text-gray-600 dark:text-gray-300 md:text-base">
+                        {release.title_original}
+                      </p>
+                    )}
+                    {settings.showDescription && release.description && (
+                      <p className="mt-2 text-sm font-light dark:text-white lg:text-base xl:text-lg line-clamp-2">
+                        {release.description}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </Card>
+            );
           })}
         </div>
-      ) : isLoading ? (
+      : isLoading ?
         <div className="flex flex-col items-center justify-center min-w-full min-h-screen">
           <Spinner />
         </div>
-      ) : (
-        <div className="flex flex-col items-center justify-center min-w-full gap-4 mt-12 text-xl">
+      : <div className="flex flex-col items-center justify-center min-w-full gap-4 mt-12 text-xl">
           <span className="w-24 h-24 iconify-color twemoji--broken-heart"></span>
           <p>В франшизе пока ничего нет...</p>
         </div>
-      )}
+      }
       {data &&
         data[data.length - 1].current_page <
           data[data.length - 1].total_page_count && (
