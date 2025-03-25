@@ -99,69 +99,71 @@ export function RelatedPage(props: { id: number | string; title: string }) {
             }
             // return <ReleaseLink169Related {...release} key={release.id} _position={index + 1} />
             return (
-              <Card>
-                <div className="grid grid-cols-1 justify-center lg:grid-cols-[1fr_1fr_2fr] gap-4">
-                  <div className="flex items-center justify-center">
-                    <h1 className="inline-block text-6xl font-bold text-center text-transparent bg-gradient-to-r from-blue-600 via-purple-500 to-indigo-500 dark:from-blue-500 dark:via-purple-400 dark:to-indigo-300 bg-clip-text ">
-                      {release.season ? YearSeason[release.season] : ""}
-                      {release.season ?
-                        <br />
-                      : ""}
-                      {release.year ? release.year : ""}
-                    </h1>
-                  </div>
-                  <div className="flex items-center justify-center lg:hidden">
-                    <div className="max-w-96">
-                      <PosterWithStuff {...release} settings={settings} />
+              <Link href={`/release/${release.id}`} key={release.id}>
+                <Card>
+                  <div className="grid grid-cols-1 justify-center lg:grid-cols-[1fr_1fr_2fr] gap-4">
+                    <div className="flex items-center justify-center">
+                      <h1 className="inline-block text-6xl font-bold text-center text-transparent bg-gradient-to-r from-blue-600 via-purple-500 to-indigo-500 dark:from-blue-500 dark:via-purple-400 dark:to-indigo-300 bg-clip-text ">
+                        {release.season ? YearSeason[release.season] : ""}
+                        {release.season ?
+                          <br />
+                        : ""}
+                        {release.year ? release.year : ""}
+                      </h1>
                     </div>
-                  </div>
-                  <div className="hidden lg:flex">
-                    <Poster image={release.image} />
-                  </div>
-                  <div className="flex-col hidden gap-2 lg:flex">
-                    <ReleaseChips
-                      {...release}
-                      user_list={user_list}
-                      grade={grade}
-                      settings={settings}
-                    />
-                    <div>
-                      {settings.showGenres &&
-                        genres.length > 0 &&
-                        genres.map((genre: string, index: number) => {
-                          return (
-                            <span
-                              key={`release_${props.id}_genre_${genre}_${index}`}
-                            >
-                              {index > 0 && ", "}
-                              <Link
-                                href={`/search?q=${genre}&searchBy=tag`}
-                                className="font-light dark:text-white md:text-sm lg:text-base xl:text-lg"
+                    <div className="flex items-center justify-center lg:hidden">
+                      <div className="max-w-96">
+                        <PosterWithStuff {...release} settings={settings} />
+                      </div>
+                    </div>
+                    <div className="hidden lg:flex">
+                      <Poster image={release.image} />
+                    </div>
+                    <div className="flex-col hidden gap-2 lg:flex">
+                      <ReleaseChips
+                        {...release}
+                        user_list={user_list}
+                        grade={grade}
+                        settings={settings}
+                      />
+                      <div>
+                        {settings.showGenres &&
+                          genres.length > 0 &&
+                          genres.map((genre: string, index: number) => {
+                            return (
+                              <span
+                                key={`release_${props.id}_genre_${genre}_${index}`}
                               >
-                                {genre}
-                              </Link>
-                            </span>
-                          );
-                        })}
+                                {index > 0 && ", "}
+                                <Link
+                                  href={`/search?q=${genre}&searchBy=tag`}
+                                  className="font-light dark:text-white md:text-sm lg:text-base xl:text-lg"
+                                >
+                                  {genre}
+                                </Link>
+                              </span>
+                            );
+                          })}
+                      </div>
+                      {release.title_ru && (
+                        <p className="text-xl font-bold dark:text-white md:text-2xl">
+                          {release.title_ru}
+                        </p>
+                      )}
+                      {release.title_original && (
+                        <p className="text-sm text-gray-600 dark:text-gray-300 md:text-base">
+                          {release.title_original}
+                        </p>
+                      )}
+                      {settings.showDescription && release.description && (
+                        <p className="mt-2 text-sm font-light dark:text-white lg:text-base xl:text-lg line-clamp-2">
+                          {release.description}
+                        </p>
+                      )}
                     </div>
-                    {release.title_ru && (
-                      <p className="text-xl font-bold dark:text-white md:text-2xl">
-                        {release.title_ru}
-                      </p>
-                    )}
-                    {release.title_original && (
-                      <p className="text-sm text-gray-600 dark:text-gray-300 md:text-base">
-                        {release.title_original}
-                      </p>
-                    )}
-                    {settings.showDescription && release.description && (
-                      <p className="mt-2 text-sm font-light dark:text-white lg:text-base xl:text-lg line-clamp-2">
-                        {release.description}
-                      </p>
-                    )}
                   </div>
-                </div>
-              </Card>
+                </Card>
+              </Link>
             );
           })}
         </div>
