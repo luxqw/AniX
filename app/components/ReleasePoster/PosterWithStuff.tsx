@@ -21,16 +21,16 @@ export const PosterWithStuff = (props: {
   settings?: {
     showGenres?: boolean;
     showDescription?: boolean;
-    chips?: {
-      enabled: boolean;
-      gradeHidden?: boolean;
-      statusHidden?: boolean;
-      categoryHidden?: boolean;
-      episodesHidden?: boolean;
-      listHidden?: boolean;
-      favHidden?: boolean;
-      lastWatchedHidden?: boolean;
-    };
+  };
+  chipsSettings?: {
+    enabled: boolean;
+    gradeHidden?: boolean;
+    statusHidden?: boolean;
+    categoryHidden?: boolean;
+    episodesHidden?: boolean;
+    listHidden?: boolean;
+    favHidden?: boolean;
+    lastWatchedHidden?: boolean;
   };
   profile_list_status?: number;
   status?: {
@@ -48,18 +48,10 @@ export const PosterWithStuff = (props: {
   const settings = {
     showGenres: true,
     showDescription: true,
-    chips: {
-      enabled: true,
-      gradeHidden: false,
-      statusHidden: false,
-      categoryHidden: false,
-      episodesHidden: false,
-      listHidden: false,
-      favHidden: false,
-      lastWatchedHidden: false,
-    },
     ...props.settings,
   };
+  const chipsSettings = props.chipsSettings || {}
+
   const grade = props.grade ? Number(props.grade.toFixed(1)) : null;
   const profile_list_status = props.profile_list_status || null;
   let user_list = null;
@@ -74,13 +66,13 @@ export const PosterWithStuff = (props: {
   }
 
   return (
-    <div className="relative flex items-center justify-center w-full h-full overflow-hidden group">
+    <div className="relative flex items-center justify-center w-full h-full overflow-hidden rounded-lg group">
       <div className="absolute z-20 top-2 left-2 right-2">
         <ReleaseChips
           {...props}
           user_list={user_list}
           grade={grade}
-          settings={settings}
+          settings={chipsSettings}
         ></ReleaseChips>
       </div>
       <div className="absolute z-20 bottom-2 left-2 right-2 lg:translate-y-[100%] group-hover:lg:translate-y-0 transition-transform">

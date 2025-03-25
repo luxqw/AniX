@@ -69,20 +69,6 @@ export function RelatedPage(props: { id: number | string; title: string }) {
         <div className="flex flex-col gap-4 my-4">
           {content.map((release, index) => {
             const genres = [];
-            const settings = {
-              showGenres: true,
-              showDescription: true,
-              chips: {
-                enabled: true,
-                gradeHidden: false,
-                statusHidden: false,
-                categoryHidden: false,
-                episodesHidden: false,
-                listHidden: false,
-                favHidden: false,
-                lastWatchedHidden: false,
-              },
-            };
             const grade =
               release.grade ? Number(release.grade.toFixed(1)) : null;
             const profile_list_status = release.profile_list_status || null;
@@ -111,7 +97,7 @@ export function RelatedPage(props: { id: number | string; title: string }) {
                     </div>
                     <div className="flex items-center justify-center lg:hidden">
                       <div className="max-w-64">
-                        <PosterWithStuff {...release} settings={settings} />
+                        <PosterWithStuff {...release} />
                       </div>
                     </div>
                     <div className="hidden lg:flex">
@@ -122,11 +108,9 @@ export function RelatedPage(props: { id: number | string; title: string }) {
                         {...release}
                         user_list={user_list}
                         grade={grade}
-                        settings={settings}
                       />
                       <div>
-                        {settings.showGenres &&
-                          genres.length > 0 &&
+                        {genres.length > 0 &&
                           genres.map((genre: string, index: number) => {
                             return (
                               <span
@@ -149,7 +133,7 @@ export function RelatedPage(props: { id: number | string; title: string }) {
                           {release.title_original}
                         </p>
                       )}
-                      {settings.showDescription && release.description && (
+                      {release.description && (
                         <p className="mt-2 text-sm font-light dark:text-white lg:text-base xl:text-lg line-clamp-2">
                           {release.description}
                         </p>

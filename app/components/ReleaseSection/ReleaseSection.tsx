@@ -1,4 +1,4 @@
-import { ReleaseLink } from "../ReleaseLink/ReleaseLink";
+import { ReleaseLink } from "../ReleaseLink/ReleaseLinkUpdate";
 
 export const ReleaseSection = (props: {
   sectionTitle?: string;
@@ -14,7 +14,24 @@ export const ReleaseSection = (props: {
         </div>
       )}
       <div className="m-4">
-        <div className="lg:justify-center lg:grid-cols-[repeat(auto-fit,minmax(400px,1fr))] gap-4 lg:gap-2 min-w-full flex flex-col lg:grid">
+        <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
+          {props.content.map((release) => {
+            return (
+              <div key={release.id} className="w-full h-full">
+                <ReleaseLink
+                  {...release}
+                  chipsSettings={{
+                    enabled: true,
+                    lastWatchedHidden:
+                      (props.sectionTitle &&
+                        props.sectionTitle.toLowerCase() != "история")
+                  }}
+                />
+              </div>
+            );
+          })}
+        </div>
+        {/* <div className="lg:justify-center lg:grid-cols-[repeat(auto-fit,minmax(400px,1fr))] gap-4 lg:gap-2 min-w-full flex flex-col lg:grid">
           {props.content.map((release) => {
             return (
               <div key={release.id} className="w-full h-full lg:aspect-video">
@@ -23,7 +40,7 @@ export const ReleaseSection = (props: {
             );
           })}
           {props.content.length == 1 && <div></div>}
-        </div>
+        </div> */}
       </div>
     </section>
   );
