@@ -15,7 +15,7 @@ import {
   Modal,
   useThemeMode,
 } from "flowbite-react";
-import { ReleaseLink } from "#/components/ReleaseLink/ReleaseLink";
+import { PosterWithStuff } from "#/components/ReleasePoster/PosterWithStuff";
 import { CropModal } from "#/components/CropModal/CropModal";
 import { b64toBlob, tryCatchAPI } from "#/api/utils";
 
@@ -462,20 +462,17 @@ export const CreateCollectionPage = () => {
           </Button>
         </div>
         <div className="m-4">
-          <div className="grid justify-center sm:grid-cols-[repeat(auto-fit,minmax(400px,1fr))] grid-cols-[100%] gap-2 min-w-full">
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
             {addedReleases.map((release) => {
               return (
-                <div
-                  key={release.id}
-                  className="relative w-full h-full aspect-video group"
-                >
+                <div key={release.id} className="relative w-full h-full group">
                   <button
-                    className="absolute inset-0 z-10 text-black transition-opacity bg-white opacity-0 group-hover:opacity-75"
+                    className="absolute inset-0 z-30 text-black transition-opacity bg-white rounded-lg opacity-0 group-hover:opacity-75"
                     onClick={() => _deleteRelease(release)}
                   >
                     Удалить
                   </button>
-                  <ReleaseLink {...release} isLinkDisabled={true} />
+                  <PosterWithStuff {...release} />
                 </div>
               );
             })}
@@ -592,6 +589,9 @@ export const ReleasesEditModal = (props: {
       return;
     }
 
+    const newContent = content.filter((r) => r.id !== release.id);
+
+    setContent(newContent);
     props.setReleases([...props.releases, release]);
     props.setReleasesIds([...props.releasesIds, release.id]);
   }
@@ -611,11 +611,7 @@ export const ReleasesEditModal = (props: {
       >
         <form
           className="max-w-full mx-auto"
-          onSubmit={(e) => {
-            e.preventDefault();
-            setContent([]);
-            setQuery(e.target[0].value.trim());
-          }}
+          onSubmit={(e) => e.preventDefault()}
         >
           <label
             htmlFor="default-search"
@@ -647,30 +643,35 @@ export const ReleasesEditModal = (props: {
               className="block w-full p-4 text-sm text-gray-900 border border-gray-300 rounded-lg ps-10 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
               placeholder="Поиск аниме..."
               required
-              defaultValue={query || ""}
+              onChange={(e) => setQuery(e.target.value)}
+              value={query || ""}
             />
             <button
-              type="submit"
-              className="text-white absolute end-2.5 bottom-2.5 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+              type="button"
+              className="text-white absolute end-2.5 bottom-2.5 bg-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800"
+              onClick={() => {
+                setSize(0);
+                setContent([]);
+                setQuery("");
+              }}
             >
-              Поиск
+              Очистить
             </button>
           </div>
         </form>
 
-        <div className="grid grid-cols-2 gap-2 mt-2 md:grid-cols-4">
+        <div className="grid grid-cols-1 gap-2 mt-2 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
           {content.map((release) => {
             return (
               <button
+                className="text-left"
                 key={release.id}
-                className="overflow-hidden"
                 onClick={() => _addRelease(release)}
               >
-                <ReleaseLink type="poster" {...release} isLinkDisabled={true} />
+                <PosterWithStuff {...release} />
               </button>
             );
           })}
-          {content.length == 1 && <div></div>}
         </div>
         {isLoading && (
           <div className="flex items-center justify-center h-full min-h-24">

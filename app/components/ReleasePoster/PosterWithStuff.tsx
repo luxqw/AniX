@@ -66,7 +66,7 @@ export const PosterWithStuff = (props: {
   }
 
   return (
-    <div className="relative flex items-center justify-center w-full h-full overflow-hidden rounded-lg group">
+    <div className="relative w-full h-full overflow-hidden rounded-lg group">
       <div className="absolute z-20 top-2 left-2 right-2">
         <ReleaseChips
           {...props}
