@@ -342,6 +342,8 @@ export const ReleasePlayerCustom = (props: {
       setIsLoading(false);
     };
     if (episode.selected) {
+      setIsLoading(true);
+      setPlayerError(null);
       __getInfo();
     }
   }, [episode.selected]);
