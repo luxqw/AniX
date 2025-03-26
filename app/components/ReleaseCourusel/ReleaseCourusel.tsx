@@ -52,7 +52,7 @@ export const ReleaseCourusel = (props: {
               return (
                 <SwiperSlide
                   key={release.id}
-                  className="max-w-64 md:max-w-96"
+                  className="h-full max-w-64 md:max-w-96 aspect-[384/538]"
                 >
                   <ReleaseLink {...release} />
                 </SwiperSlide>
