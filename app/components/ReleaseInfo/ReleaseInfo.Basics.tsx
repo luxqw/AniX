@@ -16,9 +16,18 @@ export const ReleaseInfoBasics = (props: {
   return (
     <Card className="h-full row-span-2">
       <div className="flex flex-col w-full h-full gap-4 lg:grid lg:grid-cols-[1fr_2fr] items-center lg:items-start justify-center lg:justify-start">
-        <div className="relative flex items-center justify-center w-full overflow-hidden rounded-lg">
-          <Poster image={props.image} className="z-10 sm:scale-95 lg:scale-100" />
-          <Poster image={props.image} className="absolute top-0 left-0 w-full scale-125 opacity-75 blur-xl brightness-75" />
+        <div className="flex flex-col gap-2">
+          <div className="relative flex items-center justify-center w-full overflow-hidden rounded-lg">
+            <Poster
+              image={props.image}
+              className="z-10 sm:scale-95 lg:scale-100"
+            />
+            <Poster
+              image={props.image}
+              className="absolute top-0 left-0 w-full scale-125 opacity-75 blur-xl brightness-75"
+            />
+          </div>
+          <ReleaseInfoStreaming release_id={props.release_id} />
         </div>
         <div className="flex flex-col max-w-2xl gap-2 text-sm md:text-base">
           <div className="flex flex-col gap-1">
@@ -52,7 +61,6 @@ export const ReleaseInfoBasics = (props: {
           >
             {isFullDescription ? "Скрыть" : "Показать полностью"}
           </Button>
-          <ReleaseInfoStreaming release_id={props.release_id} />
         </div>
       </div>
     </Card>

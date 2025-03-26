@@ -23,17 +23,17 @@ export const ReleaseInfoStreaming = (props: { release_id: number }) => {
       : !(data.content.length > 0) ?
         ""
       : <div>
-          <p className="mt-4 mb-1 text-lg">Официальные источники: </p>
-          <div className="grid grid-cols-2 gap-2 md:grid-cols-4">
+          <div className="grid grid-flow-row-dense grid-cols-1 gap-1 2xl:grid-cols-2">
             {data.content.map((item: any) => {
               return (
                 <a
                   href={item.url}
+                  target="_blank"
                   key={`platform_${item.id}`}
-                  className="flex items-center gap-2 px-2 py-1 transition-colors bg-gray-100 rounded-lg hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 "
+                  className="flex items-center gap-2 px-4 py-2 transition-colors bg-gray-100 rounded-lg hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 "
                 >
                   <img src={item.icon} className="w-6 h-6 rounded-full" />
-                  <p className="text-lg">{item.name}</p>
+                  <p className="text-sm line-clamp-2">{item.name}</p>
                 </a>
               );
             })}
