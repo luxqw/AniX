@@ -1,5 +1,6 @@
 "use client";
 
+import { CURRENT_APP_VERSION } from "#/api/config";
 import { usePreferencesStore } from "#/store/preferences";
 import {
   Modal,
@@ -278,26 +279,15 @@ export const SettingsModal = (props: { isOpen: boolean; setIsOpen: any }) => {
         <HR className="my-4 dark:bg-slate-400" />
         <div>
           <Link
-            href={"https://t.me/anix_web"}
+            href={"/about"}
             className="flex items-center gap-2 p-2 text-left rounded-md hover:bg-gray-100 dark:hover:bg-gray-900"
+            onClick={() => props.setIsOpen(false)}
           >
-            <span className="w-8 h-8 iconify fa6-brands--telegram"></span>
+            <span className="w-8 h-8 iconify material-symbols--info"></span>
             <div>
-              <p>Телеграм канал</p>
+              <p>О приложении</p>
               <p className="text-sm text-gray-400 dark:text-gray-200">
-                @anix_web
-              </p>
-            </div>
-          </Link>
-          <Link
-            href={"https://wah.su/radiquum"}
-            className="flex items-center gap-2 p-2 text-left rounded-md hover:bg-gray-100 dark:hover:bg-gray-900"
-          >
-            <span className="w-8 h-8 iconify mdi--code"></span>
-            <div>
-              <p>Разработчик</p>
-              <p className="text-sm text-gray-400 dark:text-gray-200">
-                Radiquum
+                v{CURRENT_APP_VERSION}
               </p>
             </div>
           </Link>
