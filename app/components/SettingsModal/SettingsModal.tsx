@@ -33,7 +33,7 @@ const NavbarTitles = {
   links: "Только ссылки",
   selected: "Только выбранные",
   never: "Никогда",
-}
+};
 
 export const SettingsModal = (props: { isOpen: boolean; setIsOpen: any }) => {
   const preferenceStore = usePreferencesStore();
@@ -169,24 +169,25 @@ export const SettingsModal = (props: { isOpen: boolean; setIsOpen: any }) => {
             </p>
             <Dropdown
               color="blue"
-              label={
-                NavbarTitles[preferenceStore.flags.showNavbarTitles]
-              }
+              label={NavbarTitles[preferenceStore.flags.showNavbarTitles]}
             >
-              {Object.keys(NavbarTitles).map((key: "always" | "links" | "selected" | "never") => {
-                return (
-                  <Dropdown.Item
-                    key={`navbar-titles-${key}`}
-                    onClick={() =>
-                      preferenceStore.setFlags({
-                        showNavbarTitles: key,
-                      })
-                    }
-                  >
-                    {NavbarTitles[key]}
-                  </Dropdown.Item>
-                );
-              })}
+              {Object.keys(NavbarTitles).map(
+                (key: "always" | "links" | "selected" | "never") => {
+                  return (
+                    <Dropdown.Item
+                      className={`${key == "links" ? "hidden lg:flex" : ""}`}
+                      key={`navbar-titles-${key}`}
+                      onClick={() =>
+                        preferenceStore.setFlags({
+                          showNavbarTitles: key,
+                        })
+                      }
+                    >
+                      {NavbarTitles[key]}
+                    </Dropdown.Item>
+                  );
+                }
+              )}
             </Dropdown>
           </div>
           <HR className="my-4 dark:bg-slate-400" />

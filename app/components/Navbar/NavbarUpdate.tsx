@@ -87,7 +87,7 @@ export const Navbar = () => {
   return (
     <>
       <header className="fixed bottom-0 left-0 z-50 w-full text-white bg-black rounded-t-lg sm:sticky sm:top-0 sm:rounded-t-none sm:rounded-b-lg">
-        <div className="container flex items-center justify-center gap-4 mx-auto sm:gap-0 sm:justify-between">
+        <div className="container flex items-center min-h-[76px] justify-center gap-4 mx-auto sm:gap-0 sm:justify-between">
           <div className="flex items-center gap-8 px-2 py-4 sm:gap-4">
             {menuItems.map((item) => {
               return (
