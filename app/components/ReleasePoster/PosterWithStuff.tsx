@@ -83,7 +83,7 @@ export const PosterWithStuff = (props: {
               return (
                 <span
                   key={`release_${props.id}_genre_${genre}_${index}`}
-                  className="font-light text-white md:text-sm lg:text-base xl:text-lg"
+                  className="font-light leading-none text-white md:text-sm lg:text-base xl:text-lg"
                 >
                   {index > 0 && ", "}
                   {genre}
@@ -91,18 +91,18 @@ export const PosterWithStuff = (props: {
               );
             })}
           {props.title_ru && (
-            <p className="text-xl font-bold text-white md:text-2xl">
+            <p className="py-1 text-xl font-bold leading-none text-white md:text-2xl md:py-0">
               {props.title_ru}
             </p>
           )}
           {props.title_original && (
-            <p className="text-sm text-gray-300 md:text-base">
+            <p className="text-sm leading-none text-gray-300 md:text-base">
               {props.title_original}
             </p>
           )}
         </div>
         {settings.showDescription && props.description && (
-          <p className="mt-2 text-sm font-light text-white lg:text-base xl:text-lg line-clamp-4">
+          <p className="mt-2 text-sm font-light leading-none text-white lg:text-base xl:text-lg line-clamp-4">
             {props.description}
           </p>
         )}
