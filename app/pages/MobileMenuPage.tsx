@@ -22,7 +22,7 @@ export const MenuPage = () => {
   return (
     <>
       {userStore.user && (
-        <div className="flex flex-col gap-2">
+        <div className="fixed flex flex-col justify-end gap-2 left-4 right-4 bottom-24 sm:static">
           <div className="flex flex-wrap items-center gap-2">
             <Link
               href={`/profile/${userStore.user.id}`}
@@ -108,32 +108,6 @@ export const MenuPage = () => {
                   className={`iconify material-symbols--history w-6 h-6`}
                 ></span>
                 <p>История</p>
-              </div>
-            </Card>
-          </Link>
-          <Link href={"https://t.me/anix_web"} className="flex-1">
-            <Card>
-              <div className="flex items-center gap-2">
-                <span className="w-8 h-8 iconify fa6-brands--telegram"></span>
-                <div>
-                  <p>Телеграм канал</p>
-                  <p className="text-sm text-gray-400 dark:text-gray-200">
-                    @anix_web
-                  </p>
-                </div>
-              </div>
-            </Card>
-          </Link>
-          <Link href={"https://wah.su/radiquum"} className="flex-1">
-            <Card>
-              <div className="flex items-center gap-2">
-                <span className="w-8 h-8 iconify mdi--code"></span>
-                <div>
-                  <p>Разработчик</p>
-                  <p className="text-sm text-gray-400 dark:text-gray-200">
-                    Radiquum
-                  </p>
-                </div>
               </div>
             </Card>
           </Link>
