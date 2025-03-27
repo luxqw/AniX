@@ -6,9 +6,11 @@ import { useRouter } from "next/navigation";
 import { SettingsModal } from "#/components/SettingsModal/SettingsModal";
 import { useEffect, useState } from "react";
 import Image from "next/image";
+import { usePreferencesStore } from "#/store/preferences";
 
 export const MenuPage = () => {
   const userStore = useUserStore();
+  const preferenceStore = usePreferencesStore();
   const router = useRouter();
   const [isSettingModalOpen, setIsSettingModalOpen] = useState(false);
 
@@ -81,36 +83,42 @@ export const MenuPage = () => {
               </button>
             </div>
           </div>
-          <Link href="/favorites" className="flex-1 sm:hidden">
-            <Card>
-              <div className="flex items-center gap-2">
-                <span
-                  className={`iconify material-symbols--favorite-outline w-6 h-6`}
-                ></span>
-                <p>Избранное</p>
-              </div>
-            </Card>
-          </Link>
-          <Link href="/collections" className="flex-1 sm:hidden">
-            <Card>
-              <div className="flex items-center gap-2">
-                <span
-                  className={`iconify material-symbols--collections-bookmark-outline w-6 h-6`}
-                ></span>
-                <p>Коллекции</p>
-              </div>
-            </Card>
-          </Link>
-          <Link href="/history" className="flex-1 sm:hidden">
-            <Card>
-              <div className="flex items-center gap-2">
-                <span
-                  className={`iconify material-symbols--history w-6 h-6`}
-                ></span>
-                <p>История</p>
-              </div>
-            </Card>
-          </Link>
+          {preferenceStore.flags.showFifthButton != 3 ?
+            <Link href="/favorites" className="flex-1 sm:hidden">
+              <Card>
+                <div className="flex items-center gap-2">
+                  <span
+                    className={`iconify material-symbols--favorite-outline w-6 h-6`}
+                  ></span>
+                  <p>Избранное</p>
+                </div>
+              </Card>
+            </Link>
+          : ""}
+          {preferenceStore.flags.showFifthButton != 4 ?
+            <Link href="/collections" className="flex-1 sm:hidden">
+              <Card>
+                <div className="flex items-center gap-2">
+                  <span
+                    className={`iconify material-symbols--collections-bookmark-outline w-6 h-6`}
+                  ></span>
+                  <p>Коллекции</p>
+                </div>
+              </Card>
+            </Link>
+          : ""}
+          {preferenceStore.flags.showFifthButton != 5 ?
+            <Link href="/history" className="flex-1 sm:hidden">
+              <Card>
+                <div className="flex items-center gap-2">
+                  <span
+                    className={`iconify material-symbols--history w-6 h-6`}
+                  ></span>
+                  <p>История</p>
+                </div>
+              </Card>
+            </Link>
+          : ""}
           <SettingsModal
             isOpen={isSettingModalOpen}
             setIsOpen={setIsSettingModalOpen}

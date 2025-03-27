@@ -11,6 +11,7 @@ interface preferencesState {
     showChangelog?: boolean;
     enableAnalytics?: boolean;
     showNavbarTitles?: "always" | "links" | "selected" | "never";
+    showFifthButton?: null | 3 | 4 | 5;
   };
   params: {
     isFirstLaunch?: boolean;
@@ -22,7 +23,7 @@ interface preferencesState {
     };
     experimental?: {
       newPlayer: boolean;
-    }
+    };
     // color: {
     //   primary: string;
     //   secondary: string;
@@ -44,6 +45,7 @@ export const usePreferencesStore = create<preferencesState>()(
         showChangelog: true,
         enableAnalytics: true,
         showNavbarTitles: "always",
+        showFifthButton: null,
       },
       params: {
         isFirstLaunch: true,
@@ -54,8 +56,8 @@ export const usePreferencesStore = create<preferencesState>()(
           bookmarksCategory: "watching",
         },
         experimental: {
-          newPlayer: false
-        }
+          newPlayer: false,
+        },
       },
       setHasHydrated: (state) => {
         set({
@@ -74,9 +76,12 @@ export const usePreferencesStore = create<preferencesState>()(
       onRehydrateStorage: (state) => {
         return () => state.setHasHydrated(true);
       },
-      merge: (persistedState , currentState) => {
-        return deepmerge(currentState as preferencesState, persistedState as preferencesState);
-      }
+      merge: (persistedState, currentState) => {
+        return deepmerge(
+          currentState as preferencesState,
+          persistedState as preferencesState
+        );
+      },
     }
   )
 );

@@ -1,6 +1,7 @@
 "use client";
 
 import { CURRENT_APP_VERSION } from "#/api/config";
+import { useUserStore } from "#/store/auth";
 import { usePreferencesStore } from "#/store/preferences";
 import {
   Modal,
@@ -35,8 +36,15 @@ const NavbarTitles = {
   never: "Никогда",
 };
 
+const FifthButton = {
+  3: "Избранное",
+  4: "Коллекции",
+  5: "История",
+};
+
 export const SettingsModal = (props: { isOpen: boolean; setIsOpen: any }) => {
   const preferenceStore = usePreferencesStore();
+  const userStore = useUserStore();
 
   const { computedMode, setMode } = useThemeMode();
 
@@ -190,6 +198,45 @@ export const SettingsModal = (props: { isOpen: boolean; setIsOpen: any }) => {
               )}
             </Dropdown>
           </div>
+          {userStore.isAuth ?
+            <div className="flex items-center justify-between sm:hidden">
+              <p className=" dark:text-white max-w-96">
+                Пятый пункт в навигации
+              </p>
+              <Dropdown
+                color="blue"
+                label={
+                  preferenceStore.flags.showFifthButton ?
+                    FifthButton[preferenceStore.flags.showFifthButton]
+                  : "Нет"
+                }
+              >
+                <Dropdown.Item
+                  onClick={() =>
+                    preferenceStore.setFlags({
+                      showFifthButton: null,
+                    })
+                  }
+                >
+                  Не показывать
+                </Dropdown.Item>
+                {Object.keys(FifthButton).map((key) => {
+                  return (
+                    <Dropdown.Item
+                      key={`navbar-fifthbutton-${key}`}
+                      onClick={() =>
+                        preferenceStore.setFlags({
+                          showFifthButton: Number(key) as 3 | 4 | 5,
+                        })
+                      }
+                    >
+                      {FifthButton[key]}
+                    </Dropdown.Item>
+                  );
+                })}
+              </Dropdown>
+            </div>
+          : ""}
           <HR className="my-4 dark:bg-slate-400" />
           <div className="flex items-center gap-2">
             <span className="w-6 h-6 iconify material-symbols--settings-outline"></span>
