@@ -67,7 +67,10 @@ export const EpisodeSelector = (props: {
           enabled: true,
           sensitivity: 4,
         }}
-        scrollbar={true}
+        scrollbar={{
+          enabled: true,
+          draggable: true,
+        }}
         allowTouchMove={true}
         style={
           {
@@ -79,6 +82,7 @@ export const EpisodeSelector = (props: {
           <SwiperSlide
             key={`episode_${episode.position}`}
             style={{ maxWidth: "fit-content" }}
+            className="pb-2"
           >
             <Button
               color={

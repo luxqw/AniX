@@ -314,9 +314,12 @@ export const ReleasePlayer = (props: { id: number }) => {
               direction={"horizontal"}
               mousewheel={{
                 enabled: true,
-                sensitivity: 2,
+                sensitivity: 4,
               }}
-              scrollbar={true}
+              scrollbar={{
+                enabled: true,
+                draggable: true,
+              }}
               allowTouchMove={true}
               style={
                 {
@@ -328,6 +331,7 @@ export const ReleasePlayer = (props: { id: number }) => {
                 <SwiperSlide
                   key={`episode_${episode.position}`}
                   style={{ maxWidth: "fit-content" }}
+                  className="pb-2"
                 >
                   <Button
                     color={
