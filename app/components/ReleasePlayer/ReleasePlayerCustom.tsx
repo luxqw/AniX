@@ -433,7 +433,7 @@ export const ReleasePlayerCustom = (props: {
               }
             </div>
 
-        : <iframe src={playerProps.src} className="w-full aspect-video" />}
+        : <iframe src={playerProps.src} className="w-full aspect-video" allowFullScreen={true} />}
       </div>
 
       <div>
