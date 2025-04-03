@@ -28,6 +28,7 @@ export const ProfileWatchDynamic = (props: { watchDynamic: Array<any> }) => {
     },
     tooltip: {
       enabled: true,
+      theme:"dark",
       x: {
         show: false,
       },

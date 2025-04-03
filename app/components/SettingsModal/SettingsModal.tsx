@@ -69,13 +69,13 @@ export const SettingsModal = (props: { isOpen: boolean; setIsOpen: any }) => {
             <p className=" dark:text-white">Тема</p>
             <ButtonGroup>
               <Button
-                color={computedMode == "light" ? "blue" : "gray"}
+                color={computedMode == "light" ? "blue" : "light"}
                 onClick={() => setMode("light")}
               >
                 Светлая
               </Button>
               <Button
-                color={computedMode == "dark" ? "blue" : "gray"}
+                color={computedMode == "dark" ? "blue" : "light"}
                 onClick={() => setMode("dark")}
               >
                 Темная
@@ -89,15 +89,6 @@ export const SettingsModal = (props: { isOpen: boolean; setIsOpen: any }) => {
             </p>
             <ToggleSwitch
               color="blue"
-              theme={{
-                toggle: {
-                  checked: {
-                    color: {
-                      blue: "border-blue-700 bg-blue-700",
-                    },
-                  },
-                },
-              }}
               onChange={() =>
                 preferenceStore.setParams({
                   skipToCategory: {
@@ -250,15 +241,6 @@ export const SettingsModal = (props: { isOpen: boolean; setIsOpen: any }) => {
             <p className=" dark:text-white">Показывать список изменений</p>
             <ToggleSwitch
               color="blue"
-              theme={{
-                toggle: {
-                  checked: {
-                    color: {
-                      blue: "border-blue-700 bg-blue-700",
-                    },
-                  },
-                },
-              }}
               onChange={() =>
                 preferenceStore.setFlags({
                   showChangelog: !preferenceStore.flags.showChangelog,
@@ -276,15 +258,6 @@ export const SettingsModal = (props: { isOpen: boolean; setIsOpen: any }) => {
             </div>
             <ToggleSwitch
               color="blue"
-              theme={{
-                toggle: {
-                  checked: {
-                    color: {
-                      blue: "border-blue-700 bg-blue-700",
-                    },
-                  },
-                },
-              }}
               onChange={() =>
                 preferenceStore.setFlags({
                   enableAnalytics: !preferenceStore.flags.enableAnalytics,
@@ -307,15 +280,6 @@ export const SettingsModal = (props: { isOpen: boolean; setIsOpen: any }) => {
             </div>
             <ToggleSwitch
               color="blue"
-              theme={{
-                toggle: {
-                  checked: {
-                    color: {
-                      blue: "border-blue-700 bg-blue-700",
-                    },
-                  },
-                },
-              }}
               onChange={() =>
                 preferenceStore.setParams({
                   experimental: {
