@@ -75,22 +75,8 @@ const NextConfig = {
   },
 };
 
-const config = () => {
-  const plugins = [withPlausibleProxy, withFlowbiteReact];
-  return (
-    plugins.reduce((acc, next) => {
-      console.log(`INIT: ${next.name}`);
-      if (next.name === "withPlausibleProxy") {
-        return next(acc, {
-          customDomain: "https://analytics.wah.su",
-        });
-      }
+const config = withPlausibleProxy({
+  customDomain: "https://analytics.wah.su",
+})(withFlowbiteReact(NextConfig));
 
-      return next(acc);
-    }),
-    { ...NextConfig }
-  );
-};
-
-console.log(config());
-module.exports = config();
+module.exports = config;
