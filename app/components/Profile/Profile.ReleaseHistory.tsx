@@ -1,49 +1,79 @@
-import { Card, Carousel } from "flowbite-react";
-import type {
-  FlowbiteCarouselIndicatorsTheme,
-  FlowbiteCarouselControlTheme,
-  CustomFlowbiteTheme,
-} from "flowbite-react";
-import { ReleaseLink } from "../ReleaseLink/ReleaseLinkUpdate";
+import { Card } from "flowbite-react";
 
-const CarouselIndicatorsTheme: FlowbiteCarouselIndicatorsTheme = {
-  active: {
-    off: "bg-gray-400/50 hover:bg-gray-200",
-    on: "bg-gray-200",
-  },
-  base: "h-3 w-3 rounded-full max-w-[300px]",
-  wrapper: "absolute bottom-5 left-1/2 flex -translate-x-1/2 space-x-3",
-};
+import { ReleaseChips } from "../ReleasePoster/Chips";
+import { Poster } from "../ReleasePoster/Poster";
+import Link from "next/link";
 
-const CarouselControlsTheme: FlowbiteCarouselControlTheme = {
-  base: "inline-flex h-8 w-8 items-center justify-center rounded-full group-focus:outline-none group-focus:ring-4 bg-gray-400/30 group-hover:bg-gray-400/60 group-focus:ring-gray-400/70 sm:h-10 sm:w-10",
-  icon: "h-5 w-5 text-gray-400 sm:h-6 sm:w-6",
-};
-
-const CarouselTheme: CustomFlowbiteTheme["carousel"] = {
-  root: {
-    base: "relative h-full w-full max-w-[375px]",
-  },
-  indicators: CarouselIndicatorsTheme,
-  control: CarouselControlsTheme,
+const profile_lists = {
+  // 0: "Не смотрю",
+  1: { name: "Смотрю", bg_color: "bg-green-500" },
+  2: { name: "В планах", bg_color: "bg-purple-500" },
+  3: { name: "Просмотрено", bg_color: "bg-blue-500" },
+  4: { name: "Отложено", bg_color: "bg-yellow-500" },
+  5: { name: "Брошено", bg_color: "bg-red-500" },
 };
 
 export const ProfileReleaseHistory = (props: any) => {
   return (
     <Card className="h-fit">
       <h1 className="text-2xl font-bold">Недавно просмотренные</h1>
-      <div className="flex justify-center">
-        <Carousel theme={CarouselTheme}>
-          {props.history.map((release) => {
-            return (
-              <ReleaseLink
-                key={`history-${release.id}`}
-                {...release}
-                chipsSettings={{ lastWatchedHidden: false }}
-              />
-            );
-          })}
-        </Carousel>
+      <div className="flex flex-col gap-4">
+        {props.history.map((release) => {
+          const genres = [];
+          const grade = release.grade ? Number(release.grade.toFixed(1)) : null;
+          const profile_list_status = release.profile_list_status || null;
+          let user_list = null;
+          if (profile_list_status != null || profile_list_status != 0) {
+            user_list = profile_lists[profile_list_status];
+          }
+          if (release.genres) {
+            const genres_array = release.genres.split(",");
+            genres_array.forEach((genre) => {
+              genres.push(genre.trim());
+            });
+          }
+          return (
+            <Link href={`/release/${release.id}`} key={`history-${release.id}`}>
+              <div className="flex gap-2">
+                <div className="flex-shrink-0 w-32">
+                  <Poster image={release.image} className="h-auto" />
+                </div>
+                <div className="flex flex-col gap-1">
+                  <ReleaseChips
+                    {...release}
+                    user_list={user_list}
+                    grade={grade}
+                    settings={{ lastWatchedHidden: false }}
+                  />
+                  <div>
+                    {genres.length > 0 &&
+                      genres.map((genre: string, index: number) => {
+                        return (
+                          <span
+                            key={`release_${props.id}_genre_${genre}_${index}`}
+                            className="text-sm font-light dark:text-white"
+                          >
+                            {index > 0 && ", "}
+                            {genre}
+                          </span>
+                        );
+                      })}
+                  </div>
+                  {release.title_ru && (
+                    <p className="text-lg font-bold dark:text-white">
+                      {release.title_ru}
+                    </p>
+                  )}
+                  {release.title_original && (
+                    <p className="text-sm text-gray-600 dark:text-gray-300">
+                      {release.title_original}
+                    </p>
+                  )}
+                </div>
+              </div>
+            </Link>
+          );
+        })}
       </div>
     </Card>
   );

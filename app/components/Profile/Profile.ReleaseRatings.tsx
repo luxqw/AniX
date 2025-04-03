@@ -1,16 +1,11 @@
 import {
   Card,
-  Carousel,
   RatingStar,
   Rating,
   Modal,
   Button,
 } from "flowbite-react";
-import type {
-  FlowbiteCarouselIndicatorsTheme,
-  FlowbiteCarouselControlTheme,
-} from "flowbite-react";
-import Image from "next/image";
+
 import { unixToDate, useSWRfetcher } from "#/api/utils";
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
@@ -18,28 +13,6 @@ import { ENDPOINTS } from "#/api/config";
 import useSWRInfinite from "swr/infinite";
 import { Spinner } from "../Spinner/Spinner";
 import { Poster } from "../ReleasePoster/Poster";
-
-const CarouselIndicatorsTheme: FlowbiteCarouselIndicatorsTheme = {
-  active: {
-    off: "bg-gray-300/50 hover:bg-gray-400 dark:bg-gray-400/50 dark:hover:bg-gray-200",
-    on: "bg-gray-600 dark:bg-gray-200",
-  },
-  base: "h-3 w-3 rounded-full",
-  wrapper: "absolute bottom-5 left-1/2 flex -translate-x-1/2 space-x-3",
-};
-
-const CarouselControlsTheme: FlowbiteCarouselControlTheme = {
-  base: "inline-flex h-8 w-8 items-center justify-center rounded-full bg-gray-600/30 group-hover:bg-gray-600/50 group-focus:outline-none group-focus:ring-4 group-focus:ring-gray-600 dark:bg-gray-400/30 dark:group-hover:bg-gray-400/60 dark:group-focus:ring-gray-400/70 sm:h-10 sm:w-10",
-  icon: "h-5 w-5 text-gray-600 dark:text-gray-400 sm:h-6 sm:w-6",
-};
-
-const CarouselTheme = {
-  root: {
-    base: "relative h-full w-full max-w-[700px]",
-  },
-  indicators: CarouselIndicatorsTheme,
-  control: CarouselControlsTheme,
-};
 
 export const ProfileReleaseRatings = (props: any) => {
   const [modal, setModal] = useState(false);
