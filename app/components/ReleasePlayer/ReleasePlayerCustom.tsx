@@ -212,7 +212,8 @@ export const ReleasePlayerCustom = (props: {
       }
     };
     __getInfo();
-  }, []);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [props.id, props.token]);
 
   useEffect(() => {
     const __getInfo = async () => {
@@ -244,6 +245,7 @@ export const ReleasePlayerCustom = (props: {
     if (voiceover.selected) {
       __getInfo();
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [voiceover.selected]);
 
   useEffect(() => {
@@ -284,6 +286,7 @@ export const ReleasePlayerCustom = (props: {
     if (source.selected) {
       __getInfo();
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [source.selected]);
 
   useEffect(() => {
@@ -346,6 +349,7 @@ export const ReleasePlayerCustom = (props: {
       setPlayerError(null);
       __getInfo();
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [episode.selected]);
 
   return (

@@ -188,6 +188,7 @@ export const ProfileEditModal = (props: {
     if (avatarModalProps.croppedImage) {
       _uploadAvatar();
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [avatarModalProps.croppedImage]);
 
   if (!prefData || !loginData || prefError || loginError) {

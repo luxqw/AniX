@@ -20,7 +20,7 @@ const DropdownTrigger = ({ name }: Source) => {
   );
 };
 
-const DropdownItem = ({ name, episodes_count }: Source) => {
+const DropdownItemInternal = ({ name, episodes_count }: Source) => {
   return (
     <div className="flex flex-col gap-2 cursor-pointer">
       <div className="flex items-center gap-2">
@@ -68,7 +68,7 @@ export const SourceSelector = (props: {
             });
           }}
         >
-          <DropdownItem {...source} />
+          <DropdownItemInternal {...source} />
         </DropdownItem>
       ))}
     </Dropdown>

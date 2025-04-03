@@ -14,7 +14,7 @@ export const ReleaseInfoStreaming = (props: { release_id: number }) => {
       setData(await response.json());
     };
     _getData();
-  }, []);
+  }, [props.release_id]);
 
   return (
     <>
@@ -32,7 +32,8 @@ export const ReleaseInfoStreaming = (props: { release_id: number }) => {
                   key={`platform_${item.id}`}
                   className="flex items-center gap-2 px-4 py-2 transition-colors bg-gray-100 rounded-lg hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 "
                 >
-                  <img src={item.icon} className="w-6 h-6 rounded-full" />
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img alt="" src={item.icon} className="w-6 h-6 rounded-full" />
                   <p className="text-sm line-clamp-2">{item.name}</p>
                 </a>
               );

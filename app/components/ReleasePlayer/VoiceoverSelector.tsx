@@ -16,7 +16,8 @@ interface Voiceover {
 const DropdownTrigger = ({ icon, name, pinned }: Voiceover) => {
   return (
     <div className="flex items-center gap-2 cursor-pointer">
-      {icon && <img className="w-6 h-6 rounded-full" src={icon}></img>}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      {icon && <img alt="" className="w-6 h-6 rounded-full" src={icon}></img>}
       <p>{name}</p>
       {pinned && (
         <span className="h-6 bg-gray-700 dark:bg-gray-300 iconify material-symbols--push-pin"></span>
@@ -36,7 +37,8 @@ const DropdownItemInternal = ({
   return (
     <div className="flex flex-col gap-2 cursor-pointer">
       <div className="flex items-center gap-2">
-        {icon && <img className="w-6 h-6 rounded-full" src={icon}></img>}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        {icon && <img alt="" className="w-6 h-6 rounded-full" src={icon}></img>}
         <p>{name}</p>
         {pinned && (
           <span className="h-6 iconify material-symbols--push-pin"></span>

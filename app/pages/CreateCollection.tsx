@@ -34,6 +34,7 @@ export const CreateCollectionPage = () => {
     if (userStore.state === "finished" && !userStore.token) {
       router.push("/login?redirect=/collections/create");
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userStore]);
 
   const [edit, setEdit] = useState(false);
