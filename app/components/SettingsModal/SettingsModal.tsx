@@ -4,12 +4,16 @@ import { CURRENT_APP_VERSION } from "#/api/config";
 import { useUserStore } from "#/store/auth";
 import { usePreferencesStore } from "#/store/preferences";
 import {
-  Modal,
   Button,
-  useThemeMode,
-  ToggleSwitch,
-  HR,
+  ButtonGroup,
   Dropdown,
+  DropdownItem,
+  HR,
+  Modal,
+  ModalBody,
+  ModalHeader,
+  ToggleSwitch,
+  useThemeMode,
 } from "flowbite-react";
 import Link from "next/link";
 
@@ -54,8 +58,8 @@ export const SettingsModal = (props: { isOpen: boolean; setIsOpen: any }) => {
       show={props.isOpen}
       onClose={() => props.setIsOpen(false)}
     >
-      <Modal.Header>Настройки</Modal.Header>
-      <Modal.Body>
+      <ModalHeader>Настройки</ModalHeader>
+      <ModalBody>
         <div className="space-y-6">
           <div className="flex items-center gap-2">
             <span className="w-6 h-6 iconify material-symbols--palette-outline"></span>
@@ -63,7 +67,7 @@ export const SettingsModal = (props: { isOpen: boolean; setIsOpen: any }) => {
           </div>
           <div className="flex items-center justify-between">
             <p className=" dark:text-white">Тема</p>
-            <Button.Group>
+            <ButtonGroup>
               <Button
                 color={computedMode == "light" ? "blue" : "gray"}
                 onClick={() => setMode("light")}
@@ -76,7 +80,7 @@ export const SettingsModal = (props: { isOpen: boolean; setIsOpen: any }) => {
               >
                 Темная
               </Button>
-            </Button.Group>
+            </ButtonGroup>
           </div>
           <div className="flex items-center justify-between">
             <p className=" dark:text-white max-w-96">
@@ -121,7 +125,7 @@ export const SettingsModal = (props: { isOpen: boolean; setIsOpen: any }) => {
                 >
                   {Object.keys(HomeCategory).map((key) => {
                     return (
-                      <Dropdown.Item
+                      <DropdownItem
                         key={key}
                         onClick={() =>
                           preferenceStore.setParams({
@@ -133,7 +137,7 @@ export const SettingsModal = (props: { isOpen: boolean; setIsOpen: any }) => {
                         }
                       >
                         {HomeCategory[key]}
-                      </Dropdown.Item>
+                      </DropdownItem>
                     );
                   })}
                 </Dropdown>
@@ -152,7 +156,7 @@ export const SettingsModal = (props: { isOpen: boolean; setIsOpen: any }) => {
                 >
                   {Object.keys(BookmarksCategory).map((key) => {
                     return (
-                      <Dropdown.Item
+                      <DropdownItem
                         key={key}
                         onClick={() =>
                           preferenceStore.setParams({
@@ -164,7 +168,7 @@ export const SettingsModal = (props: { isOpen: boolean; setIsOpen: any }) => {
                         }
                       >
                         {BookmarksCategory[key]}
-                      </Dropdown.Item>
+                      </DropdownItem>
                     );
                   })}
                 </Dropdown>
@@ -182,7 +186,7 @@ export const SettingsModal = (props: { isOpen: boolean; setIsOpen: any }) => {
               {Object.keys(NavbarTitles).map(
                 (key: "always" | "links" | "selected" | "never") => {
                   return (
-                    <Dropdown.Item
+                    <DropdownItem
                       className={`${key == "links" ? "hidden lg:flex" : ""}`}
                       key={`navbar-titles-${key}`}
                       onClick={() =>
@@ -192,7 +196,7 @@ export const SettingsModal = (props: { isOpen: boolean; setIsOpen: any }) => {
                       }
                     >
                       {NavbarTitles[key]}
-                    </Dropdown.Item>
+                    </DropdownItem>
                   );
                 }
               )}
@@ -211,7 +215,7 @@ export const SettingsModal = (props: { isOpen: boolean; setIsOpen: any }) => {
                   : "Нет"
                 }
               >
-                <Dropdown.Item
+                <DropdownItem
                   onClick={() =>
                     preferenceStore.setFlags({
                       showFifthButton: null,
@@ -219,10 +223,10 @@ export const SettingsModal = (props: { isOpen: boolean; setIsOpen: any }) => {
                   }
                 >
                   Не показывать
-                </Dropdown.Item>
+                </DropdownItem>
                 {Object.keys(FifthButton).map((key) => {
                   return (
-                    <Dropdown.Item
+                    <DropdownItem
                       key={`navbar-fifthbutton-${key}`}
                       onClick={() =>
                         preferenceStore.setFlags({
@@ -231,7 +235,7 @@ export const SettingsModal = (props: { isOpen: boolean; setIsOpen: any }) => {
                       }
                     >
                       {FifthButton[key]}
-                    </Dropdown.Item>
+                    </DropdownItem>
                   );
                 })}
               </Dropdown>
@@ -340,7 +344,7 @@ export const SettingsModal = (props: { isOpen: boolean; setIsOpen: any }) => {
             </div>
           </Link>
         </div>
-      </Modal.Body>
+      </ModalBody>
     </Modal>
   );
 };

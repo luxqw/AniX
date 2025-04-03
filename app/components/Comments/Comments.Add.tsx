@@ -1,4 +1,4 @@
-import { Button, Modal, ToggleSwitch, Label, Textarea } from "flowbite-react";
+import { Button, Label, Modal, ModalBody, ModalHeader, Textarea, ToggleSwitch } from "flowbite-react";
 import { CommentsComment } from "./Comments.Comment";
 import { useState } from "react";
 import { ENDPOINTS } from "#/api/config";
@@ -68,12 +68,12 @@ export const CommentsAddModal = (props: {
       show={props.isOpen}
       onClose={() => props.setIsOpen(false)}
     >
-      <Modal.Header>
+      <ModalHeader>
         <p className="text-lg font-bold text-gray-900 lg:text-2xl dark:text-white">
           {props.isReply ? "Ответ на комментарий" : "Оставить комментарий"}
         </p>
-      </Modal.Header>
-      <Modal.Body>
+      </ModalHeader>
+      <ModalBody>
         {props.isReply && (
           <div className="mb-4">
             <CommentsComment
@@ -98,7 +98,7 @@ export const CommentsAddModal = (props: {
         <form className="flex flex-col gap-4" onSubmit={(e) => _sendComment(e)}>
           <div>
             <div className="block mb-2 sr-only">
-              <Label htmlFor="comment" value="Ваш комментарий." />
+              <Label htmlFor="comment">Ваш комментарий.</Label>
             </div>
             <Textarea
               id="comment"
@@ -132,7 +132,7 @@ export const CommentsAddModal = (props: {
             </Button>
           </div>
         </form>
-      </Modal.Body>
+      </ModalBody>
     </Modal>
   );
 };

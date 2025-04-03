@@ -1,6 +1,6 @@
 "use client";
 
-import { Dropdown } from "flowbite-react";
+import { Dropdown, DropdownItem } from "flowbite-react";
 import { numberDeclension } from "#/api/utils";
 import { useUserPlayerPreferencesStore } from "#/store/player";
 
@@ -55,7 +55,7 @@ export const SourceSelector = (props: {
       )}
     >
       {props.availableSource.map((source: Source) => (
-        <Dropdown.Item
+        <DropdownItem
           key={`source_${source.id}`}
           onClick={() => {
             playerPreferenceStore.setPreferredPlayer(
@@ -69,7 +69,7 @@ export const SourceSelector = (props: {
           }}
         >
           <DropdownItem {...source} />
-        </Dropdown.Item>
+        </DropdownItem>
       ))}
     </Dropdown>
   );

@@ -5,14 +5,15 @@ import { useEffect, useState, useCallback } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { ENDPOINTS } from "#/api/config";
 import {
-  Card,
   Button,
+  Card,
   Checkbox,
-  TextInput,
-  Textarea,
   FileInput,
   Label,
   Modal,
+  ModalHeader,
+  Textarea,
+  TextInput,
   useThemeMode,
 } from "flowbite-react";
 import { PosterWithStuff } from "#/components/ReleasePoster/PosterWithStuff";
@@ -388,10 +389,9 @@ export const CreateCollectionPage = () => {
           </Label>
           <div className="flex-1">
             <div className="block mb-2">
-              <Label
-                htmlFor="title"
-                value="Название (минимум 10, максимум 60 символов)"
-              />
+              <Label htmlFor="title">
+                Название (минимум 10, максимум 60 символов)
+              </Label>
             </div>
             <TextInput
               id="title"
@@ -408,10 +408,9 @@ export const CreateCollectionPage = () => {
               {stringLength.title}/60
             </p>
             <div className="block mt-2 mb-2">
-              <Label
-                htmlFor="description"
-                value="Описание (максимум 1000 символов)"
-              />
+              <Label htmlFor="description">
+                Описание (максимум 1000 символов)
+              </Label>
             </div>
             <Textarea
               rows={4}
@@ -434,7 +433,7 @@ export const CreateCollectionPage = () => {
                   checked={isPrivate}
                   onChange={(e) => setIsPrivate(e.target.checked)}
                 />
-                <Label htmlFor="private" value="Приватная коллекция" />
+                <Label htmlFor="private">Приватная коллекция</Label>
               </div>
             </div>
             <Button
@@ -603,7 +602,7 @@ export const ReleasesEditModal = (props: {
       onClose={() => props.setIsOpen(false)}
       size={"7xl"}
     >
-      <Modal.Header>Изменить релизы в коллекции</Modal.Header>
+      <ModalHeader>Изменить релизы в коллекции</ModalHeader>
       <div
         onScroll={handleScroll}
         ref={modalRef}

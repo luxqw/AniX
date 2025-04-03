@@ -1,6 +1,15 @@
 "use client";
 
-import { Button, Modal, Label, TextInput, useThemeMode } from "flowbite-react";
+import {
+  Button,
+  Label,
+  Modal,
+  ModalBody,
+  ModalFooter,
+  ModalHeader,
+  TextInput,
+  useThemeMode,
+} from "flowbite-react";
 import { Spinner } from "../Spinner/Spinner";
 import { ENDPOINTS } from "#/api/config";
 import { useEffect, useState } from "react";
@@ -164,8 +173,8 @@ export const ProfileEditSocialModal = (props: {
       onClose={() => props.setIsOpen(false)}
       size={"4xl"}
     >
-      <Modal.Header>Соц. сети</Modal.Header>
-      <Modal.Body>
+      <ModalHeader>Соц. сети</ModalHeader>
+      <ModalBody>
         <p className="p-2 text-gray-400 border-2 border-gray-200 rounded-md dark:border-gray-500 dark:text-gray-300">
           Укажите ссылки на свои социальные сети, чтобы другие пользователи
           могли с вами связаться
@@ -177,7 +186,7 @@ export const ProfileEditSocialModal = (props: {
         : <div className="flex flex-col gap-4 py-4">
             <div>
               <div className="block mb-2">
-                <Label htmlFor="vk-page" value="ВКонтакте" />
+                <Label htmlFor="vk-page">ВКонтакте</Label>
               </div>
               <TextInput
                 id="vk-page"
@@ -189,7 +198,7 @@ export const ProfileEditSocialModal = (props: {
             </div>
             <div>
               <div className="block mb-2">
-                <Label htmlFor="tg-page" value="Telegram" />
+                <Label htmlFor="tg-page">Telegram</Label>
               </div>
               <TextInput
                 id="tg-page"
@@ -201,7 +210,7 @@ export const ProfileEditSocialModal = (props: {
             </div>
             <div>
               <div className="block mb-2">
-                <Label htmlFor="discord-page" value="Discord" />
+                <Label htmlFor="discord-page">Discord</Label>
               </div>
               <TextInput
                 id="discord-page"
@@ -213,7 +222,7 @@ export const ProfileEditSocialModal = (props: {
             </div>
             <div>
               <div className="block mb-2">
-                <Label htmlFor="inst-page" value="Instagram" />
+                <Label htmlFor="inst-page">Instagram</Label>
               </div>
               <TextInput
                 id="inst-page"
@@ -225,7 +234,7 @@ export const ProfileEditSocialModal = (props: {
             </div>
             <div>
               <div className="block mb-2">
-                <Label htmlFor="tt-page" value="TikTok" />
+                <Label htmlFor="tt-page">TikTok</Label>
               </div>
               <TextInput
                 id="tt-page"
@@ -237,8 +246,8 @@ export const ProfileEditSocialModal = (props: {
             </div>
           </div>
         }
-      </Modal.Body>
-      <Modal.Footer>
+      </ModalBody>
+      <ModalFooter>
         <Button
           color="blue"
           onClick={() => _setSocialSetting()}
@@ -253,7 +262,7 @@ export const ProfileEditSocialModal = (props: {
         >
           Отмена
         </Button>
-      </Modal.Footer>
+      </ModalFooter>
     </Modal>
   );
 };

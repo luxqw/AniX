@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, Modal, Textarea, useThemeMode } from "flowbite-react";
+import { Button, Modal, ModalBody, ModalFooter, ModalHeader, Textarea, useThemeMode } from "flowbite-react";
 import { ENDPOINTS } from "#/api/config";
 import { useEffect, useState } from "react";
 import { useSWRConfig } from "swr";
@@ -138,8 +138,8 @@ export const ProfileEditLoginModal = (props: {
       onClose={() => props.setIsOpen(false)}
       size={"4xl"}
     >
-      <Modal.Header>Изменить никнейм</Modal.Header>
-      <Modal.Body>
+      <ModalHeader>Изменить никнейм</ModalHeader>
+      <ModalBody>
         {loading ?
           <div className="flex items-center justify-center py-8">
             <Spinner />
@@ -173,8 +173,8 @@ export const ProfileEditLoginModal = (props: {
             }
           </>
         }
-      </Modal.Body>
-      <Modal.Footer>
+      </ModalBody>
+      <ModalFooter>
         {_loginData.is_change_available && (
           <Button
             color="blue"
@@ -191,7 +191,7 @@ export const ProfileEditLoginModal = (props: {
         >
           Отмена
         </Button>
-      </Modal.Footer>
+      </ModalFooter>
     </Modal>
   );
 };

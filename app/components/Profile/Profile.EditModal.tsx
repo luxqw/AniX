@@ -1,6 +1,6 @@
 "use client";
 
-import { FileInput, Label, Modal, useThemeMode } from "flowbite-react";
+import { FileInput, Label, Modal, ModalBody, ModalHeader, useThemeMode } from "flowbite-react";
 import { Spinner } from "../Spinner/Spinner";
 import useSWR from "swr";
 import { ENDPOINTS } from "#/api/config";
@@ -201,8 +201,8 @@ export const ProfileEditModal = (props: {
         onClose={() => props.setIsOpen(false)}
         size={"7xl"}
       >
-        <Modal.Header>Редактирование профиля</Modal.Header>
-        <Modal.Body>
+        <ModalHeader>Редактирование профиля</ModalHeader>
+        <ModalBody>
           {prefLoading ?
             <Spinner />
           : <div className="flex flex-col gap-4">
@@ -394,7 +394,7 @@ export const ProfileEditModal = (props: {
               </div>
             </div>
           }
-        </Modal.Body>
+        </ModalBody>
       </Modal>
       {props.token ?
         <>

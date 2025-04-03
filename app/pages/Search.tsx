@@ -8,7 +8,7 @@ import { useScrollPosition } from "#/hooks/useScrollPosition";
 import { useRouter } from "next/navigation";
 import { useSearchParams } from "next/navigation";
 import { useUserStore } from "../store/auth";
-import { Button, Dropdown, Modal } from "flowbite-react";
+import { Button, Dropdown, DropdownItem, Modal, ModalBody, ModalFooter, ModalHeader } from "flowbite-react";
 import { CollectionsSection } from "#/components/CollectionsSection/CollectionsSection";
 import { UserSection } from "#/components/UserSection/UserSection";
 import { useSWRfetcher } from "#/api/utils";
@@ -360,8 +360,8 @@ const FiltersModal = (props: {
 
   return (
     <Modal show={props.isOpen} onClose={() => _cancel()}>
-      <Modal.Header>Фильтры</Modal.Header>
-      <Modal.Body>
+      <ModalHeader>Фильтры</ModalHeader>
+      <ModalBody>
         <div className="my-4">
           <div className="flex items-center justify-between">
             <p className="font-bold dark:text-white">Искать в</p>
@@ -376,12 +376,12 @@ const FiltersModal = (props: {
                   return <></>;
                 } else {
                   return (
-                    <Dropdown.Item
+                    <DropdownItem
                       onClick={() => setWhere(item)}
                       key={`where--${item}`}
                     >
                       {WhereMapping[item]}
-                    </Dropdown.Item>
+                    </DropdownItem>
                   );
                 }
               })}
@@ -395,12 +395,12 @@ const FiltersModal = (props: {
               <Dropdown label={ListsMapping[list].name} color="blue">
                 {Object.keys(ListsMapping).map((item) => {
                   return (
-                    <Dropdown.Item
+                    <DropdownItem
                       onClick={() => setList(item)}
                       key={`list--${item}`}
                     >
                       {ListsMapping[item].name}
-                    </Dropdown.Item>
+                    </DropdownItem>
                   );
                 })}
               </Dropdown>
@@ -414,20 +414,20 @@ const FiltersModal = (props: {
               <Dropdown label={TagMapping[searchBy].name} color="blue">
                 {Object.keys(TagMapping).map((item) => {
                   return (
-                    <Dropdown.Item
+                    <DropdownItem
                       onClick={() => setSearchBy(item)}
                       key={`tag--${item}`}
                     >
                       {TagMapping[item].name}
-                    </Dropdown.Item>
+                    </DropdownItem>
                   );
                 })}
               </Dropdown>
             </div>
           </div>
         : ""}
-      </Modal.Body>
-      <Modal.Footer>
+      </ModalBody>
+      <ModalFooter>
         <div className="flex justify-end w-full gap-2">
           <Button color="red" onClick={() => _cancel()}>
             Отменить
@@ -436,7 +436,7 @@ const FiltersModal = (props: {
             Применить
           </Button>
         </div>
-      </Modal.Footer>
+      </ModalFooter>
     </Modal>
   );
 };

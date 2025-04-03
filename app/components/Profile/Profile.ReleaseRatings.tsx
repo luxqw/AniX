@@ -1,10 +1,4 @@
-import {
-  Card,
-  RatingStar,
-  Rating,
-  Modal,
-  Button,
-} from "flowbite-react";
+import { Button, Card, Modal, ModalHeader, Rating, RatingStar } from "flowbite-react";
 
 import { unixToDate, useSWRfetcher } from "#/api/utils";
 import Link from "next/link";
@@ -119,7 +113,7 @@ const ProfileReleaseRatingsModal = (props: {
       onClose={() => props.setIsOpen(false)}
       size={"4xl"}
     >
-      <Modal.Header>Оценки</Modal.Header>
+      <ModalHeader>Оценки</ModalHeader>
       <div
         className="flex flex-col gap-2 p-4 overflow-y-auto"
         onScroll={handleScroll}

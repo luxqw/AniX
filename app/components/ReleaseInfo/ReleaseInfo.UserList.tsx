@@ -5,7 +5,7 @@ import useSWRInfinite from "swr/infinite";
 import { useCallback, useEffect, useState } from "react";
 import { tryCatchAPI, useSWRfetcher } from "#/api/utils";
 import { toast } from "react-toastify";
-import { useThemeMode } from "flowbite-react";
+import { DropdownItem, ModalHeader, useThemeMode } from "flowbite-react";
 
 const lists = [
   { list: 0, name: "Не смотрю" },
@@ -174,12 +174,12 @@ export const ReleaseInfoUserList = (props: {
               disabled={listEventDisabled}
             >
               {lists.map((list) => (
-                <Dropdown.Item
+                <DropdownItem
                   key={list.list}
                   onClick={() => _addToList(list.list)}
                 >
                   {list.name}
-                </Dropdown.Item>
+                </DropdownItem>
               ))}
             </Dropdown>
             <Button
@@ -321,7 +321,7 @@ const AddReleaseToCollectionModal = (props: {
       show={props.isOpen}
       onClose={() => props.setIsOpen(false)}
     >
-      <Modal.Header>Выбор коллекции</Modal.Header>
+      <ModalHeader>Выбор коллекции</ModalHeader>
       <div
         className="flex flex-col gap-2 p-4 overflow-y-auto"
         onScroll={handleScroll}

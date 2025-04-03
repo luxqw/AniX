@@ -1,6 +1,14 @@
 "use client";
 
-import { Modal, Accordion } from "flowbite-react";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionPanel,
+  AccordionTitle,
+  Modal,
+  ModalBody,
+  ModalHeader,
+} from "flowbite-react";
 import Markdown from "markdown-to-jsx";
 import { useEffect, useState } from "react";
 import Styles from "./ChangelogModal.module.css";
@@ -37,8 +45,8 @@ export const ChangelogModal = (props: {
 
   return (
     <Modal show={props.isOpen} onClose={() => props.setIsOpen(false)}>
-      <Modal.Header>Список изменений v{props.version}</Modal.Header>
-      <Modal.Body>
+      <ModalHeader>Список изменений v{props.version}</ModalHeader>
+      <ModalBody>
         <Markdown className={Styles.markdown}>
           {currentVersionChangelog}
         </Markdown>
@@ -46,8 +54,8 @@ export const ChangelogModal = (props: {
           {props.previousVersions.length > 0 &&
             props.previousVersions.map((version) => {
               return (
-                <Accordion.Panel key={version}>
-                  <Accordion.Title
+                <AccordionPanel key={version}>
+                  <AccordionTitle
                     onClickCapture={(e) => {
                       if (!previousVersionsChangelog.hasOwnProperty(version)) {
                         _fetchVersionChangelog(version).then((data) => {
@@ -62,19 +70,19 @@ export const ChangelogModal = (props: {
                     }}
                   >
                     Список изменений v{version}
-                  </Accordion.Title>
-                  <Accordion.Content>
+                  </AccordionTitle>
+                  <AccordionContent>
                     {previousVersionsChangelog.hasOwnProperty(version) ?
                       <Markdown className={Styles.markdown}>
                         {previousVersionsChangelog[version]}
                       </Markdown>
                     : <div>Загрузка ...</div>}
-                  </Accordion.Content>
-                </Accordion.Panel>
+                  </AccordionContent>
+                </AccordionPanel>
               );
             })}
         </Accordion>
-      </Modal.Body>
+      </ModalBody>
     </Modal>
   );
 };

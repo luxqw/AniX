@@ -3,7 +3,7 @@
 import { Spinner } from "#/components/Spinner/Spinner";
 import { useUserStore } from "#/store/auth";
 import { useUserPlayerPreferencesStore } from "#/store/player";
-import { Card, Dropdown, Button } from "flowbite-react";
+import { Button, Card, Dropdown, DropdownItem } from "flowbite-react";
 import { ENDPOINTS } from "#/api/config";
 import { useState, useEffect } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -270,14 +270,14 @@ export const ReleasePlayer = (props: { id: number }) => {
               theme={DropdownTheme}
             >
               {voiceoverInfo.map((voiceover: any) => (
-                <Dropdown.Item
+                <DropdownItem
                   key={`voiceover_${voiceover.id}`}
                   onClick={() =>
                     setSelectedVoiceoverAndSaveAsPreferred(voiceover)
                   }
                 >
                   {voiceover.name}
-                </Dropdown.Item>
+                </DropdownItem>
               ))}
             </Dropdown>
             <Dropdown
@@ -286,12 +286,12 @@ export const ReleasePlayer = (props: { id: number }) => {
               theme={DropdownTheme}
             >
               {sourcesInfo.map((source: any) => (
-                <Dropdown.Item
+                <DropdownItem
                   key={`source_${source.id}`}
                   onClick={() => setSelectedPlayerAndSaveAsPreferred(source)}
                 >
                   {source.name}
-                </Dropdown.Item>
+                </DropdownItem>
               ))}
             </Dropdown>
           </div>

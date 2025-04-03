@@ -4,7 +4,7 @@ import { usePreferencesStore } from "./store/preferences";
 import { Navbar } from "./components/Navbar/NavbarUpdate";
 import { Inter } from "next/font/google";
 import { useEffect, useState } from "react";
-import { Button, Modal } from "flowbite-react";
+import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "flowbite-react";
 import { Spinner } from "./components/Spinner/Spinner";
 import { ChangelogModal } from "#/components/ChangelogModal/ChangelogModal";
 import PlausibleProvider from "next-plausible";
@@ -80,8 +80,8 @@ export const App = (props) => {
         show={preferencesStore.params.isFirstLaunch}
         onClose={() => preferencesStore.setParams({ isFirstLaunch: false })}
       >
-        <Modal.Header>Внимание</Modal.Header>
-        <Modal.Body>
+        <ModalHeader>Внимание</ModalHeader>
+        <ModalBody>
           <p>
             Данный сайт не связан с разработчиками приложения Anixart, это
             неофициальная имплементация веб клиента для этого приложения.
@@ -94,15 +94,15 @@ export const App = (props) => {
             На сайте могут присутствовать ошибки и не доработки, а так-же
             отсутствующий функционал.
           </p>
-        </Modal.Body>
-        <Modal.Footer>
+        </ModalBody>
+        <ModalFooter>
           <Button
             color={"blue"}
             onClick={() => preferencesStore.setParams({ isFirstLaunch: false })}
           >
             Принимаю
           </Button>
-        </Modal.Footer>
+        </ModalFooter>
       </Modal>
       {preferencesStore.flags.enableAnalytics && (
         <PlausibleProvider

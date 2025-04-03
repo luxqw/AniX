@@ -5,7 +5,7 @@ import { useState, useEffect } from "react";
 import { useScrollPosition } from "#/hooks/useScrollPosition";
 import { useUserStore } from "../store/auth";
 import { _FetchHomePageReleases } from "#/api/utils";
-import { Button } from "flowbite-react";
+import { Button, ButtonGroup } from "flowbite-react";
 import { useRouter } from "next/navigation";
 
 export function IndexCategoryPage(props) {
@@ -53,13 +53,13 @@ export function IndexCategoryPage(props) {
   return (
     <>
       <div className="mb-4 overflow-auto">
-        <Button.Group>
+        <ButtonGroup>
           <Button className="whitespace-nowrap" disabled={props.slug == "last"} color="light" onClick={() => router.push("/home/last")}>{props.SectionTitleMapping["last"]}</Button>
           <Button className="whitespace-nowrap" disabled={props.slug == "finished"} color="light" onClick={() => router.push("/home/finished")}>{props.SectionTitleMapping["finished"]}</Button>
           <Button className="whitespace-nowrap" disabled={props.slug == "ongoing"} color="light" onClick={() => router.push("/home/ongoing")}>{props.SectionTitleMapping["ongoing"]}</Button>
           <Button className="whitespace-nowrap" disabled={props.slug == "announce"} color="light" onClick={() => router.push("/home/announce")}>{props.SectionTitleMapping["announce"]}</Button>
           <Button className="whitespace-nowrap" disabled={props.slug == "films"} color="light" onClick={() => router.push("/home/films")}>{props.SectionTitleMapping["films"]}</Button>
-        </Button.Group>
+        </ButtonGroup>
       </div>
       {content && content.length > 0 ? (
         <ReleaseSection

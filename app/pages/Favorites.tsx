@@ -5,7 +5,7 @@ import { Spinner } from "#/components/Spinner/Spinner";
 import { useState, useEffect } from "react";
 import { useScrollPosition } from "#/hooks/useScrollPosition";
 import { useUserStore } from "../store/auth";
-import { Dropdown, Button } from "flowbite-react";
+import { Button, Dropdown, DropdownItem } from "flowbite-react";
 import { sort } from "./common";
 import { ENDPOINTS } from "#/api/config";
 import { useRouter } from "next/navigation";
@@ -126,7 +126,7 @@ export function FavoritesPage() {
           theme={DropdownTheme}
         >
           {sort.values.map((item, index) => (
-            <Dropdown.Item key={index} onClick={() => setSelectedSort(index)}>
+            <DropdownItem key={index} onClick={() => setSelectedSort(index)}>
               <span
                 className={`w-6 h-6 iconify ${
                   sort.values[index].value.split("_")[1] == "descending"
@@ -135,7 +135,7 @@ export function FavoritesPage() {
                 }`}
               ></span>
               {item.name}
-            </Dropdown.Item>
+            </DropdownItem>
           ))}
         </Dropdown>
       </div>

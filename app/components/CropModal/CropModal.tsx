@@ -1,7 +1,7 @@
 import React, { useRef } from "react";
 import Cropper, { ReactCropperElement } from "react-cropper";
 import "cropperjs/dist/cropper.css";
-import { Button, Modal } from "flowbite-react";
+import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "flowbite-react";
 
 type CropModalProps = {
   isOpen: boolean;
@@ -71,8 +71,8 @@ export const CropModal: React.FC<CropModalProps> = ({
       }}
       size={"7xl"}
     >
-      <Modal.Header>Обрезать изображение</Modal.Header>
-      <Modal.Body>
+      <ModalHeader>Обрезать изображение</ModalHeader>
+      <ModalBody>
         <Cropper
           src={selectedImage}
           style={{ height: 400, width: "100%" }}
@@ -95,8 +95,8 @@ export const CropModal: React.FC<CropModalProps> = ({
           </p>
           <p>Используйте колёсико мыши что-бы изменить масштаб</p>
         </div>
-      </Modal.Body>
-      <Modal.Footer>
+      </ModalBody>
+      <ModalFooter>
         <Button
           color={"blue"}
           disabled={isActionsDisabled}
@@ -120,7 +120,7 @@ export const CropModal: React.FC<CropModalProps> = ({
         >
           Отменить
         </Button>
-      </Modal.Footer>
+      </ModalFooter>
     </Modal>
   );
 };

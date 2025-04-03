@@ -1,4 +1,4 @@
-import { Card, Table } from "flowbite-react";
+import { Card, Table, TableBody, TableCell, TableRow } from "flowbite-react";
 import { ReleaseInfoSearchLink } from "#/components/ReleaseInfo/ReleaseInfo.SearchLink";
 import { unixToDate, minutesToTime } from "#/api/utils";
 const weekDay = [
@@ -30,9 +30,9 @@ export const ReleaseInfoInfo = (props: {
   return (
     <Card>
       <Table>
-        <Table.Body>
-          <Table.Row>
-            <Table.Cell className="py-0">
+        <TableBody>
+          <TableRow>
+            <TableCell className="py-0">
               {props.country ?
                 props.country.toLowerCase() == "япония" ?
                   <span className="w-8 h-8 iconify-color twemoji--flag-for-japan"></span>
@@ -40,45 +40,45 @@ export const ReleaseInfoInfo = (props: {
 
               : <span className="w-8 h-8 iconify-color twemoji--flag-for-united-nations "></span>
               }
-            </Table.Cell>
-            <Table.Cell className="font-medium text-gray-900 whitespace-nowrap dark:text-white">
+            </TableCell>
+            <TableCell className="font-medium text-gray-900 whitespace-nowrap dark:text-white">
               {props.country && props.country}
               {(props.aired_on_date != 0 || props.year) && ", "}
               {props.season && props.season != 0 ?
                 `${YearSeason[props.season]} `
               : ""}
               {props.year && `${props.year} г.`}
-            </Table.Cell>
-          </Table.Row>
-          <Table.Row>
-            <Table.Cell className="py-0">
+            </TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell className="py-0">
               <span className="w-8 h-8 iconify-color mdi--animation-play-outline dark:invert"></span>
-            </Table.Cell>
-            <Table.Cell className="font-medium text-gray-900 whitespace-nowrap dark:text-white">
+            </TableCell>
+            <TableCell className="font-medium text-gray-900 whitespace-nowrap dark:text-white">
               {props.episodes.released ? props.episodes.released : "?"}
               {"/"}
               {props.episodes.total ? props.episodes.total + " эп. " : "? эп. "}
               {props.duration != 0 &&
                 `по ${minutesToTime(props.duration, "daysHours")}`}
-            </Table.Cell>
-          </Table.Row>
-          <Table.Row>
-            <Table.Cell className="py-0">
+            </TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell className="py-0">
               <span className="w-8 h-8 iconify-color mdi--calendar-outline dark:invert"></span>
-            </Table.Cell>
-            <Table.Cell className="font-medium text-gray-900 dark:text-white">
+            </TableCell>
+            <TableCell className="font-medium text-gray-900 dark:text-white">
               {props.category}
               {", "}
               {props.broadcast == 0 ?
                 props.status.toLowerCase()
               : `выходит ${weekDay[props.broadcast]}`}
-            </Table.Cell>
-          </Table.Row>
-          <Table.Row>
-            <Table.Cell className="py-0">
+            </TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell className="py-0">
               <span className="w-8 h-8 iconify-color mdi--people-group-outline dark:invert"></span>
-            </Table.Cell>
-            <Table.Cell className="font-medium text-gray-900 dark:text-white">
+            </TableCell>
+            <TableCell className="font-medium text-gray-900 dark:text-white">
               {props.studio && (
                 <>
                   {"Студия: "}
@@ -117,13 +117,13 @@ export const ReleaseInfoInfo = (props: {
                   />
                 </>
               )}
-            </Table.Cell>
-          </Table.Row>
-          <Table.Row>
-            <Table.Cell className="py-0">
+            </TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell className="py-0">
               <span className="w-8 h-8 iconify-color mdi--tag-outline dark:invert"></span>
-            </Table.Cell>
-            <Table.Cell className="font-medium text-gray-900 dark:text-white">
+            </TableCell>
+            <TableCell className="font-medium text-gray-900 dark:text-white">
               {props.genres &&
                 props.genres.split(", ").map((genre: string, index: number) => {
                   return (
@@ -133,14 +133,14 @@ export const ReleaseInfoInfo = (props: {
                     </div>
                   );
                 })}
-            </Table.Cell>
-          </Table.Row>
+            </TableCell>
+          </TableRow>
           {props.status.toLowerCase() == "анонс" && (
-            <Table.Row>
-              <Table.Cell className="py-0">
+            <TableRow>
+              <TableCell className="py-0">
                 <span className="w-8 h-8 iconify-color mdi--clock-outline dark:invert"></span>
-              </Table.Cell>
-              <Table.Cell className="font-medium text-gray-900 whitespace-nowrap dark:text-white">
+              </TableCell>
+              <TableCell className="font-medium text-gray-900 whitespace-nowrap dark:text-white">
                 {props.aired_on_date != 0 ?
                   unixToDate(props.aired_on_date, "full")
                 : props.year ?
@@ -151,10 +151,10 @@ export const ReleaseInfoInfo = (props: {
                     {props.year && `${props.year} г.`}
                   </>
                 : "Скоро"}
-              </Table.Cell>
-            </Table.Row>
+              </TableCell>
+            </TableRow>
           )}
-        </Table.Body>
+        </TableBody>
       </Table>
     </Card>
   );

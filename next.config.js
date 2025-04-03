@@ -1,8 +1,7 @@
 const { withPlausibleProxy } = require("next-plausible");
-
-module.exports = withPlausibleProxy({
-  customDomain: "https://analytics.wah.su",
-})({
+const withFlowbiteReact = require("flowbite-react/plugin/nextjs");
+/** @type {import('next').NextConfig} */
+const NextConfig = {
   reactStrictMode: false,
   images: {
     unoptimized: true,
@@ -10,68 +9,88 @@ module.exports = withPlausibleProxy({
   async headers() {
     return [
       {
-        source: '/bookmarks/:slug*',
+        source: "/bookmarks/:slug*",
         headers: [
           {
-            key: 'Cache-Control',
-            value: 's-maxage=2592000, stale-while-revalidate=86400',
+            key: "Cache-Control",
+            value: "s-maxage=2592000, stale-while-revalidate=86400",
           },
         ],
       },
       {
-        source: '/collection/:slug*',
+        source: "/collection/:slug*",
         headers: [
           {
-            key: 'Cache-Control',
-            value: 's-maxage=2592000, stale-while-revalidate=86400',
+            key: "Cache-Control",
+            value: "s-maxage=2592000, stale-while-revalidate=86400",
           },
         ],
       },
       {
-        source: '/home/:slug*',
+        source: "/home/:slug*",
         headers: [
           {
-            key: 'Cache-Control',
-            value: 's-maxage=2592000, stale-while-revalidate=86400',
+            key: "Cache-Control",
+            value: "s-maxage=2592000, stale-while-revalidate=86400",
           },
         ],
       },
       {
-        source: '/profile/:slug*',
+        source: "/profile/:slug*",
         headers: [
           {
-            key: 'Cache-Control',
-            value: 's-maxage=2592000, stale-while-revalidate=86400',
+            key: "Cache-Control",
+            value: "s-maxage=2592000, stale-while-revalidate=86400",
           },
         ],
       },
       {
-        source: '/release/:slug*',
+        source: "/release/:slug*",
         headers: [
           {
-            key: 'Cache-Control',
-            value: 's-maxage=2592000, stale-while-revalidate=86400',
+            key: "Cache-Control",
+            value: "s-maxage=2592000, stale-while-revalidate=86400",
           },
         ],
       },
       {
-        source: '/related/:slug*',
+        source: "/related/:slug*",
         headers: [
           {
-            key: 'Cache-Control',
-            value: 's-maxage=2592000, stale-while-revalidate=86400',
+            key: "Cache-Control",
+            value: "s-maxage=2592000, stale-while-revalidate=86400",
           },
         ],
       },
       {
-        source: '/search',
+        source: "/search",
         headers: [
           {
-            key: 'Cache-Control',
-            value: 's-maxage=2592000, stale-while-revalidate=86400',
+            key: "Cache-Control",
+            value: "s-maxage=2592000, stale-while-revalidate=86400",
           },
         ],
       },
     ];
   },
-});
+};
+
+const config = () => {
+  const plugins = [withPlausibleProxy, withFlowbiteReact];
+  return (
+    plugins.reduce((acc, next) => {
+      console.log(`INIT: ${next.name}`);
+      if (next.name === "withPlausibleProxy") {
+        return next(acc, {
+          customDomain: "https://analytics.wah.su",
+        });
+      }
+
+      return next(acc);
+    }),
+    { ...NextConfig }
+  );
+};
+
+console.log(config());
+module.exports = config();

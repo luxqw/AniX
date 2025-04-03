@@ -1,6 +1,6 @@
 import { ENDPOINTS } from "#/api/config";
 import { tryCatchAPI, unixToDate, useSWRfetcher } from "#/api/utils";
-import { Avatar, Button, Modal, useThemeMode } from "flowbite-react";
+import { Avatar, Button, Modal, ModalHeader, useThemeMode } from "flowbite-react";
 import { useCallback, useEffect, useState } from "react";
 import useSWRInfinite from "swr/infinite";
 import { Spinner } from "../Spinner/Spinner";
@@ -130,7 +130,7 @@ export const ProfileBlockedUsersModal = (props: {
         onClose={() => props.setIsOpen(false)}
         size={"7xl"}
       >
-        <Modal.Header>Заблокированные пользователи</Modal.Header>
+        <ModalHeader>Заблокированные пользователи</ModalHeader>
         <div
           className="flex flex-col gap-2 p-4 overflow-y-auto"
           onScroll={handleScroll}

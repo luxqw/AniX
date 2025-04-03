@@ -1,6 +1,6 @@
 "use client";
 
-import { Modal, useThemeMode } from "flowbite-react";
+import { Modal, ModalBody, ModalHeader, useThemeMode } from "flowbite-react";
 import { ENDPOINTS } from "#/api/config";
 import { useState } from "react";
 import { toast } from "react-toastify";
@@ -98,8 +98,8 @@ export const ProfileEditPrivacyModal = (props: {
       onClose={() => props.setIsOpen(false)}
       size={"4xl"}
     >
-      <Modal.Header>{setting_text[props.setting]}</Modal.Header>
-      <Modal.Body>
+      <ModalHeader>{setting_text[props.setting]}</ModalHeader>
+      <ModalBody>
         {props.setting != "none" ?
           <>
             <div className="flex flex-col gap-2">
@@ -202,7 +202,7 @@ export const ProfileEditPrivacyModal = (props: {
             </div>
           </>
         : ""}
-      </Modal.Body>
+      </ModalBody>
     </Modal>
   );
 };

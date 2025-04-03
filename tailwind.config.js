@@ -1,5 +1,9 @@
 const { addIconSelectors } = require("@iconify/tailwind");
-import flowbite from "flowbite-react/tailwind";
+const flowbiteReact = require("flowbite-react/plugin/tailwindcss");
+
+flowbiteReact.config = {
+  charts: true,
+}
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
@@ -7,14 +11,12 @@ module.exports = {
     "./pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./components/**/*.{js,ts,jsx,tsx,mdx}",
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
-    flowbite.content(),
+    ".flowbite-react\\class-list.json"
   ],
   plugins: [
     addIconSelectors(["mdi", "material-symbols", "twemoji", "fa6-brands"]),
     require("tailwind-scrollbar"),
-    flowbite.plugin()({
-      charts: true,
-    }),
+    flowbiteReact
   ],
   darkMode: "selector",
   theme: {

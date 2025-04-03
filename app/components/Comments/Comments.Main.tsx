@@ -1,4 +1,4 @@
-import { Card, Button, Modal, Spinner } from "flowbite-react";
+import { Button, Card, Modal, ModalHeader, Spinner } from "flowbite-react";
 import { CommentsComment } from "./Comments.Comment";
 import { useState, useEffect, useCallback } from "react";
 import { ENDPOINTS } from "#/api/config";
@@ -149,7 +149,7 @@ const CommentsAllModal = (props: {
       show={props.isOpen}
       onClose={() => props.setIsOpen(false)}
     >
-      <Modal.Header>
+      <ModalHeader>
         <div className="flex flex-col gap-1">
           <h2 className="text-lg font-bold text-gray-900 lg:text-2xl dark:text-white">
             Все комментарии
@@ -158,7 +158,7 @@ const CommentsAllModal = (props: {
             всего: {isLoading ? "загрузка..." : data[0].total_count}
           </p>
         </div>
-      </Modal.Header>
+      </ModalHeader>
       <div
         className="flex flex-col gap-2 p-4 overflow-y-auto"
         onScroll={handleScroll}

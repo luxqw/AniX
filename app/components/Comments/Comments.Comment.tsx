@@ -1,7 +1,7 @@
 import { unixToDate, sinceUnixDate } from "#/api/utils";
 import { useEffect, useState } from "react";
 import { ENDPOINTS } from "#/api/config";
-import { Button, Dropdown } from "flowbite-react";
+import { Button, Dropdown, DropdownItem } from "flowbite-react";
 import Link from "next/link";
 import { CommentsAddModal } from "./Comments.Add";
 import { CommentsEditModal } from "./Comments.Edit";
@@ -183,12 +183,12 @@ export const CommentsComment = (props: {
                 <span className="w-6 h-6 bg-gray-400 iconify mdi--more-horiz hover:bg-gray-800 active:bg-gray-800"></span>
               )}
             >
-              <Dropdown.Item onClick={() => setIsEditCommentsOpen(true)}>
+              <DropdownItem onClick={() => setIsEditCommentsOpen(true)}>
                 Редактировать
-              </Dropdown.Item>
-              <Dropdown.Item onClick={() => _deleteComment()}>
+              </DropdownItem>
+              <DropdownItem onClick={() => _deleteComment()}>
                 Удалить
-              </Dropdown.Item>
+              </DropdownItem>
             </Dropdown>
           )}
         </footer>

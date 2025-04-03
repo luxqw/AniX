@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, Modal, Textarea, useThemeMode } from "flowbite-react";
+import { Button, Modal, ModalBody, ModalFooter, ModalHeader, Textarea, useThemeMode } from "flowbite-react";
 import { ENDPOINTS } from "#/api/config";
 import { useEffect, useState } from "react";
 import { useSWRConfig } from "swr";
@@ -96,8 +96,8 @@ export const ProfileEditStatusModal = (props: {
       onClose={() => props.setIsOpen(false)}
       size={"4xl"}
     >
-      <Modal.Header>Изменить статус</Modal.Header>
-      <Modal.Body>
+      <ModalHeader>Изменить статус</ModalHeader>
+      <ModalBody>
         <Textarea
           disabled={loading}
           rows={3}
@@ -111,8 +111,8 @@ export const ProfileEditStatusModal = (props: {
         <p className="text-sm text-right text-gray-500 dark:text-gray-300">
           {_stringLength}/80
         </p>
-      </Modal.Body>
-      <Modal.Footer>
+      </ModalBody>
+      <ModalFooter>
         <Button
           color="blue"
           onClick={() => _setStatusSetting()}
@@ -123,7 +123,7 @@ export const ProfileEditStatusModal = (props: {
         <Button color="red" onClick={() => props.setIsOpen(false)}>
           Отмена
         </Button>
-      </Modal.Footer>
+      </ModalFooter>
     </Modal>
   );
 };

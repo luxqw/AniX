@@ -5,7 +5,7 @@ import { Spinner } from "#/components/Spinner/Spinner";
 import { useState, useEffect } from "react";
 import { useScrollPosition } from "#/hooks/useScrollPosition";
 import { useUserStore } from "../store/auth";
-import { Dropdown, Button } from "flowbite-react";
+import { Button, ButtonGroup, Dropdown, DropdownItem } from "flowbite-react";
 import { sort } from "./common";
 import { ENDPOINTS } from "#/api/config";
 import { BookmarksList, useSWRfetcher } from "#/api/utils";
@@ -151,7 +151,7 @@ export function BookmarksCategoryPage(props: any) {
         </form>
       : ""}
       <div className="m-4 overflow-auto">
-        <Button.Group>
+        <ButtonGroup>
           <Button
             className="whitespace-nowrap"
             disabled={props.slug == "watching"}
@@ -222,7 +222,7 @@ export function BookmarksCategoryPage(props: any) {
           >
             {props.SectionTitleMapping["abandoned"]}
           </Button>
-        </Button.Group>
+        </ButtonGroup>
       </div>
       <div className="flex items-center justify-between px-4 py-2 border-b-2 border-black dark:border-white">
         <h1 className="font-bold text-md sm:text-xl md:text-lg xl:text-xl">
@@ -237,7 +237,7 @@ export function BookmarksCategoryPage(props: any) {
           theme={DropdownTheme}
         >
           {sort.values.map((item, index) => (
-            <Dropdown.Item key={index} onClick={() => setSelectedSort(index)}>
+            <DropdownItem key={index} onClick={() => setSelectedSort(index)}>
               <span
                 className={`w-6 h-6 iconify ${
                   sort.values[index].value.split("_")[1] == "descending" ?
@@ -246,7 +246,7 @@ export function BookmarksCategoryPage(props: any) {
                 }`}
               ></span>
               {item.name}
-            </Dropdown.Item>
+            </DropdownItem>
           ))}
         </Dropdown>
       </div>

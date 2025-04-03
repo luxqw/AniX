@@ -1,6 +1,6 @@
 "use client";
 
-import { Dropdown } from "flowbite-react";
+import { Dropdown, DropdownItem } from "flowbite-react";
 import { numberDeclension } from "#/api/utils";
 import { useUserPlayerPreferencesStore } from "#/store/player";
 
@@ -26,7 +26,7 @@ const DropdownTrigger = ({ icon, name, pinned }: Voiceover) => {
   );
 };
 
-const DropdownItem = ({
+const DropdownItemInternal = ({
   icon,
   name,
   pinned,
@@ -80,7 +80,7 @@ export const VoiceoverSelector = (props: {
       )}
     >
       {props.availableVoiceover.map((voiceover: Voiceover) => (
-        <Dropdown.Item
+        <DropdownItem
           className="w-fit"
           key={`voiceover_${voiceover.id}`}
           onClick={() => {
@@ -94,8 +94,8 @@ export const VoiceoverSelector = (props: {
             });
           }}
         >
-          <DropdownItem {...voiceover} />
-        </Dropdown.Item>
+          <DropdownItemInternal {...voiceover} />
+        </DropdownItem>
       ))}
     </Dropdown>
   );
