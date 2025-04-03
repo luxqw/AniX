@@ -15,7 +15,6 @@ import {
   AccordionPanel,
   AccordionTitle,
 } from "flowbite-react";
-import { version } from "node:os";
 import Link from "next/link";
 
 export const AboutPage = () => {
