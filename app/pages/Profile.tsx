@@ -59,50 +59,7 @@ export const ProfilePage = (props: any) => {
     );
   }
 
-  const hasSocials =
-    user.vk_page != "" ||
-    user.tg_page != "" ||
-    user.tt_page != "" ||
-    user.inst_page != "" ||
-    user.discord_page != "" ||
-    false;
-  const socials = [
-    {
-      name: "vk",
-      nickname: user.vk_page,
-      icon: "fa6-brands--vk",
-      urlPrefix: "https://vk.com/",
-    },
-    {
-      name: "telegram",
-      nickname: user.tg_page,
-      icon: "fa6-brands--telegram",
-      urlPrefix: "https://t.me/",
-    },
-    {
-      name: "discord",
-      nickname: user.discord_page,
-      icon: "fa6-brands--discord",
-    },
-    {
-      name: "tiktok",
-      nickname: user.tt_page,
-      icon: "fa6-brands--tiktok",
-      urlPrefix: "https://tiktok.com/@",
-    },
-    {
-      name: "instagram",
-      nickname: user.inst_page,
-      icon: "fa6-brands--instagram",
-      urlPrefix: "https://instagram.com/",
-    },
-  ];
 
-  const hasChips =
-    user.is_verified ||
-    user.is_blocked ||
-    (user.roles && user.roles.length > 0) ||
-    isMyProfile;
   const isPrivacy =
     user.is_stats_hidden || user.is_counts_hidden || user.is_social_hidden;
 
@@ -120,7 +77,45 @@ export const ProfilePage = (props: any) => {
           is_me_blocked={user.is_me_blocked}
         />
       </div>
-      <div
+      <div className="grid grid-cols-1 gap-2 lg:grid-cols-2">
+        <div className="flex flex-col gap-2">
+          <ProfileUser
+            avatar={user.avatar}
+            login={user.login}
+            status={user.status}
+            roles={user.roles}
+            rating={user.rating_score}
+            isMyProfile={isMyProfile}
+            isVerified={user.is_verified}
+            isOnline={user.is_online}
+            isSponsor={user.is_sponsor}
+            isBlocked={user.is_blocked}
+            socials={{
+              vk: user.vk_page || null,
+              tg: user.tg_page || null,
+              tt: user.tt_page || null,
+              inst: user.inst_page || null,
+              discord: user.discord_page || null,
+            }}
+          />
+          {authUser.token && (
+            <ProfileActions
+              isMyProfile={isMyProfile}
+              profile_id={user.id}
+              isFriendRequestsDisallowed={user.is_friend_requests_disallowed}
+              friendStatus={user.friend_status}
+              my_profile_id={authUser.user.id}
+              token={authUser.token}
+              is_me_blocked={user.is_me_blocked}
+              is_blocked={user.is_blocked}
+              edit_isOpen={isOpen}
+              edit_setIsOpen={setIsOpen}
+            />
+          )}
+        </div>
+        <div className="flex flex-col gap-2"></div>
+      </div>
+      {/* <div
         className={`flex flex-wrap gap-2 ${
           isPrivacy || user.is_banned || user.is_perm_banned ? "mt-4" : ""
         }`}
@@ -171,20 +166,7 @@ export const ProfilePage = (props: any) => {
           )}
         </div>
         <div className="flex flex-col w-full gap-2 xl:flex-1 xl:w-auto ">
-          {authUser.token && (
-            <ProfileActions
-              isMyProfile={isMyProfile}
-              profile_id={user.id}
-              isFriendRequestsDisallowed={user.is_friend_requests_disallowed}
-              friendStatus={user.friend_status}
-              my_profile_id={authUser.user.id}
-              token={authUser.token}
-              is_me_blocked={user.is_me_blocked}
-              is_blocked={user.is_blocked}
-              edit_isOpen={isOpen}
-              edit_setIsOpen={setIsOpen}
-            />
-          )}
+          
           {!user.is_stats_hidden && (
             <>
               <ProfileStats
@@ -215,7 +197,7 @@ export const ProfilePage = (props: any) => {
             </>
           )}
         </div>
-      </div>
+      </div> */}
       <ProfileEditModal
         isOpen={isOpen && isMyProfile}
         setIsOpen={setIsOpen}

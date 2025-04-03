@@ -1,143 +1,150 @@
 "use client";
-import { Avatar, Card, Button } from "flowbite-react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { Chip } from "../Chip/Chip";
 
-export const ProfileUser = (props: {
-  isOnline: boolean;
+import { Avatar, Card, useThemeMode } from "flowbite-react";
+import { UserRole } from "./Profile.Role";
+import { UserSocial } from "./Profile.Social";
+import Link from "next/link";
+
+interface ProfileUserProps {
   avatar: string;
   login: string;
   status: string;
-  socials: {
-    isPrivate: boolean;
-    hasSocials: boolean;
-    socials: {
-      name: string;
-      nickname: any;
-      icon: string;
-      urlPrefix?: string | undefined;
-    }[];
-  };
-  chips: {
-    hasChips: boolean;
-    isMyProfile: boolean;
-    isVerified: boolean;
-    isSponsor: boolean;
-    isBlocked: boolean;
-    roles?: {
-      id: number;
-      name: string;
-      color: string;
-    }[];
-  };
   rating: number;
-}) => {
-  const router = useRouter();
+  roles: {
+    id: number;
+    name: string;
+    color: string;
+  }[];
+  isMyProfile: boolean;
+  isSponsor: boolean;
+  isBlocked: boolean;
+  isVerified: boolean;
+  isOnline: boolean;
+  socials: {
+    vk: string;
+    tg: string;
+    tt: string;
+    inst: string;
+    discord: string;
+  };
+}
+
+export const ProfileUser = ({
+  avatar,
+  login,
+  status,
+  rating,
+  roles,
+  isMyProfile,
+  isVerified,
+  isOnline,
+  isSponsor,
+  isBlocked,
+  socials,
+}: ProfileUserProps) => {
+
+  const theme = useThemeMode().mode;
+
   return (
-    <Card className="h-fit">
-      {props.chips.hasChips && (
-        <div className="flex gap-1 overflow-x-auto scrollbar-thin">
-          {props.chips.isMyProfile && (
-            <Chip bg_color="bg-blue-500" name="Мой профиль" />
-          )}
-          {props.chips.isVerified && (
-            <Chip bg_color="bg-green-500" name="Верифицирован" />
-          )}
-          {props.chips.isSponsor && (
-            <Chip bg_color="bg-yellow-500" name="Спонсор Anixart" />
-          )}
-          {props.chips.isBlocked && (
-            <Chip bg_color="bg-red-500" name="Заблокирован" />
-          )}
-          {props.chips.roles &&
-            props.chips.roles.length > 0 &&
-            props.chips.roles.map((role: any) => (
-              <Chip
-                key={role.id}
-                bg_color={`bg-[var(--role-color)]`}
-                name={role.name}
-                style={
-                  {
-                    "--role-color": `#${role.color}`,
-                  } as React.CSSProperties
-                }
-              />
-            ))}
+    <Card>
+      {(isMyProfile ||
+        isVerified ||
+        isSponsor ||
+        isBlocked ||
+        roles.length > 0) && (
+        <div className="flex flex-wrap gap-2">
+          {isMyProfile && <UserRole name="Мой профиль" color="3f83f8" />}
+          {isBlocked && <UserRole name="Заблокирован" color="f56565" />}
+          {isVerified && <UserRole name="Верифицирован" color="0e9f6e" />}
+          {isSponsor && <UserRole name="Спонсор Anixart" color="ecc94b" />}
+          {roles.map((role) => (
+            <UserRole key={role.id} name={role.name} color={role.color} />
+          ))}
         </div>
       )}
-      <Avatar
-        alt=""
-        img={props.avatar}
-        rounded={true}
-        size={"lg"}
-        className="relative flex-col items-center justify-center sm:justify-start sm:flex-row"
-        bordered={true}
-        color={props.isOnline ? "success" : "light"}
-      >
-        <div className="space-y-1 text-2xl font-medium whitespace-pre-wrap dark:text-white">
-          <div className="text-center sm:text-left">
-            {props.login}{" "}
+      <div className="flex flex-col items-center gap-4 sm:items-start sm:flex-row">
+        <Avatar
+          alt=""
+          img={avatar}
+          rounded={true}
+          size={"lg"}
+          bordered={true}
+          color={isOnline ? "success" : "light"}
+          className="flex-shrink-0"
+        />
+        <div className="flex flex-col gap-2">
+          <p className="flex items-center gap-2 text-2xl font-semibold">
+            {login}
             <span
-              className={`border rounded-md px-2 py-1 text-sm ${
-                props.rating > 0
-                  ? "border-green-500 text-green-500"
-                  : "border-red-500 text-red-500"
+              className={`border rounded-md px-2 py-1 min-w-8 text-sm flex items-center justify-center ${
+                rating > 0 ?
+                  "border-green-500 text-green-500"
+                : "border-red-500 text-red-500"
               }`}
             >
-              {props.rating}
+              {rating}
             </span>
-          </div>
-          <div className="text-sm text-gray-500 whitespace-pre-wrap sm:text-md dark:text-gray-400 ">
-            {props.status}
-          </div>
+          </p>
+          <p className="text-sm whitespace-pre-wrap sm:text-md">{status}</p>
         </div>
-      </Avatar>
-      {props.socials.hasSocials && !props.socials.isPrivate && (
-        <div className="flex items-center gap-1 overflow-x-auto scrollbar-thin">
-          {props.socials.socials
-            .filter((social: any) => {
-              if (social.nickname == "") {
-                return false;
-              }
-              return true;
-            })
-            .map((social: any) => {
-              if (social.name == "discord" && social.nickname != "")
-                return (
-                  <Button
-                    color="light"
-                    key={social.name}
-                    onClick={() => {
-                      window.navigator.clipboard.writeText(social.nickname);
-                      alert("Скопировано!");
-                    }}
-                  >
-                    <div className="flex items-center justify-center gap-2">
-                      <span
-                        className={`iconify h-4 w-4 sm:h-6 sm:w-6 ${social.icon} dark:fill-white`}
-                      ></span>
-                      {social.nickname}
-                    </div>
-                  </Button>
-                );
-              return (
-                <Link
-                  key={social.name}
-                  href={`${social.urlPrefix}${social.nickname}`}
-                  target="_blank"
-                >
-                  <Button color="light">
-                    <div className="flex items-center justify-center gap-2">
-                      <span
-                        className={`iconify h-4 w-4 sm:h-6 sm:w-6 ${social.icon} dark:fill-white`}
-                      ></span>
-                      {social.nickname}
-                    </div>
-                  </Button>
-                </Link>
-              );
-            })}
+      </div>
+      {(socials.vk ||
+        socials.tg ||
+        socials.discord ||
+        socials.tt ||
+        socials.inst) && (
+        <div className="flex flex-wrap gap-2">
+          {socials.vk && (
+            <Link href={`https://vk.com/${socials.vk}`} target="_blank">
+              <UserSocial
+                nickname={socials.vk}
+                icon="fa6-brands--vk"
+                url={`https://vk.com/${socials.vk}`}
+                color="4a76a8"
+              />
+            </Link>
+          )}
+          {socials.tg && (
+            <Link href={`https://t.me/${socials.tg}`} target="_blank">
+              <UserSocial
+                nickname={socials.tg}
+                icon="fa6-brands--telegram"
+                url={`https://t.me/${socials.tg}`}
+                color="2aabee"
+              />
+            </Link>
+          )}
+          {socials.tt && (
+            <Link href={`https://tiktok.com/@${socials.tt}`} target="_blank">
+              <UserSocial
+                nickname={socials.tt}
+                icon="fa6-brands--tiktok"
+                url={`https://tiktok.com/@${socials.tt}`}
+                color={theme == "light" ? "000000" : "ffffff"}
+              />
+            </Link>
+          )}
+          {socials.inst && (
+            <Link
+              href={`https://instagram.com/${socials.inst}`}
+              target="_blank"
+            >
+              <UserSocial
+                nickname={socials.inst}
+                icon="fa6-brands--instagram"
+                url={`https://instagram.com/${socials.inst}`}
+                color="c32aa3"
+              />
+            </Link>
+          )}
+          {socials.discord && (
+            <UserSocial
+              nickname={socials.discord}
+              icon="fa6-brands--discord"
+              url={`https://discord.com/${socials.discord}`}
+              color="5865f2"
+            />
+          )}
         </div>
       )}
     </Card>
