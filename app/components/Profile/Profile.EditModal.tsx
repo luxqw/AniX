@@ -14,6 +14,7 @@ import { useSWRConfig } from "swr";
 import { useUserStore } from "#/store/auth";
 import { ProfileEditLoginModal } from "./Profile.EditLoginModal";
 import { toast } from "react-toastify";
+import { ProfileBlockedUsersModal } from "./Profile.BlockedUsersModal";
 
 export const ProfileEditModal = (props: {
   isOpen: boolean;
@@ -25,6 +26,7 @@ export const ProfileEditModal = (props: {
   const [statusModalOpen, setStatusModalOpen] = useState(false);
   const [socialModalOpen, setSocialModalOpen] = useState(false);
   const [loginModalOpen, setLoginModalOpen] = useState(false);
+  const [blockedModalOpen, setBlockedModalOpen] = useState(false);
   const [privacyModalSetting, setPrivacyModalSetting] = useState("none");
   const [privacySettings, setPrivacySettings] = useState({
     privacy_stats: 9,
@@ -355,13 +357,18 @@ export const ProfileEditModal = (props: {
                     }
                   </p>
                 </button>
-                {/* <button className="p-2 text-left rounded-md hover:bg-gray-100 dark:hover:bg-gray-900">
+                <button
+                  className="p-2 text-left rounded-md hover:bg-gray-100 dark:hover:bg-gray-900"
+                  onClick={() => {
+                    setBlockedModalOpen(true);
+                  }}
+                >
                   <p className="text-lg">Блоклист</p>
                   <p className="text-base text-gray-500 dark:text-gray-400">
                     Список пользователей, которым запрещён доступ к вашей
                     странице
                   </p>
-                </button> */}
+                </button>
               </div>
               <div>
                 <div className="flex flex-col">
@@ -429,6 +436,12 @@ export const ProfileEditModal = (props: {
             setIsOpen={setLoginModalOpen}
             token={props.token}
             setLogin={setLogin}
+            profile_id={props.profile_id}
+          />
+          <ProfileBlockedUsersModal
+            isOpen={blockedModalOpen}
+            setIsOpen={setBlockedModalOpen}
+            token={props.token}
             profile_id={props.profile_id}
           />
         </>
