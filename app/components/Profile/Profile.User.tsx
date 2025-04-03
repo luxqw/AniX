@@ -27,6 +27,7 @@ interface ProfileUserProps {
     inst: string;
     discord: string;
   };
+  is_social_hidden: boolean;
 }
 
 export const ProfileUser = ({
@@ -41,8 +42,8 @@ export const ProfileUser = ({
   isSponsor,
   isBlocked,
   socials,
+  is_social_hidden,
 }: ProfileUserProps) => {
-
   const theme = useThemeMode().mode;
 
   return (
@@ -88,65 +89,66 @@ export const ProfileUser = ({
           <p className="text-sm whitespace-pre-wrap sm:text-md">{status}</p>
         </div>
       </div>
-      {(socials.vk ||
-        socials.tg ||
-        socials.discord ||
-        socials.tt ||
-        socials.inst) && (
-        <div className="flex flex-wrap gap-2">
-          {socials.vk && (
-            <Link href={`https://vk.com/${socials.vk}`} target="_blank">
+      {!is_social_hidden &&
+        (socials.vk ||
+          socials.tg ||
+          socials.discord ||
+          socials.tt ||
+          socials.inst) && (
+          <div className="flex flex-wrap gap-2">
+            {socials.vk && (
+              <Link href={`https://vk.com/${socials.vk}`} target="_blank">
+                <UserSocial
+                  nickname={socials.vk}
+                  icon="fa6-brands--vk"
+                  url={`https://vk.com/${socials.vk}`}
+                  color="4a76a8"
+                />
+              </Link>
+            )}
+            {socials.tg && (
+              <Link href={`https://t.me/${socials.tg}`} target="_blank">
+                <UserSocial
+                  nickname={socials.tg}
+                  icon="fa6-brands--telegram"
+                  url={`https://t.me/${socials.tg}`}
+                  color="2aabee"
+                />
+              </Link>
+            )}
+            {socials.tt && (
+              <Link href={`https://tiktok.com/@${socials.tt}`} target="_blank">
+                <UserSocial
+                  nickname={socials.tt}
+                  icon="fa6-brands--tiktok"
+                  url={`https://tiktok.com/@${socials.tt}`}
+                  color={theme == "light" ? "000000" : "ffffff"}
+                />
+              </Link>
+            )}
+            {socials.inst && (
+              <Link
+                href={`https://instagram.com/${socials.inst}`}
+                target="_blank"
+              >
+                <UserSocial
+                  nickname={socials.inst}
+                  icon="fa6-brands--instagram"
+                  url={`https://instagram.com/${socials.inst}`}
+                  color="c32aa3"
+                />
+              </Link>
+            )}
+            {socials.discord && (
               <UserSocial
-                nickname={socials.vk}
-                icon="fa6-brands--vk"
-                url={`https://vk.com/${socials.vk}`}
-                color="4a76a8"
+                nickname={socials.discord}
+                icon="fa6-brands--discord"
+                url={`https://discord.com/${socials.discord}`}
+                color="5865f2"
               />
-            </Link>
-          )}
-          {socials.tg && (
-            <Link href={`https://t.me/${socials.tg}`} target="_blank">
-              <UserSocial
-                nickname={socials.tg}
-                icon="fa6-brands--telegram"
-                url={`https://t.me/${socials.tg}`}
-                color="2aabee"
-              />
-            </Link>
-          )}
-          {socials.tt && (
-            <Link href={`https://tiktok.com/@${socials.tt}`} target="_blank">
-              <UserSocial
-                nickname={socials.tt}
-                icon="fa6-brands--tiktok"
-                url={`https://tiktok.com/@${socials.tt}`}
-                color={theme == "light" ? "000000" : "ffffff"}
-              />
-            </Link>
-          )}
-          {socials.inst && (
-            <Link
-              href={`https://instagram.com/${socials.inst}`}
-              target="_blank"
-            >
-              <UserSocial
-                nickname={socials.inst}
-                icon="fa6-brands--instagram"
-                url={`https://instagram.com/${socials.inst}`}
-                color="c32aa3"
-              />
-            </Link>
-          )}
-          {socials.discord && (
-            <UserSocial
-              nickname={socials.discord}
-              icon="fa6-brands--discord"
-              url={`https://discord.com/${socials.discord}`}
-              color="5865f2"
-            />
-          )}
-        </div>
-      )}
+            )}
+          </div>
+        )}
     </Card>
   );
 };

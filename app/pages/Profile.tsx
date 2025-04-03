@@ -88,7 +88,7 @@ export const ProfilePage = (props: any) => {
           ) ?
             "mt-4"
           : ""
-        }`}
+        } mb-4`}
       >
         <div className="flex flex-col gap-2">
           <ProfileUser
@@ -109,6 +109,7 @@ export const ProfilePage = (props: any) => {
               inst: user.inst_page || null,
               discord: user.discord_page || null,
             }}
+            is_social_hidden={user.is_social_hidden}
           />
           {authUser.token && (
             <ProfileActions

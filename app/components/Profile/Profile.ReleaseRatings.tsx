@@ -28,12 +28,12 @@ export const ProfileReleaseRatings = (props: any) => {
         {props.ratings.map((release) => {
           return (
             <Link href={`/release/${release.id}`} key={`vote-${release.id}`}>
-              <div className="flex gap-4">
+              <div className="flex gap-2">
                 <div className="max-w-32">
                   <Poster image={release.image} />
                 </div>
-                <div className="flex flex-col gap-1 py-4">
-                  <h2 className="text-lg">{release.title_ru}</h2>
+                <div className="flex flex-col gap-1">
+                  <h2 className="text-lg font-bold dark:text-white">{release.title_ru}</h2>
                   <Rating size="md">
                     <RatingStar filled={release.my_vote >= 1} />
                     <RatingStar filled={release.my_vote >= 2} />
