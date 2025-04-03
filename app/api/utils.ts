@@ -212,9 +212,9 @@ export function unixToDate(
       " " +
       date.getFullYear() +
       ", " +
-      date.getHours() +
+      `${date.getHours()}`.padStart(2, "0") +
       ":" +
-      date.getMinutes()
+      `${date.getMinutes()}`.padStart(2, "0")
     );
   if (type === "dayMonth")
     return date.getDate() + " " + months[date.getMonth()];

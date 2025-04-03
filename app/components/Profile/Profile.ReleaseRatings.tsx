@@ -51,33 +51,31 @@ export const ProfileReleaseRatings = (props: any) => {
           Посмотреть все
         </Button>
       </div>
-      <div className="flex min-h-[200px] items-center justify-center">
-        <Carousel theme={CarouselTheme}>
-          {props.ratings.map((release) => {
-            return (
-              <Link href={`/release/${release.id}`} key={`vote-${release.id}`}>
-                <div className="flex gap-4 xl:mx-20">
-                  <div className="max-w-32">
-                    <Poster image={release.image} />
-                  </div>
-                  <div className="flex flex-col gap-1 py-4">
-                    <h2 className="text-lg">{release.title_ru}</h2>
-                    <Rating size="md">
-                      <RatingStar filled={release.my_vote >= 1} />
-                      <RatingStar filled={release.my_vote >= 2} />
-                      <RatingStar filled={release.my_vote >= 3} />
-                      <RatingStar filled={release.my_vote >= 4} />
-                      <RatingStar filled={release.my_vote >= 5} />
-                    </Rating>
-                    <h2 className="text-gray-500 text-md dark:text-gray-400">
-                      {unixToDate(release.voted_at, "full")}
-                    </h2>
-                  </div>
+      <div className="flex flex-col w-full gap-4">
+        {props.ratings.map((release) => {
+          return (
+            <Link href={`/release/${release.id}`} key={`vote-${release.id}`}>
+              <div className="flex gap-4">
+                <div className="max-w-32">
+                  <Poster image={release.image} />
                 </div>
-              </Link>
-            );
-          })}
-        </Carousel>
+                <div className="flex flex-col gap-1 py-4">
+                  <h2 className="text-lg">{release.title_ru}</h2>
+                  <Rating size="md">
+                    <RatingStar filled={release.my_vote >= 1} />
+                    <RatingStar filled={release.my_vote >= 2} />
+                    <RatingStar filled={release.my_vote >= 3} />
+                    <RatingStar filled={release.my_vote >= 4} />
+                    <RatingStar filled={release.my_vote >= 5} />
+                  </Rating>
+                  <h2 className="text-gray-500 text-md dark:text-gray-400">
+                    {unixToDate(release.voted_at, "full")}
+                  </h2>
+                </div>
+              </div>
+            </Link>
+          );
+        })}
       </div>
       <ProfileReleaseRatingsModal
         profile_id={props.profile_id}

@@ -59,10 +59,6 @@ export const ProfilePage = (props: any) => {
     );
   }
 
-
-  const isPrivacy =
-    user.is_stats_hidden || user.is_counts_hidden || user.is_social_hidden;
-
   return (
     <>
       <div className="flex flex-col gap-2">
@@ -73,23 +69,39 @@ export const ProfilePage = (props: any) => {
           ban_expires={user.ban_expires}
         />
         <ProfilePrivacyBanner
-          is_privacy={isPrivacy}
+          is_privacy={
+            user.is_stats_hidden ||
+            user.is_counts_hidden ||
+            user.is_social_hidden
+          }
           is_me_blocked={user.is_me_blocked}
         />
       </div>
-      <div className="grid grid-cols-1 gap-2 lg:grid-cols-2">
+      <div
+        className={`grid grid-cols-1 gap-2 lg:grid-cols-2 ${
+          (
+            user.is_banned ||
+            user.is_perm_banned ||
+            user.is_stats_hidden ||
+            user.is_counts_hidden ||
+            user.is_social_hidden
+          ) ?
+            "mt-4"
+          : ""
+        }`}
+      >
         <div className="flex flex-col gap-2">
           <ProfileUser
-            avatar={user.avatar}
-            login={user.login}
-            status={user.status}
-            roles={user.roles}
-            rating={user.rating_score}
-            isMyProfile={isMyProfile}
-            isVerified={user.is_verified}
-            isOnline={user.is_online}
-            isSponsor={user.is_sponsor}
-            isBlocked={user.is_blocked}
+            avatar={user.avatar || ""}
+            login={user.login || ""}
+            status={user.status || ""}
+            roles={user.roles || []}
+            rating={user.rating_score || 0}
+            isMyProfile={isMyProfile || false}
+            isVerified={user.is_verified || false}
+            isOnline={user.is_online || false}
+            isSponsor={user.is_sponsor || false}
+            isBlocked={user.is_blocked || false}
             socials={{
               vk: user.vk_page || null,
               tg: user.tg_page || null,
@@ -112,35 +124,6 @@ export const ProfilePage = (props: any) => {
               edit_setIsOpen={setIsOpen}
             />
           )}
-        </div>
-        <div className="flex flex-col gap-2"></div>
-      </div>
-      {/* <div
-        className={`flex flex-wrap gap-2 ${
-          isPrivacy || user.is_banned || user.is_perm_banned ? "mt-4" : ""
-        }`}
-      >
-        <div className="flex flex-col gap-2 w-full xl:w-[50%]">
-          <ProfileUser
-            isOnline={user.is_online}
-            avatar={user.avatar}
-            login={user.login}
-            status={user.status}
-            socials={{
-              isPrivate: user.is_social_hidden,
-              hasSocials: hasSocials,
-              socials: socials,
-            }}
-            chips={{
-              hasChips: hasChips,
-              isMyProfile: isMyProfile,
-              isVerified: user.is_verified,
-              isSponsor: user.is_sponsor,
-              isBlocked: user.is_blocked,
-              roles: user.roles,
-            }}
-            rating={user.rating_score}
-          />
           {!user.is_counts_hidden && (
             <ProfileActivity
               profile_id={user.id}
@@ -151,7 +134,7 @@ export const ProfilePage = (props: any) => {
             />
           )}
           {!user.is_stats_hidden && (
-            <div className="flex-col hidden gap-2 xl:flex">
+            <div className="flex-col hidden gap-2 lg:flex">
               {user.votes && user.votes.length > 0 && (
                 <ProfileReleaseRatings
                   ratings={user.votes}
@@ -159,14 +142,10 @@ export const ProfilePage = (props: any) => {
                   profile_id={user.id}
                 />
               )}
-              {user.history && user.history.length > 0 && (
-                <ProfileReleaseHistory history={user.history} />
-              )}
             </div>
           )}
         </div>
-        <div className="flex flex-col w-full gap-2 xl:flex-1 xl:w-auto ">
-          
+        <div className="flex flex-col gap-2">
           {!user.is_stats_hidden && (
             <>
               <ProfileStats
@@ -182,7 +161,7 @@ export const ProfilePage = (props: any) => {
                 profile_id={user.id}
               />
               <ProfileWatchDynamic watchDynamic={user.watch_dynamics || []} />
-              <div className="flex flex-col gap-2 xl:hidden">
+              <div className="flex flex-col gap-2 lg:hidden">
                 {user.votes && user.votes.length > 0 && (
                   <ProfileReleaseRatings
                     ratings={user.votes}
@@ -190,14 +169,14 @@ export const ProfilePage = (props: any) => {
                     profile_id={user.id}
                   />
                 )}
-                {user.history && user.history.length > 0 && (
-                  <ProfileReleaseHistory history={user.history} />
-                )}
               </div>
+              {user.history && user.history.length > 0 && (
+                <ProfileReleaseHistory history={user.history} />
+              )}
             </>
           )}
         </div>
-      </div> */}
+      </div>
       <ProfileEditModal
         isOpen={isOpen && isMyProfile}
         setIsOpen={setIsOpen}
