@@ -49,11 +49,13 @@ export const CollectionLink = (props: any) => {
                 {props.title}
               </p>
             </div>
-            <p className="text-xs font-light text-white md:text-sm lg:text-base xl:text-lg">
-              {`${props.description.slice(0, 125)}${
-                props.description.length > 125 ? "..." : ""
-              }`}
-            </p>
+            {props.description && (
+              <p className="text-xs font-light text-white md:text-sm lg:text-base xl:text-lg">
+                {`${props.description.slice(0, 125)}${
+                  props.description.length > 125 ? "..." : ""
+                }`}
+              </p>
+            )}
           </div>
         </div>
       </div>

@@ -131,6 +131,7 @@ export const ProfilePage = (props: any) => {
               commentCount={user.comment_count}
               videoCount={user.video_count}
               collectionCount={user.collection_count}
+              collectionPreview={user.collections_preview || []}
               friendsCount={user.friend_count}
             />
           )}
