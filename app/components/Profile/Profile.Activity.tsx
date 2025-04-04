@@ -5,6 +5,7 @@ import { Button, ButtonGroup, Card } from "flowbite-react";
 import { ProfileActivityCollections } from "./Profile.ActivityCollections";
 import { useEffect, useState } from "react";
 import { CollectionCourusel } from "../CollectionCourusel/CollectionCourusel";
+import { ProfileActivityFriends } from "./Profile.ActivityFriends";
 
 export function ProfileActivity(props: {
   profile_id: number;
@@ -13,6 +14,7 @@ export function ProfileActivity(props: {
   collectionCount: number;
   collectionPreview: any;
   friendsCount: number;
+  friendsPreview: any;
 }) {
   const [tab, setTab] = useState<
     "collections" | "comments" | "friends" | "videos"
@@ -89,7 +91,7 @@ export function ProfileActivity(props: {
         />
       )}
       {tab == "comments" && <>comments</>}
-      {tab == "friends" && <>friends</>}
+      {tab == "friends" && <ProfileActivityFriends content={props.friendsPreview || []} />}
       {tab == "videos" && <>videos</>}
     </Card>
   );

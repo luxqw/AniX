@@ -133,6 +133,7 @@ export const ProfilePage = (props: any) => {
               collectionCount={user.collection_count}
               collectionPreview={user.collections_preview || []}
               friendsCount={user.friend_count}
+              friendsPreview={user.friends_preview || []}
             />
           )}
           {!user.is_stats_hidden && (

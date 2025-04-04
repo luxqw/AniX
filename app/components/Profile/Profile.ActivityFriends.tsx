@@ -6,11 +6,9 @@ import "swiper/css/scrollbar";
 import { Navigation, Mousewheel, Scrollbar } from "swiper/modules";
 import { CollectionLink } from "../CollectionLink/CollectionLink";
 import Link from "next/link";
+import { Avatar, Button } from "flowbite-react";
 
-export const ProfileActivityCollections = (props: {
-  content: any;
-  profile_id: number;
-}) => {
+export const ProfileActivityFriends = (props: { content: any }) => {
   return (
     <div className="max-w-full">
       <Swiper
@@ -35,27 +33,34 @@ export const ProfileActivityCollections = (props: {
       >
         {props.content &&
           props.content.length > 0 &&
-          props.content.map((collection) => {
+          props.content.map((profile) => {
             return (
               <SwiperSlide
-                key={`col-prev-${collection.id}`}
+                key={`friend-prev-${profile.id}`}
                 style={{ width: "fit-content" }}
+                className="px-2 py-4"
               >
-                <Link href={`/collection/${collection.id}`}>
-                  <div className="w-[400px] xl:w-[500px] aspect-video">
-                    <CollectionLink {...collection} />
+                <Link href={`/profile/${profile.id}`}>
+                  <div className="flex items-center gap-2">
+                    <Avatar
+                      img={profile.avatar}
+                      size="md"
+                      rounded={true}
+                      bordered={true}
+                      color={profile.is_online ? "success" : "light"}
+                      className="flex-shrink-0"
+                    />
+                    <p className="text-lg">{profile.login}</p>
                   </div>
                 </Link>
               </SwiperSlide>
             );
           })}
-        <SwiperSlide style={{ width: "fit-content" }}>
-          <Link href={`/profile/${props.profile_id}/collections`}>
-            <div className="w-[400px] xl:w-[500px] aspect-video flex flex-col items-center justify-center w-full gap-2 text-black transition-colors bg-gray-100 border hover:bg-gray-200 border-gray-50 hover:border-gray-100 dark:border-gray-700 dark:hover:border-gray-600 dark:hover:bg-gray-500 aspect-video group dark:bg-gray-600 dark:text-white">
-              <span className="w-8 h-8 iconify mdi--arrow-right dark:fill-white"></span>
-              <p>Все коллекции</p>
-            </div>
-          </Link>
+        <SwiperSlide style={{ width: "fit-content" }} className="px-2 py-4">
+          <Button>
+            <p className="text-lg">Все друзья</p>
+            <span className="w-8 h-8 iconify mdi--arrow-right dark:fill-white"></span>
+          </Button>
         </SwiperSlide>
       </Swiper>
     </div>
