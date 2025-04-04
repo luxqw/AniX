@@ -19,6 +19,14 @@ export const ENDPOINTS = {
     history: `${API_PREFIX}/history`,
     favorite: `${API_PREFIX}/favorite`,
     blocklist: `${API_PREFIX}/profile/blocklist`,
+    friend: {
+      list: `${API_PREFIX}/profile/friend/all`,
+      add: `${API_PREFIX}/profile/friend/request/send`,
+      remove: `${API_PREFIX}/profile/friend/request/remove`,
+      hide: `${API_PREFIX}/profile/friend/request/hide`,
+      in: `${API_PREFIX}/profile/friend/requests/in`,
+      out: `${API_PREFIX}/profile/friend/requests/out`,
+    },
     settings: {
       my: `${API_PREFIX}/profile/preference/my`,
       login: {

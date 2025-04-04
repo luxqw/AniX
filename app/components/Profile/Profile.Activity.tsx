@@ -15,6 +15,8 @@ export function ProfileActivity(props: {
   collectionPreview: any;
   friendsCount: number;
   friendsPreview: any;
+  token: string;
+  isMyProfile: boolean;
 }) {
   const [tab, setTab] = useState<
     "collections" | "comments" | "friends" | "videos"
@@ -91,7 +93,14 @@ export function ProfileActivity(props: {
         />
       )}
       {tab == "comments" && <>comments</>}
-      {tab == "friends" && <ProfileActivityFriends content={props.friendsPreview || []} />}
+      {tab == "friends" && (
+        <ProfileActivityFriends
+          token={props.token}
+          content={props.friendsPreview || []}
+          isMyProfile={props.isMyProfile}
+          profile_id={props.profile_id}
+        />
+      )}
       {tab == "videos" && <>videos</>}
     </Card>
   );

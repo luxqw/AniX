@@ -134,6 +134,8 @@ export const ProfilePage = (props: any) => {
               collectionPreview={user.collections_preview || []}
               friendsCount={user.friend_count}
               friendsPreview={user.friends_preview || []}
+              token={authUser.token}
+              isMyProfile={isMyProfile || false}
             />
           )}
           {!user.is_stats_hidden && (
