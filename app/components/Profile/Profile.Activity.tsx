@@ -66,13 +66,19 @@ export function ProfileActivity(props: {
           color={tab == "comments" ? "blue" : "light"}
           onClick={() => setTab("comments")}
         >
-          Комментарии
+          Комментарии | {props.commentCount}
         </Button>
         <Button
           color={tab == "friends" ? "blue" : "light"}
           onClick={() => setTab("friends")}
         >
-          Друзья
+          Друзья | {props.friendsCount}
+        </Button>
+        <Button
+          color={tab == "videos" ? "blue" : "light"}
+          onClick={() => setTab("videos")}
+        >
+          Видео | {props.videoCount}
         </Button>
       </ButtonGroup>
 
@@ -84,38 +90,7 @@ export function ProfileActivity(props: {
       )}
       {tab == "comments" && <>comments</>}
       {tab == "friends" && <>friends</>}
-
-      {/* <div className="flex items-center gap-4 text-lg">
-        <div>
-          <p>
-            {props.commentCount}{" "}
-            {numberDeclension(
-              props.commentCount,
-              "комментарий",
-              "комментария",
-              "комментариев"
-            )}
-          </p>
-          <p className="mt-2">{props.videoCount} видео</p>
-        </div>
-        <div>
-          <Link href={`/profile/${props.profile_id}/collections`}>
-            <p className="border-b-2 border-gray-300 border-solid dark:border-gray-400 hover:border-gray-500 dark:hover:border-gray-200">
-              {props.collectionCount}{" "}
-              {numberDeclension(
-                props.commentCount,
-                "коллекция",
-                "коллекции",
-                "коллекций"
-              )}
-            </p>
-          </Link>
-          <p className="mt-2">
-            {props.friendsCount}{" "}
-            {numberDeclension(props.commentCount, "друзей", "друга", "друзей")}
-          </p>
-        </div>
-      </div> */}
+      {tab == "videos" && <>videos</>}
     </Card>
   );
 }
