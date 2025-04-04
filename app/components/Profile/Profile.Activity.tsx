@@ -18,9 +18,9 @@ export function ProfileActivity(props: {
   token: string;
   isMyProfile: boolean;
 }) {
-  const [tab, setTab] = useState<
-    "collections" | "comments" | "friends" | "videos"
-  >("collections");
+  const [tab, setTab] = useState<"collections" | "comments" | "friends">(
+    "collections"
+  );
 
   const [collections, setCollections] = useState<Record<number, any>>({});
 
@@ -64,25 +64,28 @@ export function ProfileActivity(props: {
           color={tab == "collections" ? "blue" : "light"}
           onClick={() => setTab("collections")}
         >
-          Коллекции | {props.collectionCount}
+          <div className="flex flex-col gap-1 sm:flex-row sm:items-center">
+            <p>Коллекции</p>
+            <p>( {props.collectionCount} )</p>
+          </div>
         </Button>
         <Button
           color={tab == "comments" ? "blue" : "light"}
           onClick={() => setTab("comments")}
         >
-          Комментарии | {props.commentCount}
+          <div className="flex flex-col gap-1 sm:flex-row sm:items-center">
+            <p>Комментарии</p>
+            <p>( {props.commentCount} )</p>
+          </div>
         </Button>
         <Button
           color={tab == "friends" ? "blue" : "light"}
           onClick={() => setTab("friends")}
         >
-          Друзья | {props.friendsCount}
-        </Button>
-        <Button
-          color={tab == "videos" ? "blue" : "light"}
-          onClick={() => setTab("videos")}
-        >
-          Видео | {props.videoCount}
+          <div className="flex flex-col gap-1 sm:flex-row sm:items-center">
+            <p>Друзья</p>
+            <p>( {props.friendsCount} )</p>
+          </div>
         </Button>
       </ButtonGroup>
 
@@ -101,7 +104,6 @@ export function ProfileActivity(props: {
           profile_id={props.profile_id}
         />
       )}
-      {tab == "videos" && <>videos</>}
     </Card>
   );
 }
