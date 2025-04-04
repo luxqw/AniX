@@ -129,7 +129,7 @@ export const ProfilePage = (props: any) => {
             <ProfileActivity
               profile_id={user.id}
               commentCount={user.comment_count}
-              videoCount={user.video_count}
+              commentPreview={user.release_comments_preview || []}
               collectionCount={user.collection_count}
               collectionPreview={user.collections_preview || []}
               friendsCount={user.friend_count}

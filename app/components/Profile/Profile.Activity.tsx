@@ -1,16 +1,14 @@
 "use client";
 import { Button, ButtonGroup, Card } from "flowbite-react";
-// import Link from "next/link";
-// import { numberDeclension } from "#/api/utils";
 import { ProfileActivityCollections } from "./Profile.ActivityCollections";
 import { useEffect, useState } from "react";
-import { CollectionCourusel } from "../CollectionCourusel/CollectionCourusel";
 import { ProfileActivityFriends } from "./Profile.ActivityFriends";
+import { ProfileActivityComment } from "./Profile.ActivityComment";
 
 export function ProfileActivity(props: {
   profile_id: number;
   commentCount: number;
-  videoCount: number;
+  commentPreview: any;
   collectionCount: number;
   collectionPreview: any;
   friendsCount: number;
@@ -95,7 +93,12 @@ export function ProfileActivity(props: {
           profile_id={props.profile_id}
         />
       )}
-      {tab == "comments" && <>comments</>}
+      {tab == "comments" && (
+        <ProfileActivityComment
+          content={props.commentPreview || []}
+          profile_id={props.profile_id}
+        />
+      )}
       {tab == "friends" && (
         <ProfileActivityFriends
           token={props.token}
