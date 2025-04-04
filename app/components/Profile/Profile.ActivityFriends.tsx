@@ -56,12 +56,14 @@ export const ProfileActivityFriends = (props: { content: any }) => {
               </SwiperSlide>
             );
           })}
-        <SwiperSlide style={{ width: "fit-content" }} className="px-2 py-4">
-          <Button>
-            <p className="text-lg">Все друзья</p>
-            <span className="w-8 h-8 iconify mdi--arrow-right dark:fill-white"></span>
-          </Button>
-        </SwiperSlide>
+        {props.content && props.content.length > 0 ?
+          <SwiperSlide style={{ width: "fit-content" }} className="px-2 py-4">
+            <Button>
+              <p className="text-lg">Все друзья</p>
+              <span className="w-8 h-8 iconify mdi--arrow-right dark:fill-white"></span>
+            </Button>
+          </SwiperSlide>
+        : <p className="text-lg">У пользователя нет друзей</p>}
       </Swiper>
     </div>
   );

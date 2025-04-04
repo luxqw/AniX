@@ -49,14 +49,17 @@ export const ProfileActivityCollections = (props: {
               </SwiperSlide>
             );
           })}
-        <SwiperSlide style={{ width: "fit-content" }}>
-          <Link href={`/profile/${props.profile_id}/collections`}>
-            <div className="w-[400px] xl:w-[500px] aspect-video flex flex-col items-center justify-center w-full gap-2 text-black transition-colors bg-gray-100 border hover:bg-gray-200 border-gray-50 hover:border-gray-100 dark:border-gray-700 dark:hover:border-gray-600 dark:hover:bg-gray-500 aspect-video group dark:bg-gray-600 dark:text-white">
-              <span className="w-8 h-8 iconify mdi--arrow-right dark:fill-white"></span>
-              <p>Все коллекции</p>
-            </div>
-          </Link>
-        </SwiperSlide>
+
+        {props.content && props.content.length > 0 ?
+          <SwiperSlide style={{ width: "fit-content" }}>
+            <Link href={`/profile/${props.profile_id}/collections`}>
+              <div className="w-[400px] xl:w-[500px] aspect-video flex flex-col items-center justify-center w-full gap-2 text-black transition-colors bg-gray-100 border hover:bg-gray-200 border-gray-50 hover:border-gray-100 dark:border-gray-700 dark:hover:border-gray-600 dark:hover:bg-gray-500 aspect-video group dark:bg-gray-600 dark:text-white">
+                <span className="w-8 h-8 iconify mdi--arrow-right dark:fill-white"></span>
+                <p>Все коллекции</p>
+              </div>
+            </Link>
+          </SwiperSlide>
+        : <p className="text-lg">У пользователя нет коллекций</p>}
       </Swiper>
     </div>
   );
