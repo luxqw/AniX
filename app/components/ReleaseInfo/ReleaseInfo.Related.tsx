@@ -1,7 +1,7 @@
 "use client";
 
-import { Card, Carousel } from "flowbite-react";
-import { ReleaseLink } from "#/components/ReleaseLink/ReleaseLinkUpdate";
+import { Card } from "flowbite-react";
+import { ReleaseLinkList } from "#/components/ReleaseLink/ReleaseLinkList";
 import Link from "next/link";
 
 export const ReleaseInfoRelated = (props: {
@@ -22,25 +22,23 @@ export const ReleaseInfoRelated = (props: {
           </Link>
         )}
       </div>
-      <div className="flex justify-center mt-2">
-        <Carousel pauseOnHover={true}>
-          {props.related_releases
-            .filter((release: any) => {
-              if (release.id == props.release_id) {
-                return false;
-              }
-              return true;
-            })
-            .map((release: any) => {
-              return (
-                <ReleaseLink
-                  key={release.id}
-                  {...release}
-                  settings={{ showGenres: false, showDescription: false }}
-                />
-              );
-            })}
-        </Carousel>
+      <div className="flex flex-col gap-4 mt-2">
+        {props.related_releases
+          .filter((release: any) => {
+            if (release.id == props.release_id) {
+              return false;
+            }
+            return true;
+          })
+          .map((release: any) => {
+            return (
+              <ReleaseLinkList
+                key={release.id}
+                {...release}
+                settings={{ showGenres: false, showDescription: false }}
+              />
+            );
+          })}
       </div>
     </Card>
   );
