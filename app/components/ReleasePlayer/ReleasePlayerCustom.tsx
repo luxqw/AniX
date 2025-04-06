@@ -105,18 +105,30 @@ export const ReleasePlayerCustom = (props: {
   }
 
   const _fetchKodikManifest = async (url: string) => {
+    // Fetch data through a proxy
     const data = await _fetchPlayer(
       `https://anix-player.wah.su/?url=${url}&player=kodik`
     );
     if (data) {
-      let lowQualityLink = data.links["360"][0].src;
-      if (lowQualityLink.includes("https://")) {
+      let lowQualityLink = data.links["360"][0].src; // we assume that 360p is always present
+
+      if (!lowQualityLink.includes("//")) { // check if link is encrypted, else do nothing
+        const decryptedBase64 = lowQualityLink.replace(/[a-zA-Z]/g, (e) => {
+          return String.fromCharCode(
+            (e <= "Z" ? 90 : 122) >= (e = e.charCodeAt(0) + 18) ? e : e - 26
+          );
+        });
+        lowQualityLink = atob(decryptedBase64);
+      }
+
+      if (lowQualityLink.includes("https://")) { // string the https prefix, since we add it manually
         lowQualityLink = lowQualityLink.replace("https://", "//");
       }
+
       let manifest = `https:${lowQualityLink.replace("360.mp4:hls:", "")}`;
       let poster = `https:${lowQualityLink.replace("360.mp4:hls:manifest.m3u8", "thumb001.jpg")}`;
 
-      if (lowQualityLink.includes("animetvseries")) {
+      if (lowQualityLink.includes("animetvseries")) { // if link includes "animetvseries" we need to construct manifest ourselves
         let blobTxt = "#EXTM3U\n";
 
         if (data.links.hasOwnProperty("240")) {
@@ -212,7 +224,7 @@ export const ReleasePlayerCustom = (props: {
       }
     };
     __getInfo();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.id, props.token]);
 
   useEffect(() => {
@@ -245,7 +257,7 @@ export const ReleasePlayerCustom = (props: {
     if (voiceover.selected) {
       __getInfo();
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [voiceover.selected]);
 
   useEffect(() => {
@@ -286,7 +298,7 @@ export const ReleasePlayerCustom = (props: {
     if (source.selected) {
       __getInfo();
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [source.selected]);
 
   useEffect(() => {
@@ -349,7 +361,7 @@ export const ReleasePlayerCustom = (props: {
       setPlayerError(null);
       __getInfo();
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [episode.selected]);
 
   return (
@@ -437,7 +449,12 @@ export const ReleasePlayerCustom = (props: {
               }
             </div>
 
-        : <iframe src={playerProps.src} className="w-full aspect-video" allowFullScreen={true} />}
+        : <iframe
+            src={playerProps.src}
+            className="w-full aspect-video"
+            allowFullScreen={true}
+          />
+        }
       </div>
 
       <div>
