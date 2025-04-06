@@ -1,13 +1,16 @@
-import reactRefresh from "eslint-plugin-react-refresh";
+const reactRefresh = require("eslint-plugin-react-refresh");
+const { defineConfig } = require("eslint/config");
 
-export default [
-  {
+module.exports = defineConfig([
+	{
     extends: ["next/core-web-vitals"],
     plugins: {
       "react-refresh": reactRefresh,
     },
-    rules: {
+		rules: {
+			semi: "error",
+			"prefer-const": "error",
       "react-refresh/only-export-components": "warn",
-    },
-  },
-];
+		},
+	},
+]);
