@@ -71,7 +71,7 @@ export const ReleasePage = (props: any) => {
   }
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-2 pb-8">
       <div className="grid grid-cols-1 lg:grid-cols-[70%_30%] gap-2 grid-flow-row-dense">
         <ReleaseInfoBasics
           image={data.release.image}
