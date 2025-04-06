@@ -17,7 +17,7 @@ export const ProfileActivityComment = (props: {
               key={`comment-${comment.id}`}
             >
               <footer className="flex items-center justify-between mb-2">
-                <div className="flex flex-col items-start gap-1 sm:items-center sm:flex-row">
+                <div className="flex items-center gap-1">
                   <Link
                     href={`/profile/${comment.profile.id}`}
                     className="inline-flex items-center mr-3 text-sm font-semibold text-gray-900 dark:text-white hover:underline"
