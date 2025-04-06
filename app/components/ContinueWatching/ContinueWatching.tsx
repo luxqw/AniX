@@ -51,7 +51,6 @@ export const ContinueWatching = () => {
         ...(plannedData.content || []),
         ...(delayedData.content || []),
       ];
-      console.log("loaded data:", data);
       const randomizedData = _randomize(data, 3);
       setReleaseData(randomizedData);
     }
@@ -66,8 +65,6 @@ export const ContinueWatching = () => {
     releaseData.length == 0
   )
     return <></>;
-
-  console.log("randomized data:", releaseData);
 
   return (
     <Card>
