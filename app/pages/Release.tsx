@@ -18,6 +18,7 @@ import { CommentsMain } from "#/components/Comments/Comments.Main";
 import { InfoLists } from "#/components/InfoLists/InfoLists";
 import { ENDPOINTS } from "#/api/config";
 import { usePreferencesStore } from "#/store/preferences";
+import { ContinueWatching } from "#/components/ContinueWatching/ContinueWatching";
 
 export const ReleasePage = (props: any) => {
   const userStore = useUserStore();
@@ -167,6 +168,7 @@ export const ReleasePage = (props: any) => {
               related_releases={data.release.related_releases}
             />
           )}
+          {userStore.token && <ContinueWatching />}
           <div className="block lg:hidden">
             <CommentsMain
               release_id={props.id}

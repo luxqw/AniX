@@ -22,6 +22,7 @@ export const ReleaseLinkList = (props: {
   settings?: {
     showGenres?: boolean;
     showDescription?: boolean;
+    showOrigTitle?: boolean;
   };
   chipsSettings?: {
     enabled: boolean;
@@ -49,6 +50,7 @@ export const ReleaseLinkList = (props: {
   const settings = {
     showGenres: true,
     showDescription: true,
+    showOrigTitle: true,
     ...props.settings,
   };
   const chipsSettings = props.chipsSettings || {};
@@ -86,7 +88,7 @@ export const ReleaseLinkList = (props: {
                 return (
                   <span
                     key={`release_${props.id}_genre_${genre}_${index}`}
-                    className="text-sm font-light dark:text-white"
+                    className="text-sm font-light leading-none dark:text-white"
                   >
                     {index > 0 && ", "}
                     {genre}
@@ -95,12 +97,12 @@ export const ReleaseLinkList = (props: {
               })}
           </div>
           {props.title_ru && (
-            <p className="text-lg font-bold dark:text-white">
+            <p className="text-lg font-bold line-clamp-2 dark:text-white">
               {props.title_ru}
             </p>
           )}
-          {props.title_original && (
-            <p className="text-sm text-gray-600 dark:text-gray-300">
+          {settings.showOrigTitle && props.title_original && (
+            <p className="text-sm text-gray-600 line-clamp-2 dark:text-gray-300">
               {props.title_original}
             </p>
           )}
