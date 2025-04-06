@@ -122,11 +122,13 @@ export const ReleasePage = (props: any) => {
                 : <ReleasePlayer id={props.id} />}
               </>
             )}
-          <CommentsMain
-            release_id={props.id}
-            token={userStore.token}
-            comments={data.release.comments}
-          />
+          <div className="hidden lg:block">
+            <CommentsMain
+              release_id={props.id}
+              token={userStore.token}
+              comments={data.release.comments}
+            />
+          </div>
         </div>
         <div className="flex flex-col gap-2">
           {data.release.status &&
@@ -165,6 +167,13 @@ export const ReleasePage = (props: any) => {
               related_releases={data.release.related_releases}
             />
           )}
+          <div className="block lg:hidden">
+            <CommentsMain
+              release_id={props.id}
+              token={userStore.token}
+              comments={data.release.comments}
+            />
+          </div>
         </div>
       </div>
     </div>
