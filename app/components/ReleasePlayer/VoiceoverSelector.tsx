@@ -15,14 +15,14 @@ interface Voiceover {
 
 const DropdownTrigger = ({ icon, name, pinned }: Voiceover) => {
   return (
-    <div className="flex items-center gap-2 cursor-pointer">
+    <div className="flex items-center gap-2 px-2 py-1 bg-black bg-opacity-75 rounded-lg cursor-pointer backdrop-blur-md">
       {/* eslint-disable-next-line @next/next/no-img-element */}
       {icon && <img alt="" className="w-6 h-6 rounded-full" src={icon}></img>}
-      <p>{name}</p>
+      <p className="text-white">{name}</p>
       {pinned && (
-        <span className="h-6 bg-gray-700 dark:bg-gray-300 iconify material-symbols--push-pin"></span>
+        <span className="h-6 bg-gray-300 iconify material-symbols--push-pin"></span>
       )}
-      <span className="w-6 h-6 -ml-2 iconify material-symbols--arrow-drop-down"></span>
+      <span className="w-6 h-6 -ml-2 text-white iconify material-symbols--arrow-drop-down"></span>
     </div>
   );
 };

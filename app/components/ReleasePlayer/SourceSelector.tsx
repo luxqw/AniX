@@ -12,10 +12,10 @@ interface Source {
 
 const DropdownTrigger = ({ name }: Source) => {
   return (
-    <div className="flex items-center gap-1 cursor-pointer">
-      <span className="w-6 h-6 iconify material-symbols--motion-play"></span>
-      <p>{name}</p>
-      <span className="w-6 h-6 iconify material-symbols--arrow-drop-down"></span>
+    <div className="flex items-center gap-2 px-2 py-1 bg-black bg-opacity-75 rounded-lg cursor-pointer backdrop-blur-md">
+      <span className="w-6 h-6 text-white iconify material-symbols--motion-play"></span>
+      <p className="text-white">{name}</p>
+      <span className="w-6 h-6 -ml-2 text-white iconify material-symbols--arrow-drop-down"></span>
     </div>
   );
 };

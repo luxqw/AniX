@@ -16,6 +16,18 @@ import MediaThemeSutro from "./MediaThemeSutro";
 import { getAnonEpisodesWatched } from "./ReleasePlayer";
 import { tryCatchPlayer, tryCatchAPI } from "#/api/utils";
 
+import {
+  MediaController,
+  MediaControlBar,
+  MediaTimeRange,
+  MediaTimeDisplay,
+  MediaVolumeRange,
+  MediaPlayButton,
+  MediaSeekBackwardButton,
+  MediaSeekForwardButton,
+  MediaMuteButton,
+} from "media-chrome/react";
+
 export const ReleasePlayerCustom = (props: {
   id: number;
   token: string | null;
@@ -112,7 +124,8 @@ export const ReleasePlayerCustom = (props: {
     if (data) {
       let lowQualityLink = data.links["360"][0].src; // we assume that 360p is always present
 
-      if (!lowQualityLink.includes("//")) { // check if link is encrypted, else do nothing
+      if (!lowQualityLink.includes("//")) {
+        // check if link is encrypted, else do nothing
         const decryptedBase64 = lowQualityLink.replace(/[a-zA-Z]/g, (e) => {
           return String.fromCharCode(
             (e <= "Z" ? 90 : 122) >= (e = e.charCodeAt(0) + 18) ? e : e - 26
@@ -121,14 +134,16 @@ export const ReleasePlayerCustom = (props: {
         lowQualityLink = atob(decryptedBase64);
       }
 
-      if (lowQualityLink.includes("https://")) { // string the https prefix, since we add it manually
+      if (lowQualityLink.includes("https://")) {
+        // string the https prefix, since we add it manually
         lowQualityLink = lowQualityLink.replace("https://", "//");
       }
 
       let manifest = `https:${lowQualityLink.replace("360.mp4:hls:", "")}`;
       let poster = `https:${lowQualityLink.replace("360.mp4:hls:manifest.m3u8", "thumb001.jpg")}`;
 
-      if (lowQualityLink.includes("animetvseries")) { // if link includes "animetvseries" we need to construct manifest ourselves
+      if (lowQualityLink.includes("animetvseries")) {
+        // if link includes "animetvseries" we need to construct manifest ourselves
         let blobTxt = "#EXTM3U\n";
 
         if (data.links.hasOwnProperty("240")) {
@@ -365,27 +380,8 @@ export const ReleasePlayerCustom = (props: {
   }, [episode.selected]);
 
   return (
-    <Card className="aspect-video min-h-min-h-[300px] sm:min-h-[466px] md:min-h-[540px] lg:min-h-[512px] xl:min-h-[608px] 2xl:min-h-[712px]">
-      <div className="flex flex-wrap gap-4">
-        {voiceover.selected && (
-          <VoiceoverSelector
-            availableVoiceover={voiceover.available}
-            voiceover={voiceover.selected}
-            setVoiceover={setVoiceover}
-            release_id={props.id}
-          />
-        )}
-        {source.selected && (
-          <SourceSelector
-            availableSource={source.available}
-            source={source.selected}
-            setSource={setSource}
-            release_id={props.id}
-          />
-        )}
-      </div>
-
-      <div className="flex items-center justify-center w-full h-full">
+    <Card className="">
+      {/* <div className="flex items-center justify-center w-full h-full">
         {isLoading ?
           !playerError ?
             <Spinner />
@@ -455,21 +451,65 @@ export const ReleasePlayerCustom = (props: {
             allowFullScreen={true}
           />
         }
+      </div> */}
+
+      <div className="flex items-center justify-center w-full h-full">
+        <MediaController className="relative w-full overflow-hidden">
+          <div className="absolute flex flex-wrap w-full gap-2 top-2 left-2">
+            {voiceover.selected && (
+              <VoiceoverSelector
+                availableVoiceover={voiceover.available}
+                voiceover={voiceover.selected}
+                setVoiceover={setVoiceover}
+                release_id={props.id}
+              />
+            )}
+            {source.selected && (
+              <SourceSelector
+                availableSource={source.available}
+                source={source.selected}
+                setSource={setSource}
+                release_id={props.id}
+              />
+            )}
+          </div>
+          <HlsVideo
+            className="object-contain h-full aspect-video"
+            slot="media"
+            src={playerProps.src}
+            poster={playerProps.poster}
+            defaultPlaybackRate={playbackRate}
+            onRateChange={(e) => {
+              // @ts-ignore
+              setPlaybackRate(e.target.playbackRate || 1);
+            }}
+          />
+          <MediaControlBar>
+            <MediaPlayButton></MediaPlayButton>
+            <MediaSeekBackwardButton></MediaSeekBackwardButton>
+            <MediaSeekForwardButton></MediaSeekForwardButton>
+            <MediaTimeRange></MediaTimeRange>
+            <MediaTimeDisplay showDuration></MediaTimeDisplay>
+            <MediaMuteButton></MediaMuteButton>
+            <MediaVolumeRange></MediaVolumeRange>
+          </MediaControlBar>
+          {episode.selected && source.selected && voiceover.selected && (
+            <div className="w-full">
+              <EpisodeSelector
+                availableEpisodes={episode.available}
+                episode={episode.selected}
+                setEpisode={setEpisode}
+                release_id={props.id}
+                source={source.selected}
+                voiceover={voiceover.selected}
+                token={props.token}
+              />
+            </div>
+          )}
+        </MediaController>
       </div>
 
-      <div>
-        {episode.selected && source.selected && voiceover.selected && (
-          <EpisodeSelector
-            availableEpisodes={episode.available}
-            episode={episode.selected}
-            setEpisode={setEpisode}
-            release_id={props.id}
-            source={source.selected}
-            voiceover={voiceover.selected}
-            token={props.token}
-          />
-        )}
-      </div>
+      <div></div>
     </Card>
   );
 };
