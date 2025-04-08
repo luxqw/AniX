@@ -57,7 +57,7 @@ export const EpisodeSelector = (props: {
   }
 
   return (
-    <div className="px-2 py-2 bg-black bg-opacity-75 backdrop-blur-md">
+    <div className="px-2 py-2">
       <Swiper
         modules={[Navigation, Mousewheel, Scrollbar]}
         spaceBetween={8}
@@ -83,7 +83,6 @@ export const EpisodeSelector = (props: {
           <SwiperSlide
             key={`episode_${episode.position}`}
             style={{ maxWidth: "fit-content" }}
-            className="pb-4"
           >
             <Button
               color={
