@@ -96,7 +96,7 @@
   background: linear-gradient(to bottom, var(--gradient-steps));
 }
 
-.media-controller :global(media-settings-menu) {
+.media-settings-menu {
   --media-menu-icon-height: 20px;
   --media-menu-item-icon-height: 20px;
   --media-settings-menu-min-width: calc(10 * var(--base));
@@ -110,8 +110,14 @@
   user-select: none;
 }
 
-.media-controller :global(media-settings-menu-item),
-.media-controller :global([role="menu"]::part(menu-item)) {
+.media-settings-menu[hidden] {
+  display: block;
+  visibility: visible;
+  opacity: 0;
+}
+
+.media-settings-menu-item,
+.media-controller [role="menu"]::part(menu-item) {
   --media-icon-color: var(--_primary-color);
   margin-inline: calc(0.45 * var(--base));
   height: calc(1.6 * var(--base));
@@ -124,32 +130,31 @@
   text-shadow: none;
 }
 
-.media-controller :global([slot="submenu"]::part(back button)) {
+.media-controller [slot="submenu"]::part(back button) {
   font-size: calc(0.7 * var(--base));
 }
 
-.media-controller :global(media-settings-menu-item:hover) {
+.media-settings-menu-item:hover {
   --media-icon-color: #000;
   color: #000;
   background-color: #fff;
 }
 
-.media-controller :global(media-settings-menu-item:hover [slot="submenu"]::part(menu-item)),
-.media-controller :global([slot="submenu"]::part(back indicator)) {
+.media-settings-menu-item:hover [slot="submenu"]::part(menu-item),
+.media-controller [slot="submenu"]::part(back indicator) {
   --media-icon-color: var(--_primary-color);
 }
 
-.media-controller :global(media-settings-menu-item:hover [slot="submenu"]::part(menu-item):hover) {
+.media-settings-menu-item:hover [slot="submenu"]::part(menu-item):hover {
   --media-icon-color: #000;
   color: #000;
   background-color: #fff;
 }
 
-.media-controller :global(media-settings-menu-item[submenusize="0"]) {
+.media-settings-menu-item[submenusize="0"] {
   display: none;
 }
 
-/* Also hide if only Auto is added. */
 .quality-settings[submenusize="1"] {
   display: none;
 }

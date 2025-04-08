@@ -12,7 +12,7 @@ import { useUserPlayerPreferencesStore } from "#/store/player";
 
 import HlsVideo from "hls-video-element/react";
 import VideoJS from "videojs-video-element/react";
-import MediaThemeSutro from "./MediaThemeSutro";
+// import MediaThemeSutro from "./MediaThemeSutro";
 import { getAnonEpisodesWatched } from "./ReleasePlayer";
 import { tryCatchPlayer, tryCatchAPI } from "#/api/utils";
 
@@ -25,7 +25,6 @@ import {
   MediaTimeDisplay,
   MediaVolumeRange,
   MediaPlayButton,
-  MediaSeekBackwardButton,
   MediaSeekForwardButton,
   MediaMuteButton,
   MediaFullscreenButton,
@@ -489,6 +488,7 @@ export const ReleasePlayerCustom = (props: {
               />
             )}
           </div>
+
           <HlsVideo
             className="object-contain h-full aspect-video"
             slot="media"
@@ -502,7 +502,7 @@ export const ReleasePlayerCustom = (props: {
           />
           <div className={`${Styles["media-gradient-bottom"]}`}></div>
           <MediaSettingsMenu
-            hidden={true}
+            hidden
             anchor="auto"
             className={`${Styles["media-settings-menu"]}`}
           >
@@ -512,8 +512,9 @@ export const ReleasePlayerCustom = (props: {
               Скорость воспроизведения
               <MediaPlaybackRateMenu
                 slot="submenu"
-                rates={[0.5, 0.75, 1, 1.25, 1.5, 1.75, 2]}
-                hidden={true}
+                rates={"0.5 0.75 1 1.25 1.5 1.75 2" as any}
+                // rates={[0.5, 0.75, 1, 1.25, 1.5, 1.75, 2]}
+                hidden
               >
                 <div slot="title">Скорость воспроизведения</div>
               </MediaPlaybackRateMenu>
@@ -522,7 +523,7 @@ export const ReleasePlayerCustom = (props: {
               className={`${Styles["media-settings-menu-item"]} ${Styles["quality-settings"]}`}
             >
               Качество
-              <MediaRenditionMenu slot="submenu" hidden={true}>
+              <MediaRenditionMenu slot="submenu" hidden>
                 <div slot="title">Качество</div>
               </MediaRenditionMenu>
             </MediaSettingsMenuItem>
