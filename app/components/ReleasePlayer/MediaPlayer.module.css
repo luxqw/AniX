@@ -537,3 +537,16 @@
     translate: 4% 4%;
   }
 }
+
+.media-controller:not([breakpointmd]) .media-pip-button {
+  display: none;
+}
+
+.media-controller media-rendition-menu[mediarenditionunavailable],
+.media-controller media-volume-range[mediavolumeunavailable],
+.media-controller media-airplay-button[mediaairplayunavailable],
+.media-controller media-fullscreen-button[mediafullscreenunavailable],
+.media-controller media-cast-button[mediacastunavailable],
+.media-controller media-pip-button[mediapipunavailable] {
+  display: none;
+}

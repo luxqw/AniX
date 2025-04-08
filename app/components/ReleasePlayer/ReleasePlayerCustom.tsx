@@ -30,6 +30,8 @@ import {
   MediaFullscreenButton,
   MediaCastButton,
   MediaPreviewTimeDisplay,
+  MediaPipButton,
+  MediaAirplayButton,
 } from "media-chrome/react";
 import {
   MediaPlaybackRateMenu,
@@ -627,6 +629,21 @@ export const ReleasePlayerCustom = (props: {
                 className={`${Styles["media-preview-time-display"]}`}
               ></MediaPreviewTimeDisplay>
             </MediaTimeRange>
+            <MediaSeekForwardButton className={`${Styles["media-button"]}`}>
+              <div slot="tooltip-content">Пропустить 1.5 минуты</div>
+              <svg
+                {...({ slot: "icon" } as any)}
+                className={`${Styles["svg"]}`}
+                width="256"
+                height="256"
+                viewBox="-65 -75 400 400"
+              >
+                <path
+                  fill="#fff"
+                  d="m246.52 118l-88.19-56.13a12 12 0 0 0-12.18-.39A11.66 11.66 0 0 0 140 71.84v44.59L54.33 61.87a12 12 0 0 0-12.18-.39A11.66 11.66 0 0 0 36 71.84v112.32a11.66 11.66 0 0 0 6.15 10.36a12 12 0 0 0 12.18-.39L140 139.57v44.59a11.66 11.66 0 0 0 6.15 10.36a12 12 0 0 0 12.18-.39L246.52 138a11.81 11.81 0 0 0 0-19.94Zm-108.3 13.19L50 187.38a3.91 3.91 0 0 1-4 .13a3.76 3.76 0 0 1-2-3.35V71.84a3.76 3.76 0 0 1 2-3.35a4 4 0 0 1 1.91-.5a3.94 3.94 0 0 1 2.13.63l88.18 56.16a3.8 3.8 0 0 1 0 6.44Zm104 0L154 187.38a3.91 3.91 0 0 1-4 .13a3.76 3.76 0 0 1-2-3.35V71.84a3.76 3.76 0 0 1 2-3.35a4 4 0 0 1 1.91-.5a3.94 3.94 0 0 1 2.13.63l88.18 56.16a3.8 3.8 0 0 1 0 6.44Z"
+                />
+              </svg>
+            </MediaSeekForwardButton>
             <MediaSettingsMenuButton
               className={`${Styles["media-button"]} ${Styles["media-settings-menu-button"]}`}
             >
@@ -647,10 +664,63 @@ export const ReleasePlayerCustom = (props: {
                 </g>
               </svg>
             </MediaSettingsMenuButton>
-
-            {/* media skip button */}
-            {/* media airplay button */}
-            {/* media cast button */}
+            <MediaPipButton
+              className={`${Styles["media-button"]} ${Styles["media-pip-button"]}`}
+            >
+              <svg
+                {...({ slot: "icon" } as any)}
+                className={`${Styles["svg"]}`}
+                viewBox="0 0 32 32"
+              >
+                <use
+                  className={`${Styles["svg-shadow"]}`}
+                  xlinkHref="#pip-icon"
+                ></use>
+                <g id="pip-icon">
+                  <path d="M12 22H9.77778C9.34822 22 9 21.6162 9 21.1429V10.8571C9 10.3838 9.34822 10 9.77778 10L22.2222 10C22.6518 10 23 10.3838 23 10.8571V12.5714" />
+                  <path d="M15 21.5714V16.4286C15 16.1919 15.199 16 15.4444 16H22.5556C22.801 16 23 16.1919 23 16.4286V17V21.5714C23 21.8081 22.801 22 22.5556 22H20.3333H17.6667H15.4444C15.199 22 15 21.8081 15 21.5714Z" />
+                </g>
+              </svg>
+            </MediaPipButton>
+            <MediaAirplayButton className={`${Styles["media-button"]}`}>
+              <svg
+                viewBox="0 0 32 32"
+                aria-hidden="true"
+                {...({ slot: "icon" } as any)}
+                className={`${Styles["svg"]}`}
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M20.5 20h1.722c.43 0 .778-.32.778-.714v-8.572c0-.394-.348-.714-.778-.714H9.778c-.43 0-.778.32-.778.714v1.429"
+                />
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M11.5 20H9.778c-.43 0-.778-.32-.778-.714v-8.572c0-.394.348-.714.778-.714h12.444c.43 0 .778.32.778.714v1.429"
+                />
+                <path
+                  stroke-linejoin="round"
+                  d="m16 19 3.464 3.75h-6.928L16 19Z"
+                />
+              </svg>
+            </MediaAirplayButton>
+            <MediaCastButton className={`${Styles["media-button"]}`}>
+              <svg
+                {...({ slot: "icon" } as any)}
+                className={`${Styles["svg"]}`}
+                viewBox="0 0 32 32"
+              >
+                <use
+                  className={`${Styles["svg-shadow"]}`}
+                  xlinkHref="#cast-icon"
+                ></use>
+                <g id="cast-icon">
+                  <path d="M18.5 21.833h4.167c.46 0 .833-.373.833-.833V11a.833.833 0 0 0-.833-.833H9.333A.833.833 0 0 0 8.5 11v1.111m0 8.056c.92 0 1.667.746 1.667 1.666M8.5 17.667a4.167 4.167 0 0 1 4.167 4.166" />
+                  <path d="M8.5 15.167a6.667 6.667 0 0 1 6.667 6.666" />
+                </g>
+              </svg>
+            </MediaCastButton>
             <MediaFullscreenButton
               className={`${Styles["media-button"]} ${Styles["media-fullscreen-button"]}`}
             >
