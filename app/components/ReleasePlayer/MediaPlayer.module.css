@@ -116,7 +116,7 @@
   --media-settings-menu-min-width: calc(10 * var(--base));
   --media-menu-transform-in: translateY(0) scale(1);
   --media-menu-transform-out: translateY(20px) rotate(3deg) scale(1);
-  background: rgb(30 30 30 / .8);
+  background: rgb(30 30 30 / .6);
   min-width: var(--media-settings-menu-min-width, 170px);
   position: absolute;
   right: 10px;

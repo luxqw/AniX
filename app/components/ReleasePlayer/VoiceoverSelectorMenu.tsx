@@ -63,43 +63,46 @@ export const VoiceoverSelectorMenu = ({
   }, [release_id, token]);
 
   return (
-    <div className="max-h-full flex flex-col gap-4 items-start justify-start overflow-x-hidden overflow-y-auto px-2 py-2 scrollbar-thin scrollbar-thumb-[rgb(60_60_60_/_.8)] scrollbar-track-[rgb(30_30_30_/_.8)]">
-      {voiceoverList && voiceoverList.length > 0 ?
-        voiceoverList.map((vo: Voiceover) => {
-          return (
-            <Button key={`release-${release_id}-voiceover-${vo.id}`}
-                className={`h-fit ${voiceover.id == vo.id ? "text-white" : "text-gray-500 hover:text-gray-300"} transition-colors`}
-                onClick={() => {
-                        setVoiceover({
-                            selected: vo,
-                            available: voiceoverList
-                        });
-                        playerPreferenceStore.setPreferredVoiceover(
-                            release_id,
-                            vo.name
-                        );
+    <div className="flex flex-col items-start justify-start gap-4">
+        <p className="text-[22px] px-2 py-2 font-bold">Озвучка</p>
+        <div className="max-h-full flex flex-col gap-4 items-start justify-start overflow-x-hidden overflow-y-auto px-2 scrollbar-thin scrollbar-thumb-[rgb(60_60_60_/_.8)] scrollbar-track-[rgb(30_30_30_/_.8)]">
+          {voiceoverList && voiceoverList.length > 0 ?
+            voiceoverList.map((vo: Voiceover) => {
+              return (
+                <button key={`release-${release_id}-voiceover-${vo.id}`}
+                    className={`h-fit justify-start items-start ${voiceover.id == vo.id ? "text-white" : "text-gray-500 hover:text-gray-300"} transition-colors`}
+                    onClick={() => {
+                            setVoiceover({
+                                selected: vo,
+                                available: voiceoverList
+                            });
+                            playerPreferenceStore.setPreferredVoiceover(
+                                release_id,
+                                vo.name
+                            );
+                        }
                     }
-                }
-            >
-                <div className="flex flex-col gap-1">
-                    <div className="flex gap-2">
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        {vo.icon ? <img alt="" className="w-6 h-6 rounded-full" src={vo.icon}></img> : ""}
-                        <span>{vo.name}</span>
-                        {vo.pinned && (
-                            <span className={`h-4 iconify material-symbols--push-pin ${voiceover.id == vo.id ? "bg-white" : "bg-gray-500 hover:bg-gray-300"} transition-colors`}></span>
-                        )}
+                >
+                    <div className="flex flex-col w-full gap-1">
+                        <div className="flex items-center gap-2">
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            {vo.icon ? <img alt="" className="w-6 h-6 rounded-full" src={vo.icon}></img> : ""}
+                            <span className="text-[16px] leading-none">{vo.name}</span>
+                            {vo.pinned && (
+                                <span className={`h-4 iconify material-symbols--push-pin ${voiceover.id == vo.id ? "bg-white" : "bg-gray-500 hover:bg-gray-300"} transition-colors`}></span>
+                            )}
+                        </div>
+                        <div className="flex gap-2">
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <span>{vo.episodes_count} {numberDeclension(vo.episodes_count, "серия", "серии", "серий")}</span>
+                            <span>{vo.view_count} {numberDeclension(vo.view_count, "просмотр", "просмотра", "просмотров")}</span>
+                        </div>
                     </div>
-                    <div className="flex gap-2">
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <span>{vo.episodes_count} {numberDeclension(vo.episodes_count, "серия", "серии", "серий")}</span>
-                        <span>{vo.view_count} {numberDeclension(vo.view_count, "просмотр", "просмотра", "просмотров")}</span>
-                    </div>
-                </div>
-            </Button>
-          );
-        })
-      : ""}
+                </button>
+              );
+            })
+          : ""}
+        </div>
     </div>
   );
 };
