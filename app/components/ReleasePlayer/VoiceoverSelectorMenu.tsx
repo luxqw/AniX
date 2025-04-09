@@ -4,10 +4,9 @@ import { ENDPOINTS } from "#/api/config";
 import { useEffect } from "react";
 import { _fetchAPI } from "./PlayerParsing";
 import { useUserPlayerPreferencesStore } from "#/store/player";
-import { Button } from "flowbite-react";
 import { numberDeclension } from "#/api/utils";
 
-interface Voiceover {
+export interface Voiceover {
   id: number;
   name: string;
   icon: string;
@@ -50,7 +49,7 @@ export const VoiceoverSelectorMenu = ({
       );
       if (vo) {
         const selectedVO =
-          vo.types.find((voiceover: any) => voiceover.name === preferredVO) ||
+          vo.types.find((voiceover: Voiceover) => voiceover.name === preferredVO) ||
           vo.types[0];
         setVoiceover({
           selected: selectedVO,
@@ -64,8 +63,8 @@ export const VoiceoverSelectorMenu = ({
 
   return (
     <div className="flex flex-col items-start justify-start gap-4">
-        <p className="text-[22px] px-2 py-2 font-bold">Озвучка</p>
-        <div className="max-h-full flex flex-col gap-4 items-start justify-start overflow-x-hidden overflow-y-auto px-2 scrollbar-thin scrollbar-thumb-[rgb(60_60_60_/_.8)] scrollbar-track-[rgb(30_30_30_/_.8)]">
+        <p className="text-[20px] px-2 pt-2 pb-1 font-bold">Озвучка</p>
+        <div className="max-h-full flex flex-col gap-4 items-start justify-start overflow-x-hidden overflow-y-auto px-2 pb-2 scrollbar-thin scrollbar-thumb-[rgb(60_60_60_/_.8)] scrollbar-track-[rgb(30_30_30_/_.8)]">
           {voiceoverList && voiceoverList.length > 0 ?
             voiceoverList.map((vo: Voiceover) => {
               return (

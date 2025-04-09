@@ -42,6 +42,7 @@ import {
   MediaSettingsMenuItem,
 } from "media-chrome/react/menu";
 import { VoiceoverSelectorMenu } from "./VoiceoverSelectorMenu";
+import { SourceSelectorMenu } from "./SourceSelectorMenu";
 
 export const ReleasePlayerCustom = (props: {
   id: number;
@@ -69,45 +70,6 @@ export const ReleasePlayerCustom = (props: {
   // const [playbackRate, setPlaybackRate] = useState(1);
   // const [isErrorDetailsOpen, setIsErrorDetailsOpen] = useState(false);
   // const [isLoading, setIsLoading] = useState(true);
-
-  // const playerPreferenceStore = useUserPlayerPreferencesStore();
-  // const preferredVO = playerPreferenceStore.getPreferredVoiceover(props.id);
-  // const preferredSource = playerPreferenceStore.getPreferredPlayer(props.id);
-
-  // old info fetching
-
-  // useEffect(() => {
-  //   const __getInfo = async () => {
-  //     let url = `${ENDPOINTS.release.episode}/${props.id}/${voiceover.selected.id}`;
-  //     const src = await _fetchAPI(
-  //       url,
-  //       "Не удалось получить информацию о источниках"
-  //     );
-  //     if (src) {
-  //       const selectedSrc =
-  //         src.sources.find((source: any) => source.name === preferredSource) ||
-  //         src.sources[0];
-  //       if (selectedSrc.episodes_count == 0) {
-  //         const remSources = src.sources.filter(
-  //           (source: any) => source.id !== selectedSrc.id
-  //         );
-  //         setSource({
-  //           selected: remSources[0],
-  //           available: remSources,
-  //         });
-  //         return;
-  //       }
-  //       setSource({
-  //         selected: selectedSrc,
-  //         available: src.sources,
-  //       });
-  //     }
-  //   };
-  //   if (voiceover.selected) {
-  //     __getInfo();
-  //   }
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [voiceover.selected]);
 
   // useEffect(() => {
   //   const __getInfo = async () => {
@@ -364,6 +326,14 @@ export const ReleasePlayerCustom = (props: {
                 setVoiceover={setVoiceover}
                 setPlayerError={setPlayerError}
               />
+              <SourceSelectorMenu
+                release_id={props.id}
+                voiceover={voiceover.selected}
+                source={source.selected}
+                sourceList={source.available}
+                setSource={setSource}
+                setPlayerError={setPlayerError}
+                />
             </div>
           </MediaChromeDialog>
           <MediaControlBar className={`${Styles["media-control-bar"]}`}>
