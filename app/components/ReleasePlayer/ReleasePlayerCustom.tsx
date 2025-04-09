@@ -43,6 +43,12 @@ import {
 } from "media-chrome/react/menu";
 import { VoiceoverSelectorMenu } from "./VoiceoverSelectorMenu";
 import { SourceSelectorMenu } from "./SourceSelectorMenu";
+import {
+  _fetchAnilibriaManifest,
+  _fetchKodikManifest,
+  _fetchSibnetManifest,
+} from "./PlayerParsing";
+import { EpisodeSelectorMenu } from "./EpisodeSelectorMenu";
 
 export const ReleasePlayerCustom = (props: {
   id: number;
@@ -60,120 +66,87 @@ export const ReleasePlayerCustom = (props: {
     selected: null,
     available: null,
   });
-  const [playerProps, SetPlayerProps] = useState({
+  const [playerProps, SetPlayerProps] = useState<{
+    src: string | null;
+    poster: string | null;
+    type: "hls" | "mp4" | null;
+  }>({
     src: null,
     poster: null,
     type: null,
-    useCustom: false,
   });
   const [playerError, setPlayerError] = useState(null);
-  // const [playbackRate, setPlaybackRate] = useState(1);
+  const [playbackRate, setPlaybackRate] = useState(1);
   // const [isErrorDetailsOpen, setIsErrorDetailsOpen] = useState(false);
-  // const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // useEffect(() => {
-  //   const __getInfo = async () => {
-  //     let url = `${ENDPOINTS.release.episode}/${props.id}/${voiceover.selected.id}/${source.selected.id}`;
-  //     if (props.token) {
-  //       url += `?token=${props.token}`;
-  //     }
-  //     const episodes = await _fetchAPI(
-  //       url,
-  //       "Не удалось получить информацию о эпизодах"
-  //     );
-  //     if (episodes) {
-  //       let anonEpisodesWatched = getAnonEpisodesWatched(
-  //         props.id,
-  //         source.selected.id,
-  //         voiceover.selected.id
-  //       );
-  //       let lastEpisodeWatched = Math.max.apply(
-  //         0,
-  //         Object.keys(
-  //           anonEpisodesWatched[props.id][source.selected.id][
-  //             voiceover.selected.id
-  //           ]
-  //         )
-  //       );
-  //       let selectedEpisode =
-  //         episodes.episodes.find(
-  //           (episode: any) => episode.position == lastEpisodeWatched
-  //         ) || episodes.episodes[0];
+  useEffect(() => {
+    const __getInfo = async () => {
+      if (source.selected.name == "Kodik") {
+        const { manifest, poster } = await _fetchKodikManifest(
+          episode.selected.url,
+          setPlayerError
+        );
+        if (manifest) {
+          SetPlayerProps({
+            src: manifest,
+            poster: poster,
+            type: "hls",
+          });
+          setIsLoading(false);
+        }
+        return;
+      }
+      if (source.selected.name == "Libria") {
+        const { manifest, poster } = await _fetchAnilibriaManifest(
+          episode.selected.url,
+          setPlayerError
+        );
+        if (manifest) {
+          SetPlayerProps({
+            src: manifest,
+            poster: poster,
+            type: "hls",
+          });
+          setIsLoading(false);
+        }
+        return;
+      }
+      if (source.selected.name == "Sibnet") {
+        const { manifest, poster } = await _fetchSibnetManifest(
+          episode.selected.url,
+          setPlayerError
+        );
+        if (manifest) {
+          SetPlayerProps({
+            src: manifest,
+            poster: poster,
+            type: "mp4",
+          });
+          setIsLoading(false);
+        }
+        return;
+      }
+      SetPlayerProps({
+        src: episode.selected.url,
+        poster: null,
+        type: null,
+      });
+      setIsLoading(false);
+    };
+    if (episode.selected) {
+      setIsLoading(true);
+      setPlayerError(null);
+      __getInfo();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [episode.selected]);
 
-  //       setEpisode({
-  //         selected: selectedEpisode,
-  //         available: episodes.episodes,
-  //       });
-  //     }
-  //   };
-  //   if (source.selected) {
-  //     __getInfo();
-  //   }
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [source.selected]);
-
-  // useEffect(() => {
-  //   const __getInfo = async () => {
-  //     if (source.selected.name == "Kodik") {
-  //       const { manifest, poster } = await _fetchKodikManifest(
-  //         episode.selected.url
-  //       );
-  //       if (manifest) {
-  //         SetPlayerProps({
-  //           src: manifest,
-  //           poster: poster,
-  //           useCustom: true,
-  //           type: "hls",
-  //         });
-  //         setIsLoading(false);
-  //       }
-  //       return;
-  //     }
-  //     if (source.selected.name == "Libria") {
-  //       const { manifest, poster } = await _fetchAnilibriaManifest(
-  //         episode.selected.url
-  //       );
-  //       if (manifest) {
-  //         SetPlayerProps({
-  //           src: manifest,
-  //           poster: poster,
-  //           useCustom: true,
-  //           type: "hls",
-  //         });
-  //         setIsLoading(false);
-  //       }
-  //       return;
-  //     }
-  //     if (source.selected.name == "Sibnet") {
-  //       const { manifest, poster } = await _fetchSibnetManifest(
-  //         episode.selected.url
-  //       );
-  //       if (manifest) {
-  //         SetPlayerProps({
-  //           src: manifest,
-  //           poster: poster,
-  //           useCustom: true,
-  //           type: "mp4",
-  //         });
-  //         setIsLoading(false);
-  //       }
-  //       return;
-  //     }
-  //     SetPlayerProps({
-  //       src: episode.selected.url,
-  //       poster: null,
-  //       useCustom: false,
-  //       type: null,
-  //     });
-  //     setIsLoading(false);
-  //   };
-  //   if (episode.selected) {
-  //     setIsLoading(true);
-  //     setPlayerError(null);
-  //     __getInfo();
-  //   }
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [episode.selected]);
+  useEffect(() => {
+    if (document && document.querySelector("media-chrome-dialog")) {
+      document.querySelector("media-chrome-dialog").shadowRoot.querySelector("slot").style.width = "100%";
+    }
+  }, [])
 
   return (
     <Card className="">
@@ -255,35 +228,40 @@ export const ReleasePlayerCustom = (props: {
           defaultStreamType="on-demand"
           className={`relative w-full overflow-hidden ${Styles["media-controller"]}`}
         >
-          {/* <div className="absolute flex flex-wrap w-full gap-2 top-2 left-2">
-            {voiceover.selected && (
-              <VoiceoverSelector
-                availableVoiceover={voiceover.available}
-                voiceover={voiceover.selected}
-                setVoiceover={setVoiceover}
-                release_id={props.id}
-              />
-            )}
-            {source.selected && (
-              <SourceSelector
-                availableSource={source.available}
-                source={source.selected}
-                setSource={setSource}
-                release_id={props.id}
-              />
-            )}
-          </div> */}
-          <HlsVideo
-            className="object-contain h-full aspect-video"
-            slot="media"
-            src={playerProps.src}
-            poster={playerProps.poster}
-            // defaultPlaybackRate={playbackRate}
-            // onRateChange={(e) => {
-            //   // @ts-ignore
-            //   setPlaybackRate(e.target.playbackRate || 1);
-            // }}
-          />
+          {playerProps.type == "hls" && (
+            <HlsVideo
+              className="object-contain h-full aspect-video"
+              slot="media"
+              src={playerProps.src}
+              poster={playerProps.poster}
+              defaultPlaybackRate={playbackRate}
+              onRateChange={(e) => {
+                // @ts-ignore
+                setPlaybackRate(e.target.playbackRate || 1);
+              }}
+            />
+          )}
+          {playerProps.type == "mp4" && (
+            <VideoJS
+              className="object-contain h-full aspect-video"
+              slot="media"
+              src={playerProps.src}
+              poster={playerProps.poster}
+              defaultPlaybackRate={playbackRate}
+              onRateChange={(e) => {
+                // @ts-ignore
+                setPlaybackRate(e.target.playbackRate || 1);
+              }}
+            ></VideoJS>
+          )}
+          {(playerProps.type == null || playerProps.src == null) && (
+            <VideoJS
+              src={null}
+              slot="media"
+              poster="https://wallpapers.com/images/featured/cute-red-panda-pictures-sererbq0fdjum7rn.jpg"
+              className="object-contain h-full aspect-video"
+            ></VideoJS>
+          )}
           <div className={`${Styles["media-gradient-bottom"]}`}></div>
           <MediaSettingsMenu
             id="settings"
@@ -333,7 +311,17 @@ export const ReleasePlayerCustom = (props: {
                 sourceList={source.available}
                 setSource={setSource}
                 setPlayerError={setPlayerError}
-                />
+              />
+              <EpisodeSelectorMenu
+                release_id={props.id}
+                token={props.token}
+                voiceover={voiceover.selected}
+                source={source.selected}
+                episode={episode.selected}
+                episodeList={episode.available}
+                setEpisode={setEpisode}
+                setPlayerError={setPlayerError}
+              />
             </div>
           </MediaChromeDialog>
           <MediaControlBar className={`${Styles["media-control-bar"]}`}>
