@@ -15,7 +15,8 @@ module.exports = {
   ],
   plugins: [
     addIconSelectors(["mdi", "material-symbols", "twemoji", "fa6-brands"]),
-    flowbiteReact
+    flowbiteReact,
+    require("tailwind-scrollbar")
   ],
   darkMode: "selector",
   theme: {

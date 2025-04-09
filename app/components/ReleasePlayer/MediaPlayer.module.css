@@ -38,7 +38,7 @@
   position: absolute;
   height: calc(2 * var(--base));
   line-height: calc(2 * var(--base));
-  bottom: calc(3 * var(--base));
+  bottom: calc(1 * var(--base));
   left: var(--base);
   right: var(--base);
 }
@@ -108,6 +108,27 @@
   border-radius: 8px;
   z-index: 2;
   user-select: none;
+}
+
+.media-source-dialog {
+  --media-menu-icon-height: 20px;
+  --media-menu-item-icon-height: 20px;
+  --media-settings-menu-min-width: calc(10 * var(--base));
+  --media-menu-transform-in: translateY(0) scale(1);
+  --media-menu-transform-out: translateY(20px) rotate(3deg) scale(1);
+  background: rgb(30 30 30 / .8);
+  min-width: var(--media-settings-menu-min-width, 170px);
+  position: absolute;
+  right: 10px;
+  bottom: calc(3 * var(--base));
+  padding-block: calc(0.15 * var(--base));
+  padding-inline: calc(0.6 * var(--base));
+  margin-right: 10px;
+  margin-bottom: 17px;
+  border-radius: 8px;
+  user-select: none;
+  width: fit-content;
+  max-height: 50%;
 }
 
 .media-settings-menu[hidden] {
