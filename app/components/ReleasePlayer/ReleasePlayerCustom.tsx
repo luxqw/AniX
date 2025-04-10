@@ -7,7 +7,6 @@ import { ENDPOINTS } from "#/api/config";
 // import { VoiceoverSelector } from "./VoiceoverSelector";
 // import { SourceSelector } from "./SourceSelector";
 // import { EpisodeSelector } from "./EpisodeSelector";
-// import { Spinner } from "../Spinner/Spinner";
 // import { useUserPlayerPreferencesStore } from "#/store/player";
 
 import HlsVideo from "hls-video-element/react";
@@ -33,6 +32,7 @@ import {
   MediaPipButton,
   MediaAirplayButton,
   MediaChromeDialog,
+  MediaLoadingIndicator,
 } from "media-chrome/react";
 import {
   MediaPlaybackRateMenu,
@@ -78,7 +78,6 @@ export const ReleasePlayerCustom = (props: {
   const [playerError, setPlayerError] = useState(null);
   const [playbackRate, setPlaybackRate] = useState(1);
   // const [isErrorDetailsOpen, setIsErrorDetailsOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const __getInfo = async () => {
@@ -93,7 +92,6 @@ export const ReleasePlayerCustom = (props: {
             poster: poster,
             type: "hls",
           });
-          setIsLoading(false);
         }
         return;
       }
@@ -108,7 +106,6 @@ export const ReleasePlayerCustom = (props: {
             poster: poster,
             type: "hls",
           });
-          setIsLoading(false);
         }
         return;
       }
@@ -123,19 +120,20 @@ export const ReleasePlayerCustom = (props: {
             poster: poster,
             type: "mp4",
           });
-          setIsLoading(false);
         }
         return;
       }
+      setPlayerError({
+        message: `Источник "${source.selected.name}" не поддерживается`,
+        detail: null,
+      });
+    };
+    if (episode.selected) {
       SetPlayerProps({
-        src: episode.selected.url,
+        src: null,
         poster: null,
         type: null,
       });
-      setIsLoading(false);
-    };
-    if (episode.selected) {
-      setIsLoading(true);
       setPlayerError(null);
       __getInfo();
     }
@@ -144,9 +142,11 @@ export const ReleasePlayerCustom = (props: {
 
   useEffect(() => {
     if (document && document.querySelector("media-chrome-dialog")) {
-      document.querySelector("media-chrome-dialog").shadowRoot.querySelector("slot").style.width = "100%";
+      document
+        .querySelector("media-chrome-dialog")
+        .shadowRoot.querySelector("slot").style.width = "100%";
     }
-  }, [])
+  }, []);
 
   return (
     <Card className="">
@@ -228,7 +228,7 @@ export const ReleasePlayerCustom = (props: {
           defaultStreamType="on-demand"
           className={`relative w-full overflow-hidden ${Styles["media-controller"]}`}
         >
-          {playerProps.type == "hls" && (
+          {playerProps.type == "hls" && playerProps.src && (
             <HlsVideo
               className="object-contain h-full aspect-video"
               slot="media"
@@ -241,7 +241,7 @@ export const ReleasePlayerCustom = (props: {
               }}
             />
           )}
-          {playerProps.type == "mp4" && (
+          {playerProps.type == "mp4" && playerProps.src && (
             <VideoJS
               className="object-contain h-full aspect-video"
               slot="media"
@@ -254,14 +254,41 @@ export const ReleasePlayerCustom = (props: {
               }}
             ></VideoJS>
           )}
-          {(playerProps.type == null || playerProps.src == null) && (
-            <VideoJS
-              src={null}
-              slot="media"
-              poster="https://wallpapers.com/images/featured/cute-red-panda-pictures-sererbq0fdjum7rn.jpg"
-              className="object-contain h-full aspect-video"
-            ></VideoJS>
-          )}
+          {playerProps.type == null || playerProps.src == null ?
+            <>
+              <VideoJS
+                src={null}
+                slot="media"
+                poster="https://wallpapers.com/images/featured/cute-red-panda-pictures-sererbq0fdjum7rn.jpg"
+                className="object-contain h-full aspect-video"
+              ></VideoJS>
+              {/* <div className="flex items-center justify-center w-full h-full"> */}
+              <svg
+                {...({ slot: "centered-chrome" } as any)}
+                viewBox="0 0 100 100"
+                width={100}
+                height={100}
+                fill="var(--media-primary-color)"
+              >
+                <path d="M73,50c0-12.7-10.3-23-23-23S27,37.3,27,50 M30.9,50c0-10.5,8.5-19.1,19.1-19.1S69.1,39.5,69.1,50">
+                  <animateTransform
+                    attributeName="transform"
+                    attributeType="XML"
+                    type="rotate"
+                    dur="1s"
+                    from="0 50 50"
+                    to="360 50 50"
+                    repeatCount="indefinite"
+                  ></animateTransform>
+                </path>
+              </svg>
+              {/* </div> */}
+            </>
+          : <MediaLoadingIndicator
+              slot="centered-chrome"
+              noAutohide
+            ></MediaLoadingIndicator>
+          }
           <div className={`${Styles["media-gradient-bottom"]}`}></div>
           <MediaSettingsMenu
             id="settings"
