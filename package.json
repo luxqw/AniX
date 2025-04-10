@@ -10,6 +10,7 @@
     "postinstall": "flowbite-react patch"
   },
   "dependencies": {
+    "@iconify-json/hugeicons": "^1.2.4",
     "apexcharts": "^3.52.0",
     "deepmerge-ts": "^7.1.0",
     "flowbite": "^2.4.1",

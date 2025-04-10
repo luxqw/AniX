@@ -20,6 +20,7 @@ import {
   MediaChromeDialog,
   MediaLoadingIndicator,
   MediaPosterImage,
+  MediaSeekBackwardButton,
 } from "media-chrome/react";
 import {
   MediaPlaybackRateMenu,
@@ -400,7 +401,10 @@ export const ReleasePlayerCustom = (props: {
                 className={`${Styles["media-preview-time-display"]}`}
               ></MediaPreviewTimeDisplay>
             </MediaTimeRange>
-            <MediaSeekForwardButton className={`${Styles["media-button"]}`} seekOffset={90}>
+            <MediaSeekForwardButton
+              className={`${Styles["media-button"]}`}
+              seekOffset={90}
+            >
               <div slot="tooltip-content">Пропустить 1.5 минуты</div>
               <svg
                 {...({ slot: "icon" } as any)}
@@ -581,6 +585,46 @@ export const ReleasePlayerCustom = (props: {
               </svg>
             </MediaFullscreenButton>
           </MediaControlBar>
+          <div className={`flex gap-2 ${Styles["media-skip-bar"]}`}>
+            <MediaSeekBackwardButton
+              className={`${Styles["media-button"]}`}
+              noTooltip
+              seekOffset={10}
+            >
+              <div
+                slot="icon"
+                className="w-[var(--base)] h-[var(--base)] iconify hugeicons--go-backward-10-sec"
+              ></div>
+            </MediaSeekBackwardButton>
+            <MediaSeekBackwardButton
+              className={`${Styles["media-button"]}`}
+              noTooltip
+            >
+              <div
+                slot="icon"
+                className="w-[var(--base)] h-[var(--base)] iconify hugeicons--go-backward-30-sec"
+              ></div>
+            </MediaSeekBackwardButton>
+            <MediaSeekForwardButton
+              className={`${Styles["media-button"]}`}
+              noTooltip
+            >
+              <div
+                slot="icon"
+                className="w-[var(--base)] h-[var(--base)] iconify hugeicons--go-forward-30-sec"
+              ></div>
+            </MediaSeekForwardButton>
+            <MediaSeekForwardButton
+              className={`${Styles["media-button"]}`}
+              noTooltip
+              seekOffset={10}
+            >
+              <div
+                slot="icon"
+                className="w-[var(--base)] h-[var(--base)] iconify hugeicons--go-forward-10-sec"
+              ></div>
+            </MediaSeekForwardButton>
+          </div>
         </MediaController>
       </div>
     </Card>
