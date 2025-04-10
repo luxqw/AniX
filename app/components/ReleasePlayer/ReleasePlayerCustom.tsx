@@ -1,22 +1,8 @@
 "use client";
 
+import Styles from "./MediaPlayer.module.css";
 import { Button, Card } from "flowbite-react";
 import { useEffect, useState } from "react";
-import { ENDPOINTS } from "#/api/config";
-
-// import { VoiceoverSelector } from "./VoiceoverSelector";
-// import { SourceSelector } from "./SourceSelector";
-// import { EpisodeSelector } from "./EpisodeSelector";
-// import { useUserPlayerPreferencesStore } from "#/store/player";
-
-import HlsVideo from "hls-video-element/react";
-import VideoJS from "videojs-video-element/react";
-// import MediaThemeSutro from "./MediaThemeSutro";
-// import { getAnonEpisodesWatched } from "./ReleasePlayer";
-// import { tryCatchPlayer, tryCatchAPI } from "#/api/utils";
-
-import Styles from "./MediaPlayer.module.css";
-
 import {
   MediaController,
   MediaControlBar,
@@ -50,6 +36,11 @@ import {
   _fetchSibnetManifest,
 } from "./PlayerParsing";
 import { EpisodeSelectorMenu } from "./EpisodeSelectorMenu";
+import HlsVideo from "hls-video-element/react";
+import VideoJS from "videojs-video-element/react";
+
+// import { ENDPOINTS } from "#/api/config";
+// import { getAnonEpisodesWatched } from "./ReleasePlayer";
 
 export const ReleasePlayerCustom = (props: {
   id: number;
@@ -151,49 +142,6 @@ export const ReleasePlayerCustom = (props: {
 
   return (
     <Card className="">
-      {/* <div className="flex items-center justify-center w-full h-full">
-        {isLoading ?
-          !playerError ?
-            <Spinner />
-          : <div className="flex flex-col gap-2">
-              <p className="text-lg font-bold">Ошибка: {playerError.message}</p>
-              {!isErrorDetailsOpen ?
-                <Button
-                  color="light"
-                  size="xs"
-                  onClick={() => setIsErrorDetailsOpen(true)}
-                >
-                  Подробнее
-                </Button>
-              : <p className="text-gray-600 dark:text-gray-100">
-                  {playerError.detail}
-                </p>
-              }
-            </div>
-
-        : playerProps.useCustom ?
-          !playerError ?
-
-          : <div className="flex flex-col gap-2">
-              <p className="text-lg font-bold">Ошибка: {playerError.message}</p>
-              {!isErrorDetailsOpen ?
-                <Button
-                  color="light"
-                  size="xs"
-                  onClick={() => setIsErrorDetailsOpen(true)}
-                >
-                  Подробнее
-                </Button>
-              : <p className="text-gray-600 dark:text-gray-100">
-                  {playerError.detail}
-                </p>
-              }
-            </div>
-
-
-        }
-      </div> */}
-
       <div className="flex items-center justify-center w-full h-full">
         <MediaController
           breakpoints="md:480"
@@ -228,11 +176,11 @@ export const ReleasePlayerCustom = (props: {
           )}
           {playerProps.type == null || playerProps.src == null ?
             <>
-              <MediaPosterImage src="https://wallpapers.com/images/featured/cute-red-panda-pictures-sererbq0fdjum7rn.jpg"></MediaPosterImage>
+              {/* <MediaPosterImage src="https://wallpapers.com/images/featured/cute-red-panda-pictures-sererbq0fdjum7rn.jpg"></MediaPosterImage> */}
               <VideoJS
                 src={null}
                 slot="media"
-                poster="https://wallpapers.com/images/featured/cute-red-panda-pictures-sererbq0fdjum7rn.jpg"
+                poster={null}
                 className="object-contain h-full aspect-video"
               ></VideoJS>
               {!playerError && (
@@ -318,7 +266,7 @@ export const ReleasePlayerCustom = (props: {
             id="source"
             className={`${Styles["media-source-dialog"]}`}
           >
-            <div className="flex gap-2 overflow-hidden">
+            <div className="hidden gap-2 overflow-hidden sm:flex">
               <VoiceoverSelectorMenu
                 release_id={props.id}
                 token={props.token}
@@ -348,6 +296,9 @@ export const ReleasePlayerCustom = (props: {
               {!voiceover.selected && !source.selected && !episode.selected ?
                 <p>Нет доступных вариантов для выбора</p>
               : ""}
+            </div>
+            <div className="sm:hidden">
+              <p>Выбор доступен только в горизонтальном режиме</p>
             </div>
           </MediaChromeDialog>
           <MediaControlBar className={`${Styles["media-control-bar"]}`}>
@@ -449,7 +400,7 @@ export const ReleasePlayerCustom = (props: {
                 className={`${Styles["media-preview-time-display"]}`}
               ></MediaPreviewTimeDisplay>
             </MediaTimeRange>
-            <MediaSeekForwardButton className={`${Styles["media-button"]}`}>
+            <MediaSeekForwardButton className={`${Styles["media-button"]}`} seekOffset={90}>
               <div slot="tooltip-content">Пропустить 1.5 минуты</div>
               <svg
                 {...({ slot: "icon" } as any)}
@@ -550,8 +501,12 @@ export const ReleasePlayerCustom = (props: {
               </svg>
             </MediaAirplayButton>
             <MediaCastButton className={`${Styles["media-button"]}`}>
-              <div slot="tooltip-enter">Включить трансляцию через Google Cast</div>
-              <div slot="tooltip-exit">Остановить трансляцию через Google Cast</div>
+              <div slot="tooltip-enter">
+                Включить трансляцию через Google Cast
+              </div>
+              <div slot="tooltip-exit">
+                Остановить трансляцию через Google Cast
+              </div>
               <svg
                 {...({ slot: "icon" } as any)}
                 className={`${Styles["svg"]}`}

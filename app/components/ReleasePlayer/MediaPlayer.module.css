@@ -131,8 +131,19 @@
   border-radius: 8px;
   user-select: none;
   width: fit-content;
-  height: fit-content;
-  max-height: 50%;
+  max-height: fit-content;
+}
+
+@media (min-width: 640px) {
+  .media-source-dialog {
+    max-height: 50%;
+  }
+}
+
+@media (min-width: 1280px) {
+  .media-controller[mediaisfullscreen] .media-source-dialog {
+    max-height: 30%;
+  }
 }
 
 .media-controller media-chrome-dialog > div {
