@@ -86,6 +86,8 @@ export const EpisodeSelectorMenu = ({
     }
   }, [release_id, source, voiceover]);
 
+  if (!voiceover || !source || !episode) return <></>
+
   return (
     <div className="flex flex-col items-start justify-start gap-4">
       <p className="text-[20px] px-2 pt-2 pb-1 font-bold">Эпизод</p>

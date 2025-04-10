@@ -61,6 +61,8 @@ export const VoiceoverSelectorMenu = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [release_id, token]);
 
+  if (!voiceover) return <></>
+
   return (
     <div className="flex flex-col items-start justify-start gap-4">
         <p className="text-[20px] px-2 pt-2 pb-1 font-bold">Озвучка</p>

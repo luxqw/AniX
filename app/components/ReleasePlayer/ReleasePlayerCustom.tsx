@@ -33,6 +33,7 @@ import {
   MediaAirplayButton,
   MediaChromeDialog,
   MediaLoadingIndicator,
+  MediaPosterImage,
 } from "media-chrome/react";
 import {
   MediaPlaybackRateMenu,
@@ -77,7 +78,7 @@ export const ReleasePlayerCustom = (props: {
   });
   const [playerError, setPlayerError] = useState(null);
   const [playbackRate, setPlaybackRate] = useState(1);
-  // const [isErrorDetailsOpen, setIsErrorDetailsOpen] = useState(false);
+  const [isErrorDetailsOpen, setIsErrorDetailsOpen] = useState(false);
 
   useEffect(() => {
     const __getInfo = async () => {
@@ -172,32 +173,7 @@ export const ReleasePlayerCustom = (props: {
 
         : playerProps.useCustom ?
           !playerError ?
-            <MediaThemeSutro className="object-none w-full aspect-video">
-              {playerProps.type == "hls" ?
-                <HlsVideo
-                  className="object-contain h-full aspect-video"
-                  slot="media"
-                  src={playerProps.src}
-                  poster={playerProps.poster}
-                  defaultPlaybackRate={playbackRate}
-                  onRateChange={(e) => {
-                    // @ts-ignore
-                    setPlaybackRate(e.target.playbackRate || 1);
-                  }}
-                />
-              : <VideoJS
-                  className="object-contain h-full aspect-video"
-                  slot="media"
-                  src={playerProps.src}
-                  poster={playerProps.poster}
-                  defaultPlaybackRate={playbackRate}
-                  onRateChange={(e) => {
-                    // @ts-ignore
-                    setPlaybackRate(e.target.playbackRate || 1);
-                  }}
-                ></VideoJS>
-              }
-            </MediaThemeSutro>
+
           : <div className="flex flex-col gap-2">
               <p className="text-lg font-bold">Ошибка: {playerError.message}</p>
               {!isErrorDetailsOpen ?
@@ -214,11 +190,7 @@ export const ReleasePlayerCustom = (props: {
               }
             </div>
 
-        : <iframe
-            src={playerProps.src}
-            className="w-full aspect-video"
-            allowFullScreen={true}
-          />
+
         }
       </div> */}
 
@@ -256,39 +228,63 @@ export const ReleasePlayerCustom = (props: {
           )}
           {playerProps.type == null || playerProps.src == null ?
             <>
+              <MediaPosterImage src="https://wallpapers.com/images/featured/cute-red-panda-pictures-sererbq0fdjum7rn.jpg"></MediaPosterImage>
               <VideoJS
                 src={null}
                 slot="media"
                 poster="https://wallpapers.com/images/featured/cute-red-panda-pictures-sererbq0fdjum7rn.jpg"
                 className="object-contain h-full aspect-video"
               ></VideoJS>
-              {/* <div className="flex items-center justify-center w-full h-full"> */}
-              <svg
-                {...({ slot: "centered-chrome" } as any)}
-                viewBox="0 0 100 100"
-                width={100}
-                height={100}
-                fill="var(--media-primary-color)"
-              >
-                <path d="M73,50c0-12.7-10.3-23-23-23S27,37.3,27,50 M30.9,50c0-10.5,8.5-19.1,19.1-19.1S69.1,39.5,69.1,50">
-                  <animateTransform
-                    attributeName="transform"
-                    attributeType="XML"
-                    type="rotate"
-                    dur="1s"
-                    from="0 50 50"
-                    to="360 50 50"
-                    repeatCount="indefinite"
-                  ></animateTransform>
-                </path>
-              </svg>
-              {/* </div> */}
+              {!playerError && (
+                <svg
+                  {...({ slot: "centered-chrome" } as any)}
+                  viewBox="0 0 100 100"
+                  width={100}
+                  height={100}
+                  fill="var(--media-primary-color)"
+                >
+                  <path d="M73,50c0-12.7-10.3-23-23-23S27,37.3,27,50 M30.9,50c0-10.5,8.5-19.1,19.1-19.1S69.1,39.5,69.1,50">
+                    <animateTransform
+                      attributeName="transform"
+                      attributeType="XML"
+                      type="rotate"
+                      dur="1s"
+                      from="0 50 50"
+                      to="360 50 50"
+                      repeatCount="indefinite"
+                    ></animateTransform>
+                  </path>
+                </svg>
+              )}
             </>
-          : <MediaLoadingIndicator
+          : !playerError ?
+            <MediaLoadingIndicator
               slot="centered-chrome"
               noAutohide
             ></MediaLoadingIndicator>
-          }
+          : ""}
+
+          {playerError ?
+            <>
+              <div className="absolute inset-0 w-full h-full bg-black bg-opacity-75 backdrop-blur-lg"></div>
+              <div slot="centered-chrome" className="flex flex-col gap-4 z-[2]">
+                <p className="text-lg font-bold">{playerError.message}</p>
+                {!isErrorDetailsOpen ?
+                  <Button
+                    color="light"
+                    size="xs"
+                    onClick={() => setIsErrorDetailsOpen(true)}
+                  >
+                    Подробнее
+                  </Button>
+                : <p className="font-light text-gray-100">
+                    {playerError.detail}
+                  </p>
+                }
+              </div>
+            </>
+          : ""}
+
           <div className={`${Styles["media-gradient-bottom"]}`}></div>
           <MediaSettingsMenu
             id="settings"
@@ -349,6 +345,9 @@ export const ReleasePlayerCustom = (props: {
                 setEpisode={setEpisode}
                 setPlayerError={setPlayerError}
               />
+              {!voiceover.selected && !source.selected && !episode.selected ?
+                <p>Нет доступных вариантов для выбора</p>
+              : ""}
             </div>
           </MediaChromeDialog>
           <MediaControlBar className={`${Styles["media-control-bar"]}`}>
@@ -466,8 +465,25 @@ export const ReleasePlayerCustom = (props: {
               </svg>
             </MediaSeekForwardButton>
             <MediaSettingsMenuButton
+              className={`${Styles["media-button"]}`}
               {...({ invoketarget: "source" } as any)}
-            ></MediaSettingsMenuButton>
+            >
+              Выбор озвучки, источника и серии
+              <div slot="tooltip-content">Выбор озвучки, источника и серии</div>
+              <svg
+                {...({ slot: "icon" } as any)}
+                className={`${Styles["svg"]}`}
+                width="24"
+                height="24"
+                viewBox="-8 -8 40 40"
+              >
+                <path
+                  fill="#fff"
+                  fill-rule="evenodd"
+                  d="M9.25 21.75c-.41 0-.75-.34-.75-.75V3c0-.41.34-.75.75-.75s.75.34.75.75v18c0 .41-.34.75-.75.75m-3-4c-.41 0-.75-.34-.75-.75V7c0-.41.34-.75.75-.75S7 6.59 7 7v10c0 .41-.34.75-.75.75m5.25.25c0 .41.34.75.75.75s.75-.34.75-.75V6c0-.41-.34-.75-.75-.75s-.75.34-.75.75zm3.75-2.25c-.41 0-.75-.34-.75-.75V9c0-.41.34-.75.75-.75s.75.34.75.75v6c0 .41-.34.75-.75.75M17.5 17c0 .41.34.75.75.75s.75-.34.75-.75V7c0-.41-.34-.75-.75-.75s-.75.34-.75.75zm3.75-3.25c-.41 0-.75-.34-.75-.75v-2c0-.41.34-.75.75-.75s.75.34.75.75v2c0 .41-.34.75-.75.75M2.5 13c0 .41.34.75.75.75S4 13.41 4 13v-2c0-.41-.34-.75-.75-.75s-.75.34-.75.75z"
+                />
+              </svg>
+            </MediaSettingsMenuButton>
             <MediaSettingsMenuButton
               className={`${Styles["media-button"]} ${Styles["media-settings-menu-button"]}`}
             >
@@ -491,6 +507,8 @@ export const ReleasePlayerCustom = (props: {
             <MediaPipButton
               className={`${Styles["media-button"]} ${Styles["media-pip-button"]}`}
             >
+              <div slot="tooltip-enter">Включить PiP</div>
+              <div slot="tooltip-exit">Выключить PiP</div>
               <svg
                 {...({ slot: "icon" } as any)}
                 className={`${Styles["svg"]}`}
@@ -507,6 +525,8 @@ export const ReleasePlayerCustom = (props: {
               </svg>
             </MediaPipButton>
             <MediaAirplayButton className={`${Styles["media-button"]}`}>
+              <div slot="tooltip-enter">Включить трансляцию через Airplay</div>
+              <div slot="tooltip-exit">Остановить трансляцию через Airplay</div>
               <svg
                 viewBox="0 0 32 32"
                 aria-hidden="true"
@@ -530,6 +550,8 @@ export const ReleasePlayerCustom = (props: {
               </svg>
             </MediaAirplayButton>
             <MediaCastButton className={`${Styles["media-button"]}`}>
+              <div slot="tooltip-enter">Включить трансляцию через Google Cast</div>
+              <div slot="tooltip-exit">Остановить трансляцию через Google Cast</div>
               <svg
                 {...({ slot: "icon" } as any)}
                 className={`${Styles["svg"]}`}
@@ -604,19 +626,6 @@ export const ReleasePlayerCustom = (props: {
               </svg>
             </MediaFullscreenButton>
           </MediaControlBar>
-          {/* {episode.selected && source.selected && voiceover.selected && (
-            <div className="w-full">
-              <EpisodeSelector
-                availableEpisodes={episode.available}
-                episode={episode.selected}
-                setEpisode={setEpisode}
-                release_id={props.id}
-                source={source.selected}
-                voiceover={voiceover.selected}
-                token={props.token}
-              />
-            </div>
-          )} */}
         </MediaController>
       </div>
     </Card>
