@@ -119,7 +119,7 @@ export const ReleasePage = (props: any) => {
             data.release.status.name.toLowerCase() != "анонс" && (
               <>
                 {preferenceStore.params.experimental.newPlayer ?
-                  <ReleasePlayerCustom id={props.id} token={userStore.token} />
+                  <ReleasePlayerCustom id={props.id} token={userStore.token} title={data.release.title_ru || data.release.title_original || ""} />
                 : <ReleasePlayer id={props.id} />}
               </>
             )}

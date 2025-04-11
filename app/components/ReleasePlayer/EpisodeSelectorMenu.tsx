@@ -97,7 +97,7 @@ export const EpisodeSelectorMenu = ({
             return (
               <button
                 key={`release-${release_id}-voiceover-${voiceover.id}-source-${source.id}-episode-${epis.position}`}
-                className={`h-fit px-2 justify-start items-start ${episode.position == epis.position ? "text-white" : "text-gray-400 hover:text-gray-100"} transition-colors`}
+                className={`h-fit px-2 justify-start items-start ${episode.position == epis.position ? "text-white" : "text-gray-300 hover:text-gray-100"} transition-colors`}
                 onClick={() => {
                   setEpisode({
                     selected: epis,

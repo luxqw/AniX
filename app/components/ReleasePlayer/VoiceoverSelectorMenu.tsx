@@ -71,7 +71,7 @@ export const VoiceoverSelectorMenu = ({
             voiceoverList.map((vo: Voiceover) => {
               return (
                 <button key={`release-${release_id}-voiceover-${vo.id}`}
-                    className={`h-fit px-2 ${voiceover.id == vo.id ? "text-white" : "text-gray-400 hover:text-gray-100"} transition-colors`}
+                    className={`h-fit px-2 ${voiceover.id == vo.id ? "text-white" : "text-gray-300 hover:text-gray-100"} transition-colors`}
                     onClick={() => {
                             setVoiceover({
                                 selected: vo,
@@ -90,7 +90,7 @@ export const VoiceoverSelectorMenu = ({
                             {vo.icon ? <img alt="" className="w-6 h-6 rounded-full" src={vo.icon}></img> : ""}
                             <span className="text-[16px] leading-none whitespace-nowrap">{vo.name}</span>
                             {vo.pinned && (
-                                <span className={`h-4 iconify material-symbols--push-pin ${voiceover.id == vo.id ? "bg-white" : "bg-gray-400 hover:bg-gray-100"} transition-colors`}></span>
+                                <span className={`h-4 iconify material-symbols--push-pin ${voiceover.id == vo.id ? "bg-white" : "bg-gray-300 hover:bg-gray-100"} transition-colors`}></span>
                             )}
                         </div>
                         <div className="flex gap-2">

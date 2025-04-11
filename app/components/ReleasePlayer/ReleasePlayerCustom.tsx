@@ -45,6 +45,7 @@ import VideoJS from "videojs-video-element/react";
 
 export const ReleasePlayerCustom = (props: {
   id: number;
+  title: string;
   token: string | null;
 }) => {
   const [voiceover, setVoiceover] = useState({
@@ -233,6 +234,31 @@ export const ReleasePlayerCustom = (props: {
               </div>
             </>
           : ""}
+
+          <div className={`${Styles["media-gradient-top"]}`}></div>
+
+          <div className={`${Styles["anime-title"]}`}>
+            <div className="flex flex-col gap-2">
+              <p className="text-xl text-white">{props.title}</p>
+              <div className="flex gap-2">
+                {voiceover.selected ?
+                  <p className="text-base font-light leading-none text-gray-200">
+                    {voiceover.selected.name}
+                  </p>
+                : ""}
+                {episode.selected ?
+                  <p className="text-base font-light leading-none text-gray-200">
+                    |{" "}
+                    {episode.selected.name ?
+                      episode.selected.name
+                    : ["Sibnet"].includes(source.selected.name) ?
+                      `${episode.selected.position + 1} Серия`
+                    : `${episode.selected.position} Серия`}
+                  </p>
+                : ""}
+              </div>
+            </div>
+          </div>
 
           <div className={`${Styles["media-gradient-bottom"]}`}></div>
           <MediaSettingsMenu

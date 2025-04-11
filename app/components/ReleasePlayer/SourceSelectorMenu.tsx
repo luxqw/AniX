@@ -79,7 +79,7 @@ export const SourceSelectorMenu = ({
             return (
               <button
                 key={`release-${release_id}-voiceover-${voiceover.id}-source-${src.id}`}
-                className={`h-fit ${source.id == src.id ? "text-white" : "text-gray-400 hover:text-gray-100"} transition-colors`}
+                className={`h-fit ${source.id == src.id ? "text-white" : "text-gray-300 hover:text-gray-100"} transition-colors`}
                 onClick={() => {
                   setSource({
                     selected: src,

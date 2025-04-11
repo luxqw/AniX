@@ -110,6 +110,39 @@
   background: linear-gradient(to bottom, var(--gradient-steps));
 }
 
+.media-gradient-top {
+  position: absolute;
+  top: 0;
+  width: 100%;
+  height: calc(8 * var(--base));
+  pointer-events: none;
+}
+
+.media-gradient-top::before {
+  content: "";
+  --gradient-steps:
+    hsl(0 0% 0% / 0) 0%, hsl(0 0% 0% / 0.013) 8.1%, hsl(0 0% 0% / 0.049) 15.5%,
+    hsl(0 0% 0% / 0.104) 22.5%, hsl(0 0% 0% / 0.175) 29%,
+    hsl(0 0% 0% / 0.259) 35.3%, hsl(0 0% 0% / 0.352) 41.2%,
+    hsl(0 0% 0% / 0.45) 47.1%, hsl(0 0% 0% / 0.55) 52.9%,
+    hsl(0 0% 0% / 0.648) 58.8%, hsl(0 0% 0% / 0.741) 64.7%,
+    hsl(0 0% 0% / 0.825) 71%, hsl(0 0% 0% / 0.896) 77.5%,
+    hsl(0 0% 0% / 0.951) 84.5%, hsl(0 0% 0% / 0.987) 91.9%, hsl(0 0% 0%) 100%;
+
+  position: absolute;
+  inset: 0;
+  opacity: 0.7;
+  background: linear-gradient(to top, var(--gradient-steps));
+}
+
+.anime-title {
+  position: absolute;
+  height: calc(2 * var(--base));
+  top: calc(0.5 * var(--base));
+  left: var(--base);
+  right: var(--base);
+}
+
 .media-settings-menu {
   --media-menu-icon-height: 20px;
   --media-menu-item-icon-height: 20px;
