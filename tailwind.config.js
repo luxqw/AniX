@@ -14,7 +14,7 @@ module.exports = {
     ".flowbite-react\\class-list.json"
   ],
   plugins: [
-    addIconSelectors(["mdi", "material-symbols", "twemoji", "fa6-brands", "hugeicons"]),
+    addIconSelectors(["mdi", "material-symbols", "twemoji", "fa6-brands", "solar"]),
     flowbiteReact,
     require("tailwind-scrollbar")
   ],

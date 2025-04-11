@@ -427,6 +427,62 @@ export const ReleasePlayerCustom = (props: {
                 className={`${Styles["media-preview-time-display"]}`}
               ></MediaPreviewTimeDisplay>
             </MediaTimeRange>
+            <MediaSeekBackwardButton
+              className={`${Styles["media-button"]}`}
+              seekOffset={10}
+            >
+              <div slot="tooltip-content">Вернуться на 10 секунд</div>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                {...({ slot: "icon" } as any)}
+                className={`${Styles["svg"]}`}
+                width="24"
+                height="24"
+                viewBox="-8 -8 40 40"
+              >
+                <g
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-width="1.5"
+                >
+                  <path
+                    stroke-linejoin="round"
+                    d="M14 4.5L12 2c5.523 0 10 4.477 10 10s-4.477 10-10 10S2 17.523 2 12c0-4.1 2.468-7.625 6-9.168"
+                  />
+                  <path stroke-linejoin="round" d="m7.5 10.5l2.5-2v7" />
+                  <path d="M12.5 13.75v-3.5a1.75 1.75 0 1 1 3.5 0v3.5a1.75 1.75 0 1 1-3.5 0Z" />
+                </g>
+              </svg>
+            </MediaSeekBackwardButton>
+            <MediaSeekForwardButton
+              className={`${Styles["media-button"]}`}
+              seekOffset={10}
+            >
+              <div slot="tooltip-content">Пропустить 10 секунд</div>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                {...({ slot: "icon" } as any)}
+                className={`${Styles["svg"]}`}
+                width="24"
+                height="24"
+                viewBox="-8 -8 40 40"
+              >
+                <g
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-width="1.5"
+                >
+                  <path
+                    stroke-linejoin="round"
+                    d="M10 4.5L12 2C6.477 2 2 6.477 2 12s4.477 10 10 10s10-4.477 10-10c0-4.1-2.468-7.625-6-9.168"
+                  />
+                  <path stroke-linejoin="round" d="m7.5 10.5l2.5-2v7" />
+                  <path d="M12.5 13.75v-3.5a1.75 1.75 0 1 1 3.5 0v3.5a1.75 1.75 0 1 1-3.5 0Z" />
+                </g>
+              </svg>
+            </MediaSeekForwardButton>
             <MediaSeekForwardButton
               className={`${Styles["media-button"]}`}
               seekOffset={90}
@@ -458,11 +514,16 @@ export const ReleasePlayerCustom = (props: {
                 height="24"
                 viewBox="-8 -8 40 40"
               >
-                <path
+                <g
                   fill="#fff"
-                  fill-rule="evenodd"
-                  d="M9.25 21.75c-.41 0-.75-.34-.75-.75V3c0-.41.34-.75.75-.75s.75.34.75.75v18c0 .41-.34.75-.75.75m-3-4c-.41 0-.75-.34-.75-.75V7c0-.41.34-.75.75-.75S7 6.59 7 7v10c0 .41-.34.75-.75.75m5.25.25c0 .41.34.75.75.75s.75-.34.75-.75V6c0-.41-.34-.75-.75-.75s-.75.34-.75.75zm3.75-2.25c-.41 0-.75-.34-.75-.75V9c0-.41.34-.75.75-.75s.75.34.75.75v6c0 .41-.34.75-.75.75M17.5 17c0 .41.34.75.75.75s.75-.34.75-.75V7c0-.41-.34-.75-.75-.75s-.75.34-.75.75zm3.75-3.25c-.41 0-.75-.34-.75-.75v-2c0-.41.34-.75.75-.75s.75.34.75.75v2c0 .41-.34.75-.75.75M2.5 13c0 .41.34.75.75.75S4 13.41 4 13v-2c0-.41-.34-.75-.75-.75s-.75.34-.75.75z"
-                />
+                  stroke="#fff"
+                  stroke-linecap="round"
+                  stroke-width="1.5"
+                >
+                  <path d="M12 4v16" />
+                  <path d="M16 7v10M8 7v10" opacity="0.5" />
+                  <path d="M20 11v2M4 11v2" />
+                </g>
               </svg>
             </MediaSettingsMenuButton>
             <MediaSettingsMenuButton
@@ -611,46 +672,6 @@ export const ReleasePlayerCustom = (props: {
               </svg>
             </MediaFullscreenButton>
           </MediaControlBar>
-          <div className={`flex gap-2 ${Styles["media-skip-bar"]}`}>
-            <MediaSeekBackwardButton
-              className={`${Styles["media-button"]}`}
-              noTooltip
-              seekOffset={10}
-            >
-              <div
-                slot="icon"
-                className="w-[var(--base)] h-[var(--base)] iconify hugeicons--go-backward-10-sec"
-              ></div>
-            </MediaSeekBackwardButton>
-            <MediaSeekBackwardButton
-              className={`${Styles["media-button"]}`}
-              noTooltip
-            >
-              <div
-                slot="icon"
-                className="w-[var(--base)] h-[var(--base)] iconify hugeicons--go-backward-30-sec"
-              ></div>
-            </MediaSeekBackwardButton>
-            <MediaSeekForwardButton
-              className={`${Styles["media-button"]}`}
-              noTooltip
-            >
-              <div
-                slot="icon"
-                className="w-[var(--base)] h-[var(--base)] iconify hugeicons--go-forward-30-sec"
-              ></div>
-            </MediaSeekForwardButton>
-            <MediaSeekForwardButton
-              className={`${Styles["media-button"]}`}
-              noTooltip
-              seekOffset={10}
-            >
-              <div
-                slot="icon"
-                className="w-[var(--base)] h-[var(--base)] iconify hugeicons--go-forward-10-sec"
-              ></div>
-            </MediaSeekForwardButton>
-          </div>
         </MediaController>
       </div>
     </Card>

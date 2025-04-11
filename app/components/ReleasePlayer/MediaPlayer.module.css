@@ -38,17 +38,8 @@
   position: absolute;
   height: calc(2 * var(--base));
   line-height: calc(2 * var(--base));
-  bottom: calc(2 * var(--base));
-  left: var(--base);
-  right: var(--base);
-}
-
-.media-skip-bar {
-  position: absolute;
-  height: calc(1 * var(--base));
-  line-height: calc(2 * var(--base));
   bottom: calc(1 * var(--base));
-  left: calc(1.25 * var(--base));
+  left: var(--base);
   right: var(--base);
 }
 
@@ -63,11 +54,6 @@
   padding: 0;
   opacity: 0.9;
   transition: opacity 0.1s cubic-bezier(0.4, 0, 1, 1);
-}
-
-.media-skip-bar .media-button {
-  width: calc(1.5 * var(--base));
-  height: calc(1.5 * var(--base));
 }
 
 .svg {
@@ -169,7 +155,7 @@
   min-height: var(--media-settings-menu-min-height, 170px);
   position: absolute;
   right: 10px;
-  bottom: calc(4 * var(--base));
+  bottom: calc(3 * var(--base));
   padding: 0;
   padding-block: calc(0.15 * var(--base));
   padding-inline: calc(0.6 * var(--base));
