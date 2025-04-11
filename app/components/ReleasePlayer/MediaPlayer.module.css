@@ -34,6 +34,10 @@
   --base: 24px;
 }
 
+.media-controller:not([mediaisfullscreen]) {
+  border-radius: 8px;
+}
+
 .media-control-bar {
   position: absolute;
   height: calc(2 * var(--base));
