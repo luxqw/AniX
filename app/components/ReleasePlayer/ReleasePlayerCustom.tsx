@@ -20,6 +20,7 @@ import {
   MediaChromeDialog,
   MediaLoadingIndicator,
   MediaSeekBackwardButton,
+  MediaChromeButton,
 } from "media-chrome/react";
 import {
   MediaPlaybackRateMenu,
@@ -166,6 +167,42 @@ export const ReleasePlayerCustom = (props: {
         );
       }
     }
+  }
+
+  function _prevEpisode() {
+    if (!episode.available || !episode.selected) return;
+
+    const curEpIdx = episode.available.findIndex(
+      (el) => el.position == episode.selected.position
+    );
+
+    if (curEpIdx == -1 || curEpIdx == 0 || episode.available.length == 0)
+      return;
+
+    setEpisode({
+      selected: episode.available[curEpIdx - 1],
+      available: episode.available,
+    });
+  }
+
+  function _nextEpisode() {
+    if (!episode.available || !episode.selected) return;
+
+    const curEpIdx = episode.available.findIndex(
+      (el) => el.position == episode.selected.position
+    );
+
+    if (
+      curEpIdx == -1 ||
+      episode.available.length == 0 ||
+      curEpIdx == episode.available.length - 1
+    )
+      return;
+
+    setEpisode({
+      selected: episode.available[curEpIdx + 1],
+      available: episode.available,
+    });
   }
 
   return (
@@ -356,6 +393,15 @@ export const ReleasePlayerCustom = (props: {
             </div>
           </MediaChromeDialog>
           <MediaControlBar className={`${Styles["media-control-bar"]}`}>
+            <MediaChromeButton
+              className={`${Styles["media-button"]} w-[calc(2*var(--base))] z-[2]`}
+              onClick={() => _prevEpisode()}
+            >
+              <div slot="tooltip-content">Предыдущая серия</div>
+              <span
+                className={`${Styles["svg"]} iconify solar--skip-previous-outline w-[calc(0.9*var(--base))] h-[calc(0.9*var(--base))]`}
+              ></span>
+            </MediaChromeButton>
             <MediaPlayButton
               mediaPaused={true}
               className={`${Styles["media-button"]} ${Styles["media-play-button"]}`}
@@ -400,6 +446,15 @@ export const ReleasePlayerCustom = (props: {
                 </g>
               </svg>
             </MediaPlayButton>
+            <MediaChromeButton
+              className={`${Styles["media-button"]} w-[calc(2*var(--base))] z-[2]`}
+              onClick={() => _nextEpisode()}
+            >
+              <div slot="tooltip-content">Следующая серия</div>
+              <span
+                className={`${Styles["svg"]} iconify solar--skip-next-outline w-[calc(0.9*var(--base))] h-[calc(0.9*var(--base))]`}
+              ></span>
+            </MediaChromeButton>
             <MediaMuteButton
               className={`${Styles["media-button"]} ${Styles["media-mute-button"]}`}
               noTooltip={true}
