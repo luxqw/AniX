@@ -41,6 +41,7 @@ import HlsVideo from "hls-video-element/react";
 import VideoJS from "videojs-video-element/react";
 import { ENDPOINTS } from "#/api/config";
 import { saveAnonEpisodeWatched } from "./ReleasePlayer";
+import { usePreferencesStore } from "#/store/preferences";
 
 export const ReleasePlayerCustom = (props: {
   id: number;
@@ -71,6 +72,8 @@ export const ReleasePlayerCustom = (props: {
   const [playerError, setPlayerError] = useState(null);
   const [playbackRate, setPlaybackRate] = useState(1);
   const [isErrorDetailsOpen, setIsErrorDetailsOpen] = useState(false);
+
+  const preferenceStore = usePreferencesStore()
 
   useEffect(() => {
     const __getInfo = async () => {
@@ -142,7 +145,7 @@ export const ReleasePlayerCustom = (props: {
   }, []);
 
   function saveEpisodeToHistory() {
-    if (episode.selected && !episode.selected.is_watched) {
+    if (preferenceStore.flags.saveWatchHistory && episode.selected && !episode.selected.is_watched) {
       const objectToReplace = episode.available.find(
         (arrayItem: Episode) => arrayItem.position === episode.selected.position
       );
