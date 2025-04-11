@@ -19,7 +19,6 @@ import {
   MediaAirplayButton,
   MediaChromeDialog,
   MediaLoadingIndicator,
-  MediaPosterImage,
   MediaSeekBackwardButton,
 } from "media-chrome/react";
 import {
@@ -36,12 +35,11 @@ import {
   _fetchKodikManifest,
   _fetchSibnetManifest,
 } from "./PlayerParsing";
-import { EpisodeSelectorMenu } from "./EpisodeSelectorMenu";
+import { Episode, EpisodeSelectorMenu } from "./EpisodeSelectorMenu";
 import HlsVideo from "hls-video-element/react";
 import VideoJS from "videojs-video-element/react";
-
-// import { ENDPOINTS } from "#/api/config";
-// import { getAnonEpisodesWatched } from "./ReleasePlayer";
+import { ENDPOINTS } from "#/api/config";
+import { saveAnonEpisodeWatched } from "./ReleasePlayer";
 
 export const ReleasePlayerCustom = (props: {
   id: number;
@@ -142,6 +140,34 @@ export const ReleasePlayerCustom = (props: {
     }
   }, []);
 
+  function saveEpisodeToHistory() {
+    if (episode.selected && !episode.selected.is_watched) {
+      const objectToReplace = episode.available.find(
+        (arrayItem: Episode) => arrayItem.position === episode.selected.position
+      );
+      const newObject = {
+        ...episode.selected,
+        is_watched: true,
+      };
+      Object.assign(objectToReplace, newObject);
+
+      saveAnonEpisodeWatched(
+        props.id,
+        source.selected.id,
+        voiceover.selected.id,
+        episode.selected.position
+      );
+      if (props.token) {
+        fetch(
+          `${ENDPOINTS.statistic.addHistory}/${props.id}/${source.selected.id}/${episode.selected.position}?token=${props.token}`
+        );
+        fetch(
+          `${ENDPOINTS.statistic.markWatched}/${props.id}/${source.selected.id}/${episode.selected.position}?token=${props.token}`
+        );
+      }
+    }
+  }
+
   return (
     <Card className="">
       <div className="flex items-center justify-center w-full h-full">
@@ -149,6 +175,7 @@ export const ReleasePlayerCustom = (props: {
           breakpoints="md:480"
           defaultStreamType="on-demand"
           className={`relative w-full overflow-hidden ${Styles["media-controller"]}`}
+          onPlayCapture={() => saveEpisodeToHistory()}
         >
           {playerProps.type == "hls" && playerProps.src && (
             <HlsVideo
