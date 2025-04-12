@@ -84,9 +84,17 @@ export const CommentsComment = (props: {
         url += `&token=${props.token}`;
       }
       await fetch(url)
-        .then((res) => res.json())
+        .then((res) => {
+          if (res.ok) {
+            return res.json();
+          } else {
+            return { content: [] };
+          }
+        })
         .then((data) => {
-          setReplies(data.content);
+          if (data && data.content) {
+            setReplies(data.content);
+          }
         });
     }
     if (
@@ -194,9 +202,9 @@ export const CommentsComment = (props: {
         </footer>
         <div className="relative flex items-center py-2">
           <p className="text-gray-800 whitespace-pre-wrap dark:text-gray-400">
-            {!props.comment.isDeleted
-              ? props.comment.message
-              : "Комментарий был удалён."}
+            {!props.comment.isDeleted ?
+              props.comment.message
+            : "Комментарий был удалён."}
           </p>
           {isHidden && (
             <button
@@ -205,9 +213,9 @@ export const CommentsComment = (props: {
             >
               <div className="min-w-full min-h-full px-2 py-1.5 rounded-md bg-black text-white bg-opacity-50 backdrop-blur-[8px] flex flex-col justify-center items-center">
                 <p>
-                  {props.comment.likes_count < -5
-                    ? "У комментария слишком низкий рейтинг."
-                    : "Данный комментарий может содержать спойлер."}
+                  {props.comment.likes_count < -5 ?
+                    "У комментария слишком низкий рейтинг."
+                  : "Данный комментарий может содержать спойлер."}
                 </p>
                 <p className="font-bold">Нажмите, чтобы прочитать</p>
               </div>
@@ -220,7 +228,7 @@ export const CommentsComment = (props: {
               isHidden ? "mt-4" : ""
             }`}
           >
-            {props.token ? (
+            {props.token ?
               <button
                 type="button"
                 className="flex items-center text-sm font-medium text-gray-500 hover:underline dark:text-gray-400"
@@ -243,9 +251,7 @@ export const CommentsComment = (props: {
                 </svg>
                 Ответить
               </button>
-            ) : (
-              <span></span>
-            )}
+            : <span></span>}
             <div className="flex items-center">
               <Button
                 color="inline"
@@ -256,19 +262,17 @@ export const CommentsComment = (props: {
               >
                 <span
                   className={`w-6 h-6 iconify mdi--dislike ${
-                    vote == 1
-                      ? "text-red-500 dark:text-red-400"
-                      : "text-gray-500 dark:text-gray-400"
+                    vote == 1 ?
+                      "text-red-500 dark:text-red-400"
+                    : "text-gray-500 dark:text-gray-400"
                   }`}
                 ></span>
               </Button>
               <p
                 className={`text-sm font-medium ${
-                  likes > 0
-                    ? "text-green-500 dark:text-green-400"
-                    : likes < 0
-                    ? "text-red-500 dark:text-red-400"
-                    : "text-gray-500 dark:text-gray-400"
+                  likes > 0 ? "text-green-500 dark:text-green-400"
+                  : likes < 0 ? "text-red-500 dark:text-red-400"
+                  : "text-gray-500 dark:text-gray-400"
                 }`}
               >
                 {likes}
@@ -282,9 +286,9 @@ export const CommentsComment = (props: {
               >
                 <span
                   className={`w-6 h-6 iconify mdi--like ${
-                    vote == 2
-                      ? "text-green-500 dark:text-green-400"
-                      : "text-gray-500 dark:text-gray-400"
+                    vote == 2 ?
+                      "text-green-500 dark:text-green-400"
+                    : "text-gray-500 dark:text-gray-400"
                   }`}
                 ></span>
               </Button>

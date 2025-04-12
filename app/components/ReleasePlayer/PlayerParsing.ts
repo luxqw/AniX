@@ -1,0 +1,178 @@
+import { tryCatchPlayer, tryCatchAPI } from "#/api/utils";
+
+export async function _fetchAPI(
+  url: string,
+  onErrorMsg: string,
+  setPlayerError: (state) => void,
+  onErrorCodes?: Record<number, string>
+) {
+  const { data, error } = await tryCatchAPI(fetch(url));
+  if (error) {
+    let errorDetail = "Мы правда не знаем что произошло...";
+
+    if (error.name) {
+      if (error.name == "TypeError") {
+        errorDetail = "Не удалось подключиться к серверу";
+      } else {
+        errorDetail = `Неизвестная ошибка ${error.name}: ${error.message}`;
+      }
+    }
+    if (error.code) {
+      if (Object.keys(onErrorCodes).includes(error.code.toString())) {
+        errorDetail = onErrorCodes[error.code.toString()];
+      } else {
+        errorDetail = `API вернуло ошибку: ${error.code}`;
+      }
+    }
+
+    setPlayerError({
+      message: onErrorMsg,
+      detail: errorDetail,
+    });
+    return null;
+  }
+  return data;
+}
+
+export async function _fetchPlayer(
+  url: string,
+  setPlayerError: (state) => void
+) {
+  const { data, error } = (await tryCatchPlayer(fetch(url))) as any;
+  if (error) {
+    let errorDetail = "Мы правда не знаем что произошло...";
+
+    if (error.name) {
+      if (error.name == "TypeError") {
+        errorDetail = "Не удалось подключиться к серверу";
+      } else {
+        errorDetail = `Неизвестная ошибка ${error.name}: ${error.message}`;
+      }
+    } else if (error.message) {
+      errorDetail = error.message;
+    }
+
+    setPlayerError({
+      message: "Не удалось получить ссылку на видео",
+      detail: errorDetail,
+    });
+    return null;
+  }
+  return data;
+}
+
+export const _fetchKodikManifest = async (
+  url: string,
+  setPlayerError: (state) => void
+) => {
+  // Fetch episode links via edge function
+  const data = await _fetchPlayer(
+    `https://anix-player.wah.su/?url=${url}&player=kodik`,
+    setPlayerError
+  );
+  if (data) {
+    let lowQualityLink = data.links["360"][0].src; // we assume that 360p is always present
+
+    if (!lowQualityLink.includes("//")) {
+      // check if link is encrypted, else do nothing
+      const decryptedBase64 = lowQualityLink.replace(/[a-zA-Z]/g, (e) => {
+        return String.fromCharCode(
+          (e <= "Z" ? 90 : 122) >= (e = e.charCodeAt(0) + 18) ? e : e - 26
+        );
+      });
+      lowQualityLink = atob(decryptedBase64);
+    }
+
+    if (lowQualityLink.includes("https://")) {
+      // string the https prefix, since we add it manually
+      lowQualityLink = lowQualityLink.replace("https://", "//");
+    }
+
+    let manifest = `https:${lowQualityLink.replace("360.mp4:hls:", "")}`;
+    let poster = `https:${lowQualityLink.replace("360.mp4:hls:manifest.m3u8", "thumb001.jpg")}`;
+
+    if (lowQualityLink.includes("animetvseries")) {
+      // if link includes "animetvseries" we need to construct manifest ourselves
+      let blobTxt = "#EXTM3U\n";
+
+      if (data.links.hasOwnProperty("240")) {
+        blobTxt += "#EXT-X-STREAM-INF:RESOLUTION=427x240,BANDWIDTH=200000\n";
+        !data.links["240"][0].src.startsWith("https:") ?
+          (blobTxt += `https:${data.links["240"][0].src}\n`)
+        : (blobTxt += `${data.links["240"][0].src}\n`);
+      }
+
+      if (data.links.hasOwnProperty("360")) {
+        blobTxt += "#EXT-X-STREAM-INF:RESOLUTION=578x360,BANDWIDTH=400000\n";
+        !data.links["360"][0].src.startsWith("https:") ?
+          (blobTxt += `https:${data.links["360"][0].src}\n`)
+        : (blobTxt += `${data.links["360"][0].src}\n`);
+      }
+
+      if (data.links.hasOwnProperty("480")) {
+        blobTxt += "#EXT-X-STREAM-INF:RESOLUTION=854x480,BANDWIDTH=596000\n";
+        !data.links["480"][0].src.startsWith("https:") ?
+          (blobTxt += `https:${data.links["480"][0].src}\n`)
+        : (blobTxt += `${data.links["480"][0].src}\n`);
+      }
+
+      if (data.links.hasOwnProperty("720")) {
+        blobTxt += "#EXT-X-STREAM-INF:RESOLUTION=1280x720,BANDWIDTH=1280000\n";
+        !data.links["720"][0].src.startsWith("https:") ?
+          (blobTxt += `https:${data.links["720"][0].src}\n`)
+        : (blobTxt += `${data.links["720"][0].src}\n`);
+      }
+
+      let file = new File([blobTxt], "manifest.m3u8", {
+        type: "application/x-mpegURL",
+      });
+      manifest = URL.createObjectURL(file);
+    }
+    return { manifest, poster };
+  }
+  return { manifest: null, poster: null };
+};
+
+export const _fetchAnilibriaManifest = async (
+  url: string,
+  setPlayerError: (state) => void
+) => {
+  const id = url.split("?id=")[1].split("&ep=")[0];
+  const epid = url.split("?id=")[1].split("&ep=")[1];
+  const _url = `https://api.anilibria.tv/v3/title?id=${id}`
+  const data = await _fetchPlayer(
+    `https://anix-player.wah.su/?url=${_url}&player=libria`,
+    setPlayerError
+  );
+  if (data) {
+    const host = `https://${data.player.host}`;
+    const ep = data.player.list[epid];
+
+    // we need to manually construct a manifest file for a hls player
+    const blobTxt = `#EXTM3U\n${ep.hls.sd && `#EXT-X-STREAM-INF:RESOLUTION=854x480,BANDWIDTH=596000\n${host}${ep.hls.sd}\n`}${ep.hls.hd && `#EXT-X-STREAM-INF:RESOLUTION=1280x720,BANDWIDTH=1280000\n${host}${ep.hls.hd}\n`}${ep.hls.fhd && `#EXT-X-STREAM-INF:RESOLUTION=1920x1080,BANDWIDTH=2560000\n${host}${ep.hls.fhd}\n`}`;
+    let file = new File([blobTxt], "manifest.m3u8", {
+      type: "application/x-mpegURL",
+    });
+    let manifest = URL.createObjectURL(file);
+    let poster = `https://anixart.libria.fun${ep.preview}`;
+    return { manifest, poster };
+  }
+  return { manifest: null, poster: null };
+};
+
+export const _fetchSibnetManifest = async (
+  url: string,
+  setPlayerError: (state) => void
+) => {
+  // Fetch data via cloud endpoint
+  const data = await _fetchPlayer(
+    `https://sibnet.anix-player.wah.su/?url=${url}`,
+    setPlayerError
+  );
+  if (data) {
+    let manifest = data.video;
+    let poster = data.poster;
+    return { manifest, poster };
+  }
+  return { manifest: null, poster: null };
+};

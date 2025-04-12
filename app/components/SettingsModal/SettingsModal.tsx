@@ -251,6 +251,24 @@ export const SettingsModal = (props: { isOpen: boolean; setIsOpen: any }) => {
           </div>
           <div className="flex items-center justify-between">
             <div>
+              <p className=" dark:text-white">Сохранять историю просмотра</p>
+              <p className="max-w-sm text-gray-500 dark:text-gray-300">
+                При отключении, история не будет сохранятся как локально, так и
+                на аккаунте
+              </p>
+            </div>
+            <ToggleSwitch
+              color="blue"
+              onChange={() =>
+                preferenceStore.setFlags({
+                  saveWatchHistory: !preferenceStore.flags.saveWatchHistory,
+                })
+              }
+              checked={preferenceStore.flags.saveWatchHistory}
+            />
+          </div>
+          <div className="flex items-center justify-between">
+            <div>
               <p className=" dark:text-white">Отправка аналитики</p>
               <p className="text-gray-500 dark:text-gray-300">
                 Требуется перезагрузка для применения

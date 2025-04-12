@@ -1,10 +1,17 @@
-export const Spinner = () => {
+export const Spinner = (props: { size?: "base" | "md" | "lg" }) => {
+  let size = "w-8 h-8";
+  if (props.size == "md") {
+    size = "w-12 h-12";
+  }
+  if (props.size == "lg") {
+    size = "w-16 h-16";
+  }
   return (
     <div>
       <div role="status">
         <svg
           aria-hidden="true"
-          className="inline w-8 h-8 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600"
+          className={`inline ${size} text-gray-200 animate-spin dark:text-gray-600 fill-blue-600`}
           viewBox="0 0 100 101"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"

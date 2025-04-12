@@ -41,7 +41,7 @@ export const CommentsMain = (props: {
             </div>
           </div>
           <div className="flex flex-col gap-2">
-            {props.comments.map((comment: any) => (
+            {props.comments && props.comments.map((comment: any) => (
               <CommentsComment
                 key={comment.id}
                 release_id={props.release_id}
