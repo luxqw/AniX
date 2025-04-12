@@ -73,7 +73,9 @@ export const ReleasePlayerCustom = (props: {
   const [playbackRate, setPlaybackRate] = useState(1);
   const [isErrorDetailsOpen, setIsErrorDetailsOpen] = useState(false);
 
-  const preferenceStore = usePreferencesStore()
+  const [retryCount, setRetryCount] = useState(0);
+
+  const preferenceStore = usePreferencesStore();
 
   useEffect(() => {
     const __getInfo = async () => {
@@ -134,7 +136,7 @@ export const ReleasePlayerCustom = (props: {
       __getInfo();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [episode.selected]);
+  }, [episode.selected, retryCount]);
 
   useEffect(() => {
     if (document && document.querySelector("media-chrome-dialog")) {
@@ -145,7 +147,11 @@ export const ReleasePlayerCustom = (props: {
   }, []);
 
   function saveEpisodeToHistory() {
-    if (preferenceStore.flags.saveWatchHistory && episode.selected && !episode.selected.is_watched) {
+    if (
+      preferenceStore.flags.saveWatchHistory &&
+      episode.selected &&
+      !episode.selected.is_watched
+    ) {
       const objectToReplace = episode.available.find(
         (arrayItem: Episode) => arrayItem.position === episode.selected.position
       );
@@ -298,6 +304,15 @@ export const ReleasePlayerCustom = (props: {
                     {playerError.detail}
                   </p>
                 }
+                {voiceover.selected && source.selected && episode.selected ?
+                  <Button
+                    color="light"
+                    size="xs"
+                    onClick={() => setRetryCount(retryCount + 1)}
+                  >
+                    Повторить
+                  </Button>
+                : ""}
               </div>
             </>
           : ""}
