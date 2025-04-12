@@ -84,15 +84,18 @@ export const _fetchKodikManifest = async (
     }
 
     if (lowQualityLink.includes("https://")) {
-      // string the https prefix, since we add it manually
+      // strip the https prefix, since we add it manually
       lowQualityLink = lowQualityLink.replace("https://", "//");
     }
 
     let manifest = `https:${lowQualityLink.replace("360.mp4:hls:", "")}`;
     let poster = `https:${lowQualityLink.replace("360.mp4:hls:manifest.m3u8", "thumb001.jpg")}`;
 
-    if (lowQualityLink.includes("animetvseries")) {
-      // if link includes "animetvseries" we need to construct manifest ourselves
+    if (
+      lowQualityLink.includes("animetvseries") ||
+      lowQualityLink.includes("tvseries")
+    ) {
+      // if link includes "animetvseries" or "tvseries" we need to construct manifest ourselves
       let blobTxt = "#EXTM3U\n";
 
       if (data.links.hasOwnProperty("240")) {
@@ -139,7 +142,7 @@ export const _fetchAnilibriaManifest = async (
 ) => {
   const id = url.split("?id=")[1].split("&ep=")[0];
   const epid = url.split("?id=")[1].split("&ep=")[1];
-  const _url = `https://api.anilibria.tv/v3/title?id=${id}`
+  const _url = `https://api.anilibria.tv/v3/title?id=${id}`;
   const data = await _fetchPlayer(
     `https://anix-player.wah.su/?url=${_url}&player=libria`,
     setPlayerError
