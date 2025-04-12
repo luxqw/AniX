@@ -61,6 +61,15 @@ export async function _fetchPlayer(
   return data;
 }
 
+function decryptKodikLink(enc: string) {
+  const decryptedBase64 = enc.replace(/[a-zA-Z]/g, (e: any) => {
+    return String.fromCharCode(
+      (e <= "Z" ? 90 : 122) >= (e = e.charCodeAt(0) + 18) ? e : e - 26
+    );
+  });
+  return atob(decryptedBase64);
+}
+
 export const _fetchKodikManifest = async (
   url: string,
   setPlayerError: (state) => void
@@ -75,12 +84,7 @@ export const _fetchKodikManifest = async (
 
     if (!lowQualityLink.includes("//")) {
       // check if link is encrypted, else do nothing
-      const decryptedBase64 = lowQualityLink.replace(/[a-zA-Z]/g, (e) => {
-        return String.fromCharCode(
-          (e <= "Z" ? 90 : 122) >= (e = e.charCodeAt(0) + 18) ? e : e - 26
-        );
-      });
-      lowQualityLink = atob(decryptedBase64);
+      lowQualityLink = decryptKodikLink(lowQualityLink);
     }
 
     if (lowQualityLink.includes("https://")) {
@@ -100,30 +104,87 @@ export const _fetchKodikManifest = async (
 
       if (data.links.hasOwnProperty("240")) {
         blobTxt += "#EXT-X-STREAM-INF:RESOLUTION=427x240,BANDWIDTH=200000\n";
-        !data.links["240"][0].src.startsWith("https:") ?
-          (blobTxt += `https:${data.links["240"][0].src}\n`)
-        : (blobTxt += `${data.links["240"][0].src}\n`);
+        let link = data.links["240"][0].src;
+        let dec = null;
+        link.includes("//") ?
+          link.startsWith("https:") ?
+            (blobTxt += `${link}\n`)
+          : (blobTxt += `https:${link}\n`)
+        : (dec = decryptKodikLink(link));
+
+        dec ?
+          dec.startsWith("https:") ?
+            (blobTxt += `${dec}\n`)
+          : (blobTxt += `https:${dec}\n`)
+        : null;
       }
 
       if (data.links.hasOwnProperty("360")) {
         blobTxt += "#EXT-X-STREAM-INF:RESOLUTION=578x360,BANDWIDTH=400000\n";
-        !data.links["360"][0].src.startsWith("https:") ?
-          (blobTxt += `https:${data.links["360"][0].src}\n`)
-        : (blobTxt += `${data.links["360"][0].src}\n`);
+        let link = data.links["360"][0].src;
+        let dec = null;
+        link.includes("//") ?
+          link.startsWith("https:") ?
+            (blobTxt += `${link}\n`)
+          : (blobTxt += `https:${link}\n`)
+        : (dec = decryptKodikLink(link));
+
+        dec ?
+          dec.startsWith("https:") ?
+            (blobTxt += `${dec}\n`)
+          : (blobTxt += `https:${dec}\n`)
+        : null;
       }
 
       if (data.links.hasOwnProperty("480")) {
         blobTxt += "#EXT-X-STREAM-INF:RESOLUTION=854x480,BANDWIDTH=596000\n";
-        !data.links["480"][0].src.startsWith("https:") ?
-          (blobTxt += `https:${data.links["480"][0].src}\n`)
-        : (blobTxt += `${data.links["480"][0].src}\n`);
+        let link = data.links["480"][0].src;
+        let dec = null;
+        link.includes("//") ?
+          link.startsWith("https:") ?
+            (blobTxt += `${link}\n`)
+          : (blobTxt += `https:${link}\n`)
+        : (dec = decryptKodikLink(link));
+
+        dec ?
+          dec.startsWith("https:") ?
+            (blobTxt += `${dec}\n`)
+          : (blobTxt += `https:${dec}\n`)
+        : null;
       }
 
       if (data.links.hasOwnProperty("720")) {
         blobTxt += "#EXT-X-STREAM-INF:RESOLUTION=1280x720,BANDWIDTH=1280000\n";
-        !data.links["720"][0].src.startsWith("https:") ?
-          (blobTxt += `https:${data.links["720"][0].src}\n`)
-        : (blobTxt += `${data.links["720"][0].src}\n`);
+        let link = data.links["720"][0].src;
+        let dec = null;
+        link.includes("//") ?
+          link.startsWith("https:") ?
+            (blobTxt += `${link}\n`)
+          : (blobTxt += `https:${link}\n`)
+        : (dec = decryptKodikLink(link));
+
+        dec ?
+          dec.startsWith("https:") ?
+            (blobTxt += `${dec}\n`)
+          : (blobTxt += `https:${dec}\n`)
+        : null;
+      }
+
+      if (data.links.hasOwnProperty("1080")) {
+        blobTxt += "#EXT-X-STREAM-INF:RESOLUTION=1920x1080,BANDWIDTH=2560000\n";
+        let link = data.links["1080"][0].src;
+        let dec = null;
+        link.includes("//") ?
+          link.startsWith("https:") ?
+            (blobTxt += `${link}\n`)
+          : (blobTxt += `https:${link}\n`)
+        : (dec = decryptKodikLink(link));
+
+        dec ?
+          dec.startsWith("https:") ?
+            (blobTxt += `${dec}\n`)
+          : (blobTxt += `https:${dec}\n`)
+        : null;
       }
 
       let file = new File([blobTxt], "manifest.m3u8", {
