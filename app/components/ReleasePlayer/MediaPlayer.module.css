@@ -169,6 +169,7 @@
   user-select: none;
   width: fit-content;
   max-height: fit-content;
+  z-index: 5;
 }
 
 @media (min-width: 640px) {
