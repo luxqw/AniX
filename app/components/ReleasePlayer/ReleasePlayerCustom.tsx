@@ -75,6 +75,7 @@ export const ReleasePlayerCustom = (props: {
   const [playerError, setPlayerError] = useState(null);
   const [playbackRate, setPlaybackRate] = useState(1);
   const [isErrorDetailsOpen, setIsErrorDetailsOpen] = useState(false);
+  const [isEpLoadingTimeout, setIsEpLoadingTimeout] = useState(null);
 
   const [retryCount, setRetryCount] = useState(0);
 
@@ -130,13 +131,20 @@ export const ReleasePlayerCustom = (props: {
       });
     };
     if (episode.selected) {
+      if (isEpLoadingTimeout) {
+        clearTimeout(isEpLoadingTimeout);
+      }
+      setPlayerError(null);
       SetPlayerProps({
         src: null,
         poster: null,
         type: null,
       });
-      setPlayerError(null);
-      __getInfo();
+      setIsEpLoadingTimeout(
+        setTimeout(() => {
+          __getInfo();
+        }, 250)
+      );
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [episode.selected, retryCount]);
