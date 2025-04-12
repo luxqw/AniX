@@ -139,8 +139,9 @@ export const _fetchAnilibriaManifest = async (
 ) => {
   const id = url.split("?id=")[1].split("&ep=")[0];
   const epid = url.split("?id=")[1].split("&ep=")[1];
+  const _url = `https://api.anilibria.tv/v3/title?id=${id}`
   const data = await _fetchPlayer(
-    `https://api.anilibria.tv/v3/title?id=${id}`,
+    `https://anix-player.wah.su/?url=${_url}&player=libria`,
     setPlayerError
   );
   if (data) {
