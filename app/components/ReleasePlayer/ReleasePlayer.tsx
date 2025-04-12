@@ -12,6 +12,7 @@ import "swiper/css/navigation";
 import "swiper/css/mousewheel";
 import "swiper/css/scrollbar";
 import { Navigation, Mousewheel, Scrollbar } from "swiper/modules";
+import { usePreferencesStore } from "#/store/preferences";
 
 const DropdownTheme = {
   floating: {
@@ -132,6 +133,7 @@ export const ReleasePlayer = (props: { id: number }) => {
     setSelectedSource(player);
     preferredVoiceoverStore.setPreferredPlayer(props.id, player.name);
   };
+  const preferenceStore = usePreferencesStore();
 
   function _setError(error: string) {
     setVoiceoverInfo(null);
@@ -244,25 +246,48 @@ export const ReleasePlayer = (props: { id: number }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.id, selectedSource, userStore.token]);
 
-  async function _addToHistory(episode: any) {
-    if (episode && userStore.token) {
-      _fetch(
-        `${ENDPOINTS.statistic.addHistory}/${props.id}/${selectedSource.id}/${episode.position}?token=${userStore.token}`
+  function _addToHistory(episode: any) {
+    if (props.id && selectedSource && selectedVoiceover && episode) {
+      const anonEpisodesWatched = getAnonEpisodesWatched(
+        props.id,
+        selectedSource.id,
+        selectedVoiceover.id
       );
-      _fetch(
-        `${ENDPOINTS.statistic.markWatched}/${props.id}/${selectedSource.id}/${episode.position}?token=${userStore.token}`
-      );
+      if (
+        preferenceStore.flags.saveWatchHistory &&
+        !episode.is_watched &&
+        !Object.keys(
+          anonEpisodesWatched[props.id][selectedSource.id][selectedVoiceover.id]
+        ).includes(episode.position.toString())
+      ) {
+        episode.is_watched = true;
+        saveAnonEpisodeWatched(
+          props.id,
+          selectedSource.id,
+          selectedVoiceover.id,
+          episode.position
+        );
+        if (userStore.token) {
+          fetch(
+            `${ENDPOINTS.statistic.addHistory}/${props.id}/${selectedSource.id}/${episode.position}?token=${userStore.token}`
+          );
+          fetch(
+            `${ENDPOINTS.statistic.markWatched}/${props.id}/${selectedSource.id}/${episode.position}?token=${userStore.token}`
+          );
+        }
+      }
     }
   }
 
   return (
     <Card>
-      {!voiceoverInfo || !sourcesInfo || !episodeInfo ? (
+      {!voiceoverInfo || !sourcesInfo || !episodeInfo ?
         <div className="flex items-center justify-center w-full aspect-video">
-          {!error ? <Spinner /> : <p>{error}</p>}
+          {!error ?
+            <Spinner />
+          : <p>{error}</p>}
         </div>
-      ) : (
-        <>
+      : <>
           <div className="flex flex-wrap gap-2">
             <Dropdown
               label={`Озвучка: ${selectedVoiceover.name}`}
@@ -296,15 +321,13 @@ export const ReleasePlayer = (props: { id: number }) => {
             </Dropdown>
           </div>
           <div className="aspect-video">
-            {selectedEpisode ? (
+            {selectedEpisode ?
               <iframe
                 allowFullScreen={true}
                 src={selectedEpisode.url}
                 className="w-full h-full rounded-md"
               ></iframe>
-            ) : (
-              <p>Ошибка загрузки плеера</p>
-            )}
+            : <p>Ошибка загрузки плеера</p>}
           </div>
           <div>
             <Swiper
@@ -335,51 +358,48 @@ export const ReleasePlayer = (props: { id: number }) => {
                 >
                   <Button
                     color={
-                      selectedEpisode.position === episode.position
-                        ? "blue"
-                        : "light"
+                      selectedEpisode.position === episode.position ?
+                        "blue"
+                      : "light"
                     }
                     theme={{ base: "w-full disabled:opacity-100" }}
                     onClick={() => {
                       setSelectedEpisode(episode);
-                      episode.is_watched = true;
                       _addToHistory(episode);
-                      saveAnonEpisodeWatched(
+                    }}
+                    disabled={selectedEpisode.position === episode.position}
+                  >
+                    {episode.name ?
+                      episode.name
+                    : `${
+                        (
+                          !["Sibnet", "Sibnet (не работает)"].includes(
+                            selectedSource.name
+                          )
+                        ) ?
+                          episode.position
+                        : episode.position + 1
+                      } серия`
+                    }
+                    {(
+                      episode.is_watched ||
+                      getAnonCurrentEpisodeWatched(
                         props.id,
                         selectedSource.id,
                         selectedVoiceover.id,
                         episode.position
-                      );
-                    }}
-                    disabled={selectedEpisode.position === episode.position}
-                  >
-                    {episode.name
-                      ? episode.name
-                      : `${
-                          !["Sibnet", "Sibnet (не работает)"].includes(
-                            selectedSource.name
-                          )
-                            ? episode.position
-                            : episode.position + 1
-                        } серия`}
-                    {episode.is_watched ||
-                    getAnonCurrentEpisodeWatched(
-                      props.id,
-                      selectedSource.id,
-                      selectedVoiceover.id,
-                      episode.position
-                    ) ? (
+                      )
+                    ) ?
                       <span className="w-5 h-5 ml-2 iconify material-symbols--check-circle"></span>
-                    ) : (
-                      <span className="w-5 h-5 ml-2 opacity-10 iconify material-symbols--check-circle"></span>
-                    )}
+                    : <span className="w-5 h-5 ml-2 opacity-10 iconify material-symbols--check-circle"></span>
+                    }
                   </Button>
                 </SwiperSlide>
               ))}
             </Swiper>
           </div>
         </>
-      )}
+      }
     </Card>
   );
 };

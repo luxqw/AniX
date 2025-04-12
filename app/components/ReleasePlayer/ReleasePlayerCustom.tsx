@@ -40,7 +40,10 @@ import { Episode, EpisodeSelectorMenu } from "./EpisodeSelectorMenu";
 import HlsVideo from "hls-video-element/react";
 import VideoJS from "videojs-video-element/react";
 import { ENDPOINTS } from "#/api/config";
-import { saveAnonEpisodeWatched } from "./ReleasePlayer";
+import {
+  getAnonEpisodesWatched,
+  saveAnonEpisodeWatched,
+} from "./ReleasePlayer";
 import { usePreferencesStore } from "#/store/preferences";
 
 export const ReleasePlayerCustom = (props: {
@@ -147,33 +150,44 @@ export const ReleasePlayerCustom = (props: {
   }, []);
 
   function saveEpisodeToHistory() {
-    if (
-      preferenceStore.flags.saveWatchHistory &&
-      episode.selected &&
-      !episode.selected.is_watched
-    ) {
-      const objectToReplace = episode.available.find(
-        (arrayItem: Episode) => arrayItem.position === episode.selected.position
-      );
-      const newObject = {
-        ...episode.selected,
-        is_watched: true,
-      };
-      Object.assign(objectToReplace, newObject);
-
-      saveAnonEpisodeWatched(
+    if (props.id && source.selected && voiceover.selected && episode.selected) {
+      const anonEpisodesWatched = getAnonEpisodesWatched(
         props.id,
         source.selected.id,
-        voiceover.selected.id,
-        episode.selected.position
+        voiceover.selected.id
       );
-      if (props.token) {
-        fetch(
-          `${ENDPOINTS.statistic.addHistory}/${props.id}/${source.selected.id}/${episode.selected.position}?token=${props.token}`
+      if (
+        preferenceStore.flags.saveWatchHistory &&
+        !episode.selected.is_watched &&
+        !Object.keys(
+          anonEpisodesWatched[props.id][source.selected.id][
+            voiceover.selected.id
+          ]
+        ).includes(episode.selected.position.toString())
+      ) {
+        const objectToReplace = episode.available.find(
+          (arrayItem: Episode) =>
+            arrayItem.position === episode.selected.position
         );
-        fetch(
-          `${ENDPOINTS.statistic.markWatched}/${props.id}/${source.selected.id}/${episode.selected.position}?token=${props.token}`
+        const newObject = {
+          ...episode.selected,
+          is_watched: true,
+        };
+        Object.assign(objectToReplace, newObject);
+        saveAnonEpisodeWatched(
+          props.id,
+          source.selected.id,
+          voiceover.selected.id,
+          episode.selected.position
         );
+        if (props.token) {
+          fetch(
+            `${ENDPOINTS.statistic.addHistory}/${props.id}/${source.selected.id}/${episode.selected.position}?token=${props.token}`
+          );
+          fetch(
+            `${ENDPOINTS.statistic.markWatched}/${props.id}/${source.selected.id}/${episode.selected.position}?token=${props.token}`
+          );
+        }
       }
     }
   }
