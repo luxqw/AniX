@@ -94,7 +94,8 @@
 1. Клонируйте репозиторий `git clone https://github.com/Radiquum/AniX`
 2. Переместитесь в директорию репозитория `cd AniX`
 3. Переместитесь в директорию парсеров `cd player-parsers`
-4. Выполните команду `pm2 start index.ts -n anix-player-parser`
+4. Выполните команду `npm install`
+5. После окончания, Выполните команду `pm2 start index.ts -n anix-player-parser`
 
 ### Обозначения
 

@@ -94,7 +94,8 @@ Instructions:
 1. Clone the repository `git clone https://github.com/Radiquum/AniX`
 2. Navigate to the repository directory `cd AniX`
 3. Navigate to the parsers directory `cd player-parsers`
-4. Run the command `pm2 start index.ts -n anix-player-parser`
+4. Run the command `npm install`
+5. Once finished, Run the command `pm2 start index.ts -n anix-player-parser`
 
 ### Legend
 
