@@ -1,10 +1,4 @@
 {
-    "git": {
-        "deploymentEnabled": {
-            "V3": false,
-            "V2": false
-        }
-    },
     "headers": [
         {
             "source": "/bookmarks/:slug*",
