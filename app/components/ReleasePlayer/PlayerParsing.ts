@@ -75,8 +75,16 @@ export const _fetchKodikManifest = async (
   setPlayerError: (state) => void
 ) => {
   // Fetch episode links via edge function
+  if (!process.env.NEXT_PUBLIC_KODIK_PARSER_DOMAIN) {
+    setPlayerError({
+      message: "Источник не настроен",
+      detail: "переменная 'NEXT_PUBLIC_KODIK_PARSER_DOMAIN' не обнаружена",
+    });
+    return { manifest: null, poster: null };
+  }
+
   const data = await _fetchPlayer(
-    `https://anix-player.wah.su/?url=${url}&player=kodik`,
+    `https://${process.env.NEXT_PUBLIC_KODIK_PARSER_DOMAIN}/?url=${url}&player=kodik`,
     setPlayerError
   );
   if (data) {
@@ -204,10 +212,16 @@ export const _fetchAnilibriaManifest = async (
   const id = url.split("?id=")[1].split("&ep=")[0];
   const epid = url.split("?id=")[1].split("&ep=")[1];
   const _url = `https://api.anilibria.tv/v3/title?id=${id}`;
-  const data = await _fetchPlayer(
-    `https://anix-player.wah.su/?url=${_url}&player=libria`,
-    setPlayerError
-  );
+  let data = null;
+  if (process.env.NEXT_PUBLIC_ANILIBRIA_PARSER_DOMAIN) {
+    data = await _fetchPlayer(
+      `https://${process.env.NEXT_PUBLIC_ANILIBRIA_PARSER_DOMAIN}/?url=${_url}&player=libria`,
+      setPlayerError
+    );
+  } else {
+    data = await _fetchPlayer(_url, setPlayerError);
+  }
+
   if (data) {
     const host = `https://${data.player.host}`;
     const ep = data.player.list[epid];
@@ -229,8 +243,15 @@ export const _fetchSibnetManifest = async (
   setPlayerError: (state) => void
 ) => {
   // Fetch data via cloud endpoint
+  if (!process.env.NEXT_PUBLIC_SIBNET_PARSER_DOMAIN) {
+    setPlayerError({
+      message: "Источник не настроен",
+      detail: "переменная 'NEXT_PUBLIC_SIBNET_PARSER_DOMAIN' не обнаружена",
+    });
+    return { manifest: null, poster: null };
+  }
   const data = await _fetchPlayer(
-    `https://sibnet.anix-player.wah.su/?url=${url}`,
+    `https://${process.env.NEXT_PUBLIC_SIBNET_PARSER_DOMAIN}/?url=${url}`,
     setPlayerError
   );
   if (data) {

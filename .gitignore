@@ -61,3 +61,4 @@ videos/*
 public/_next-video
 
 API-Trace/*
+.env
