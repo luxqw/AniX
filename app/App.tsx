@@ -7,7 +7,6 @@ import { useEffect, useState } from "react";
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "flowbite-react";
 import { Spinner } from "./components/Spinner/Spinner";
 import { ChangelogModal } from "#/components/ChangelogModal/ChangelogModal";
-import PlausibleProvider from "next-plausible";
 import { Bounce, ToastContainer } from "react-toastify";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -104,14 +103,6 @@ export const App = (props) => {
           </Button>
         </ModalFooter>
       </Modal>
-      {preferencesStore.flags.enableAnalytics && (
-        <PlausibleProvider
-          domain="anix.wah.su"
-          trackLocalhost={false}
-          selfHosted={true}
-          enabled={true}
-        />
-      )}
       <ToastContainer
         className={"mx-2 mb-20 sm:mb-0"}
         position="bottom-center"

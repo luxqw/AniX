@@ -1,4 +1,3 @@
-const { withPlausibleProxy } = require("next-plausible");
 const withFlowbiteReact = require("flowbite-react/plugin/nextjs");
 /** @type {import('next').NextConfig} */
 const NextConfig = {
@@ -75,8 +74,6 @@ const NextConfig = {
   },
 };
 
-const config = withPlausibleProxy({
-  customDomain: "https://analytics.wah.su",
-})(withFlowbiteReact(NextConfig));
+const config = withFlowbiteReact(NextConfig);
 
 module.exports = config;
