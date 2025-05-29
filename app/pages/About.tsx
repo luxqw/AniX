@@ -45,8 +45,8 @@ export const AboutPage = () => {
   });
 
   return (
-    <div className="grid grid-cols-1 gap-2 md:grid-cols-2 lg:grid-cols-3">
-      <Card className="md:col-span-2 lg:col-span-3">
+    <div className="grid grid-cols-1 gap-2 mb-4 md:grid-cols-2">
+      <Card className="md:col-span-2">
         <div className="flex flex-col items-center gap-4 md:flex-row">
           <Image
             src="/images/icons/icon-512x512.png"
@@ -62,32 +62,13 @@ export const AboutPage = () => {
             <p className="max-w-[900px]">
               AniX - это неофициальный веб-клиент для Android-приложения
               Anixart. Он позволяет вам получать доступ к своей учетной записи
-              Anixart и управлять ею из веб-браузера. Так-же можно
-              синхронизировать и управлять списками и избранным. И самое главное
-              смотреть все доступные аниме из базы Anixart.
+              Anixart и управлять ею из веб-браузера компьютера или телефона.
+              В клиенте доступна синхронизация с аккаунтом и управление его списками и избранным.
+              А самое главное - это возможность смотреть все доступные аниме из базы Anixart даже недоступные на территории РФ.
             </p>
           </div>
         </div>
       </Card>
-      <Link href={"https://wah.su/radiquum"} target="_blank">
-        <Card>
-          <div className="flex items-center gap-4">
-            <Image
-              src="https://radiquum.wah.su/static/avatar_512.jpg"
-              className="flex-shrink-0 w-16 h-16 rounded-full"
-              alt="developer image"
-              width={128}
-              height={128}
-            />
-            <div>
-              <h1 className="text-xl font-bold">Radiquum</h1>
-              <p className="text-sm text-gray-500 dark:text-gray-200">
-                Разработчик
-              </p>
-            </div>
-          </div>
-        </Card>
-      </Link>
       <Link href={"https://t.me/anix_web"} target="_blank">
         <Card>
           <div className="flex items-center gap-4">
@@ -114,7 +95,7 @@ export const AboutPage = () => {
           </div>
         </Card>
       </Link>
-      <Card className="md:col-span-2 lg:col-span-3">
+      <Card className="md:col-span-2">
         <h1 className="text-2xl font-bold">Список изменений</h1>
         <Markdown className={Styles.markdown}>{current.changelog}</Markdown>
         <Accordion collapseAll={true}>
