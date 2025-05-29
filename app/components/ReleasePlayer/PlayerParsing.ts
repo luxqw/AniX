@@ -75,16 +75,16 @@ export const _fetchKodikManifest = async (
   setPlayerError: (state) => void
 ) => {
   // Fetch episode links via edge function
-  if (!process.env.NEXT_PUBLIC_KODIK_PARSER_DOMAIN) {
+  if (!process.env.NEXT_PUBLIC_KODIK_PARSER_URL) {
     setPlayerError({
       message: "Источник не настроен",
-      detail: "переменная 'NEXT_PUBLIC_KODIK_PARSER_DOMAIN' не обнаружена",
+      detail: "переменная 'NEXT_PUBLIC_KODIK_PARSER_URL' не обнаружена",
     });
     return { manifest: null, poster: null };
   }
 
   const data = await _fetchPlayer(
-    `https://${process.env.NEXT_PUBLIC_KODIK_PARSER_DOMAIN}/?url=${url}&player=kodik`,
+    `${process.env.NEXT_PUBLIC_KODIK_PARSER_URL}/?url=${url}&player=kodik`,
     setPlayerError
   );
   if (data) {
@@ -213,9 +213,9 @@ export const _fetchAnilibriaManifest = async (
   const epid = url.split("?id=")[1].split("&ep=")[1];
   const _url = `https://api.anilibria.tv/v3/title?id=${id}`;
   let data = null;
-  if (process.env.NEXT_PUBLIC_ANILIBRIA_PARSER_DOMAIN) {
+  if (process.env.NEXT_PUBLIC_ANILIBRIA_PARSER_URL) {
     data = await _fetchPlayer(
-      `https://${process.env.NEXT_PUBLIC_ANILIBRIA_PARSER_DOMAIN}/?url=${_url}&player=libria`,
+      `${process.env.NEXT_PUBLIC_ANILIBRIA_PARSER_URL}/?url=${_url}&player=libria`,
       setPlayerError
     );
   } else {
@@ -243,15 +243,15 @@ export const _fetchSibnetManifest = async (
   setPlayerError: (state) => void
 ) => {
   // Fetch data via cloud endpoint
-  if (!process.env.NEXT_PUBLIC_SIBNET_PARSER_DOMAIN) {
+  if (!process.env.NEXT_PUBLIC_SIBNET_PARSER_URL) {
     setPlayerError({
       message: "Источник не настроен",
-      detail: "переменная 'NEXT_PUBLIC_SIBNET_PARSER_DOMAIN' не обнаружена",
+      detail: "переменная 'NEXT_PUBLIC_SIBNET_PARSER_URL' не обнаружена",
     });
     return { manifest: null, poster: null };
   }
   const data = await _fetchPlayer(
-    `https://${process.env.NEXT_PUBLIC_SIBNET_PARSER_DOMAIN}/?url=${url}`,
+    `${process.env.NEXT_PUBLIC_SIBNET_PARSER_URL}/?url=${url}&player=sibnet`,
     setPlayerError
   );
   if (data) {
