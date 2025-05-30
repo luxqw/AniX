@@ -2,19 +2,19 @@
 
 AniX is an unofficial web client for the Android application Anixart. It allows you to access and manage your Anixart account from a web browser on your desktop or laptop computer.
 
-[Readme [RU]](./docs/REAME.RU.md) | [Browser Extension [RU]](./extension/README.md)
-
-## Changelog [RU]
-
-- [3.7.0](./public/changelog/3.7.0.md)
-- [3.6.0](./public/changelog/3.6.0.md)
-- [3.5.0](./public/changelog/3.5.0.md)
-
-[other versions](./public/changelog)
-
 ## Disclaimer
 
 Please note that AniX is an unofficial project and is not affiliated with the developers of Anixart. It is recommended to use the official Anixart app for the most up-to-date features and functionality.
+
+---
+
+[[RU] ПРОЧТИ МЕНЯ](./REAME.RU.md) | [[EN] README](./REAME.md)
+
+[[RU] РАЗВЁРТЫВАНИЕ](./DEPLOYMENT.RU.md) | [[EN] DEPLOY](./DEPLOYMENT.md)
+
+[[RU] Changelogs](./public/changelog)
+
+---
 
 ## Screenshots
 
@@ -52,12 +52,6 @@ Please note that AniX is an unofficial project and is not affiliated with the de
 ![User Page Screenshot](./docs/images/ProfilePageView.jpg)
 
 </details>
-
-## Features
-
-1. Use your existing Anixart account
-2. sync lists, watch history, collections and more
-3. use almost all features of an android app
 
 ## Contributing
 

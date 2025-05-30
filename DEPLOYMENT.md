@@ -111,9 +111,9 @@ Additional Requirements:
 
 - [git](https://git-scm.com/)
 
-1. Clone the repository `git clone https://github.com/Radiquum/AniX`  
-2. Navigate to the repository directory `cd AniX`  
-3. Run the command `docker build -t anix .`  
+1. Clone the repository `git clone https://github.com/Radiquum/AniX`
+2. Navigate to the repository directory `cd AniX`
+3. Run the command `docker build -t anix .`
 4. Once finished, run the command: `docker run -d --restart always --name anix -p 3000:3000 anix`
 
 ### docker/Flags
