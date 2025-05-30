@@ -44,7 +44,7 @@
 
 1. выполните комманду:
 
-`docker run -d --name anix-player -p 7000:7000 ghcr.io/radiquum/anix-player-parser:29-05-2025`
+`docker run -d --name anix-player -p 7000:7000 radiquum/anix-player-parser:latest`
 
 ### Ручной билд
 
