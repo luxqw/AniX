@@ -36,8 +36,7 @@ Response:
 >
 > Because of this specificity, the parsers cannot be deployed on edge services like CloudFlare Workers or Deno, only on a dedicated server.
 
-<details>
-<summary>Using docker</summary>
+### Docker
 
 Requirements:
 
@@ -61,18 +60,18 @@ Additional Requirements:
 4. Run the command `docker build -t anix-player-parser .`
 5. Once finished, run the command: `docker run -d --restart always --name anix-player -p 7000:7000 anix-player-parser`
 
-### Legend
+### docker/Legend
 
 - -d - run the container in background
 - --restart always - always restart after server reboot
 - --name - container name
 - -p - container port accessible externally. PORT:7000
 
-### After deployment
+### docker/After deployment
 
 The service will be available at: `http://<YOUR IP><:YOUR PORT>/`
 
-### Note
+### docker/Note
 
 To use your own domain and support the https protocol, you can use traefik or another reverse-proxy with an SSL certificate.
 
@@ -83,8 +82,7 @@ Useful links:
 
 </details>
 
-<details>
-<summary>Using pm2</summary>
+### pm2
 
 Requirements:
 
@@ -100,20 +98,18 @@ Instructions:
 4. Run the command `npm install`
 5. Once finished, Run the command `pm2 start index.ts -n anix-player-parser`
 
-### Legend
+### pm2/Legend
 
 - -n - service name in pm2
 
-### After deployment
+### pm2/After deployment
 
 The service will be available at: `http://<YOUR IP>:7000/`
 
-### Note
+### pm2/Note
 
 To enable automatic application start, it is recommended to configure pm2 to start on boot with the command: `pm2 startup`
 
 Useful links:
 
 - [PM2: smart approach to process management @ Habr](https://habr.com/ru/articles/480670/)
-
-</details>
