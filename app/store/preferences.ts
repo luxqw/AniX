@@ -9,7 +9,6 @@ interface preferencesState {
     // saveSearchHistory: boolean;
     saveWatchHistory?: boolean;
     showChangelog?: boolean;
-    enableAnalytics?: boolean;
     showNavbarTitles?: "always" | "links" | "selected" | "never";
     showFifthButton?: null | 3 | 4 | 5;
   };
@@ -43,7 +42,6 @@ export const usePreferencesStore = create<preferencesState>()(
         // saveSearchHistory: true,
         saveWatchHistory: true,
         showChangelog: true,
-        enableAnalytics: true,
         showNavbarTitles: "always",
         showFifthButton: null,
       },

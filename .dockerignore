@@ -62,3 +62,7 @@ public/_next-video
 
 API-Trace/*
 .env
+
+player-parsers
+docs
+.git

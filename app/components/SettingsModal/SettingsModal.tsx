@@ -267,23 +267,6 @@ export const SettingsModal = (props: { isOpen: boolean; setIsOpen: any }) => {
               checked={preferenceStore.flags.saveWatchHistory}
             />
           </div>
-          <div className="flex items-center justify-between">
-            <div>
-              <p className=" dark:text-white">Отправка аналитики</p>
-              <p className="text-gray-500 dark:text-gray-300">
-                Требуется перезагрузка для применения
-              </p>
-            </div>
-            <ToggleSwitch
-              color="blue"
-              onChange={() =>
-                preferenceStore.setFlags({
-                  enableAnalytics: !preferenceStore.flags.enableAnalytics,
-                })
-              }
-              checked={preferenceStore.flags.enableAnalytics}
-            />
-          </div>
           <HR className="my-4 dark:bg-slate-400" />
           <div className="flex items-center gap-2">
             <span className="w-6 h-6 iconify material-symbols--experiment-outline"></span>

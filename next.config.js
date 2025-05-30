@@ -1,10 +1,15 @@
-const { withPlausibleProxy } = require("next-plausible");
 const withFlowbiteReact = require("flowbite-react/plugin/nextjs");
 /** @type {import('next').NextConfig} */
 const NextConfig = {
+  output: "standalone",
   reactStrictMode: false,
   images: {
     unoptimized: true,
+  },
+  env: {
+    NEXT_PUBLIC_KODIK_PARSER_URL: process.env.NEXT_PUBLIC_KODIK_PARSER_URL,
+    NEXT_PUBLIC_ANILIBRIA_PARSER_URL: process.env.NEXT_PUBLIC_ANILIBRIA_PARSER_URL,
+    NEXT_PUBLIC_SIBNET_PARSER_URL: process.env.NEXT_PUBLIC_SIBNET_PARSER_URL,
   },
   async headers() {
     return [
@@ -75,8 +80,6 @@ const NextConfig = {
   },
 };
 
-const config = withPlausibleProxy({
-  customDomain: "https://analytics.wah.su",
-})(withFlowbiteReact(NextConfig));
+const config = withFlowbiteReact(NextConfig);
 
 module.exports = config;
