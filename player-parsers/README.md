@@ -29,7 +29,7 @@ Response:
 
 ## Deployment
 
-> Due to the nature of the sources, it is recommended to use a virtual server in Russia or the Netherlands, as they may be inaccessible from other countries.
+> Due to the nature of the sources, it is recommended to use a virtual server in Russia, as they may be inaccessible from other countries.
 >
 > Because of this specificity, the parsers cannot be deployed on edge services like CloudFlare Workers or Deno, only on a dedicated server.
 
