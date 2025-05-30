@@ -4,7 +4,13 @@ import { usePreferencesStore } from "./store/preferences";
 import { Navbar } from "./components/Navbar/NavbarUpdate";
 import { Inter } from "next/font/google";
 import { useEffect, useState } from "react";
-import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "flowbite-react";
+import {
+  Button,
+  Modal,
+  ModalBody,
+  ModalFooter,
+  ModalHeader,
+} from "flowbite-react";
 import { Spinner } from "./components/Spinner/Spinner";
 import { ChangelogModal } from "#/components/ChangelogModal/ChangelogModal";
 import { Bounce, ToastContainer } from "react-toastify";

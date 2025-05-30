@@ -1,4 +1,5 @@
 import { tryCatchPlayer, tryCatchAPI } from "#/api/utils";
+import { env } from 'next-runtime-env';
 
 export async function _fetchAPI(
   url: string,
@@ -75,7 +76,8 @@ export const _fetchKodikManifest = async (
   setPlayerError: (state) => void
 ) => {
   // Fetch episode links via edge function
-  if (!process.env.NEXT_PUBLIC_KODIK_PARSER_URL) {
+  const NEXT_PUBLIC_KODIK_PARSER_URL = env("NEXT_PUBLIC_KODIK_PARSER_URL")
+  if (!NEXT_PUBLIC_KODIK_PARSER_URL) {
     setPlayerError({
       message: "Источник не настроен",
       detail: "переменная 'NEXT_PUBLIC_KODIK_PARSER_URL' не обнаружена",
@@ -84,7 +86,7 @@ export const _fetchKodikManifest = async (
   }
 
   const data = await _fetchPlayer(
-    `${process.env.NEXT_PUBLIC_KODIK_PARSER_URL}/?url=${url}&player=kodik`,
+    `${NEXT_PUBLIC_KODIK_PARSER_URL}/?url=${url}&player=kodik`,
     setPlayerError
   );
   if (data) {
@@ -213,9 +215,10 @@ export const _fetchAnilibriaManifest = async (
   const epid = url.split("?id=")[1].split("&ep=")[1];
   const _url = `https://api.anilibria.tv/v3/title?id=${id}`;
   let data = null;
-  if (process.env.NEXT_PUBLIC_ANILIBRIA_PARSER_URL) {
+  const NEXT_PUBLIC_ANILIBRIA_PARSER_URL = env("NEXT_PUBLIC_ANILIBRIA_PARSER_URL")
+  if (NEXT_PUBLIC_ANILIBRIA_PARSER_URL) {
     data = await _fetchPlayer(
-      `${process.env.NEXT_PUBLIC_ANILIBRIA_PARSER_URL}/?url=${_url}&player=libria`,
+      `${NEXT_PUBLIC_ANILIBRIA_PARSER_URL}/?url=${_url}&player=libria`,
       setPlayerError
     );
   } else {
@@ -243,7 +246,8 @@ export const _fetchSibnetManifest = async (
   setPlayerError: (state) => void
 ) => {
   // Fetch data via cloud endpoint
-  if (!process.env.NEXT_PUBLIC_SIBNET_PARSER_URL) {
+  const NEXT_PUBLIC_SIBNET_PARSER_URL = env("NEXT_PUBLIC_SIBNET_PARSER_URL")
+  if (!NEXT_PUBLIC_SIBNET_PARSER_URL) {
     setPlayerError({
       message: "Источник не настроен",
       detail: "переменная 'NEXT_PUBLIC_SIBNET_PARSER_URL' не обнаружена",
@@ -251,7 +255,7 @@ export const _fetchSibnetManifest = async (
     return { manifest: null, poster: null };
   }
   const data = await _fetchPlayer(
-    `${process.env.NEXT_PUBLIC_SIBNET_PARSER_URL}/?url=${url}&player=sibnet`,
+    `${NEXT_PUBLIC_SIBNET_PARSER_URL}/?url=${url}&player=sibnet`,
     setPlayerError
   );
   if (data) {
