@@ -11,8 +11,9 @@ const port = 7000;
 const allowedPlayers = ["kodik", "libria", "sibnet"];
 
 app.get("/", (req, res) => {
-  const url = req.query.url;
-  const player = req.query.player;
+  const urlParams = new URLSearchParams(req.query)
+  const url = urlParams.get("url");
+  const player = urlParams.get("player");
 
   if (!url) {
     asJSON(res, { message: "no 'url' query provided" }, 400)
