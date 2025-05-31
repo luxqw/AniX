@@ -29,5 +29,5 @@ export function asJSON(res, object: any, status: number) {
 }
 
 export function randomUA() {
-  return USERAGENTS[Math.floor(Math.random() * USERAGENTS.length - 1)]
+  return USERAGENTS[Math.floor(Math.random() * USERAGENTS.length)]
 }
