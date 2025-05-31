@@ -19,7 +19,7 @@ export async function getKodikURL(res, url: string) {
   });
 
   if (!pageRes.ok) {
-    for (let i = 0; i < altDomains.length - 1; i++) {
+    for (let i = 0; i < altDomains.length; i++) {
       if (url.includes(altDomains[i])) {
         continue;
       }
