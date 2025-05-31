@@ -32,9 +32,10 @@ Response:
 
 ## Deployment
 
+> [!IMPORTANT]
 > Due to the nature of the sources, it is recommended to use a virtual server in Russia, as they may be inaccessible from other countries.
 >
-> Because of this specificity, the parsers cannot be deployed on edge services like CloudFlare Workers or Deno, only on a dedicated server.
+> Because of this specificity, the parsers cannot be deployed on edge services like Cloudflare Workers or Deno, only on a dedicated server.
 
 ### Docker
 
@@ -62,7 +63,7 @@ Additional Requirements:
 
 ### docker/Legend
 
-- -d - run the container in background
+- -d - run container in the background
 - --restart always - always restart after server reboot
 - --name - container name
 - -p - container port accessible externally. PORT:7000
@@ -73,14 +74,12 @@ The service will be available at: `http://<YOUR IP><:YOUR PORT>/`
 
 ### docker/Note
 
-To use your own domain and support the https protocol, you can use traefik or another reverse-proxy with an SSL certificate.
+To use your own domain and support the HTTPS protocol, you can use Traefik or another reverse-proxy with an SSL certificate.
 
 Useful links:
 
 - [Docker run to docker compose syntax converter](https://it-tools.tech/docker-run-to-docker-compose-converter)
-- [How to setup traefik + custom domain + SSL](https://letmegooglethat.com/?q=how+to+setup+traefik+with+custom+domain+and+ssl+certificate+from+lets+encrypt%3F)
-
-</details>
+- [How to setup Traefik + custom domain + SSL](https://letmegooglethat.com/?q=how+to+setup+traefik+with+custom+domain+and+ssl+certificate+from+lets+encrypt%3F)
 
 ### pm2
 
@@ -96,7 +95,7 @@ Instructions:
 2. Navigate to the repository directory `cd AniX`
 3. Navigate to the parsers directory `cd player-parsers`
 4. Run the command `npm install`
-5. Once finished, Run the command `pm2 start index.ts -n anix-player-parser`
+5. Once finished, run the command `pm2 start index.ts -n anix-player-parser`
 
 ### pm2/Legend
 

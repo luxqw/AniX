@@ -8,7 +8,7 @@ Please note that AniX is an unofficial project and is not affiliated with the de
 
 ---
 
-[[RU] ПРОЧТИ МЕНЯ](./REAME.RU.md) | [[EN] README](./REAME.md)
+[[RU] ПРОЧТИ МЕНЯ](./README.RU.md) | [[EN] README](./README.md)
 
 [[RU] РАЗВЁРТЫВАНИЕ](./DEPLOYMENT.RU.md) | [[EN] DEPLOY](./DEPLOYMENT.md)
 

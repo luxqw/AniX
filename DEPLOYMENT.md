@@ -14,9 +14,9 @@ Requirements:
 2. Log in to your Vercel account
 
     > [!IMPORTANT]
-    >Your Vercel account must be linked with your GitHub account.
+    > Your Vercel account must be linked with your GitHub account.
     >
-    >If you don't have a Vercel account, create one by signing in with GitHub.
+    > If you don't have a Vercel account, create one by signing in with GitHub.
 
 3. Click the button to create a new project
 
@@ -36,9 +36,9 @@ Requirements:
 
     ![vercel project settings](./docs/deploy/vercel_project.png)
 
-6. Click the "Deploy" button and wait until you see a confirmation  
-7. Click the "Continue to Dashboard" button  
-8. The client will be available at a link of this form, click it to open  
+6. Click the "Deploy" button and wait until you see a confirmation
+7. Click the "Continue to Dashboard" button
+8. The client will be available at a link of this form, click it to open
     ![vercel project url](./docs/deploy/vercel_url.png)
 
 ## Netlify
@@ -55,9 +55,9 @@ Requirements:
 2. Log in to your Netlify account
 
     > [!IMPORTANT]
-    >Your Netlify account must be linked with your GitHub account.
+    > Your Netlify account must be linked with your GitHub account.
     >
-    >If you don't have a Netlify account, create one by signing in with GitHub.
+    > If you don't have a Netlify account, create one by signing in with GitHub.
 
 3. Click the button to create a new project
 
@@ -118,12 +118,12 @@ Additional Requirements:
 
 ### docker/Flags
 
-- -d - run container in background
+- -d - run container in the background
 - --restart always - always restart after server reboot
 - --name - container name
 - -p - container port to be exposed externally. PORT:3000
 
->[!NOTE]
+> [!NOTE]
 > For variables you received if you deployed [anix-player-parsers](./player-parsers/README.md), you need to use `-e VARIABLE=VALUE` before the word anix
 
 [docker run command](https://docs.docker.com/reference/cli/docker/container/run/)
@@ -134,12 +134,12 @@ The service will be available at: `http://<YOUR IP><:YOUR PORT>/`
 
 ### docker/Note
 
-To use your own domain and support HTTPS protocol, you can use traefik or another reverse proxy with SSL certificate.
+To use your own domain and support HTTPS protocol, you can use Traefik or another reverse proxy with SSL certificate.
 
 Useful links:
 
 - [Converter from docker run command to docker compose syntax](https://it-tools.tech/docker-run-to-docker-compose-converter)
-- [How to setup traefik + custom domain + SSL](https://letmegooglethat.com/?q=how+to+setup+traefik+with+custom+domain+and+ssl+certificate+from+lets+encrypt%3F)
+- [How to setup Traefik + custom domain + SSL](https://letmegooglethat.com/?q=how+to+setup+traefik+with+custom+domain+and+ssl+certificate+from+lets+encrypt%3F)
 
 ## pm2
 
@@ -156,12 +156,12 @@ Instructions:
 3. Run the command `npm install`
 4. (optional) copy `.env.sample` as `.env` and fill it with variables you received if you deployed [anix-player-parsers](./player-parsers/README.md)
 5. Run the command `npm run build`
-6. Create a new directory
-7. Move into the new directory:
-    - move `public` directory to `./new/public`
-    - move `.next/static` directory to `./new/.next/static`
-    - move files from `.next/standalone` to `./new`
-8. Move into the created directory and run the command `pm2 start server.js -n anix`
+6. Create a new directory (next we will be refer to its name as `<new_dir>`)
+7. Move the following files into the new directory (`<new_dir>`):
+    - move `public` directory to `<new_dir>/public`
+    - move `.next/static` directory to `<new_dir>/.next/static`
+    - move files from `.next/standalone` to `<new_dir>`
+8. Move into the created directory (<new_dir>) and run the command `pm2 start server.js -n anix`
 
 ### pm2/Flags
 
