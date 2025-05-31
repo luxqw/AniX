@@ -13,10 +13,10 @@ Requirements:
 
 2. Log in to your Vercel account
 
-    > [!IMPORTANT]
-    > Your Vercel account must be linked with your GitHub account.
-    >
-    > If you don't have a Vercel account, create one by signing in with GitHub.
+> [!IMPORTANT]
+> Your Vercel account must be linked with your GitHub account.
+>
+> If you don't have a Vercel account, create one by signing in with GitHub.
 
 3. Click the button to create a new project
 
@@ -54,10 +54,10 @@ Requirements:
 
 2. Log in to your Netlify account
 
-    > [!IMPORTANT]
-    > Your Netlify account must be linked with your GitHub account.
-    >
-    > If you don't have a Netlify account, create one by signing in with GitHub.
+> [!IMPORTANT]
+> Your Netlify account must be linked with your GitHub account.
+>
+> If you don't have a Netlify account, create one by signing in with GitHub.
 
 3. Click the button to create a new project
 

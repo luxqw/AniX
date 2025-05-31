@@ -1,6 +1,6 @@
 # AniX - Player Parsers
 
-This sub-project allows obtaining direct video file links from sources Sibnet, Kodik, Libria
+This sub-project allows obtaining direct video file links from sources Sibnet, Kodik, Anilibria (source: libria)
 
 It can be used both for the main AniX project and as a standalone service.
 
@@ -22,7 +22,7 @@ where:
 - VIDEO_URL - the link to the video from the source
 - PLAYER_SOURCE - the source, one of: kodik, sibnet, libria
 
->[!NOTE]
+> [!NOTE]
 > When using libria source, url should be the url to the anilibria api, not player directly
 
 Response:
