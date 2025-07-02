@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  anix-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: anix-app-dev
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    networks:
+      - anix-network-dev
+    environment:
+      - NODE_ENV=development
+      - PORT=3000
+      - HOSTNAME=0.0.0.0
+      - NEXT_PUBLIC_KODIK_PARSER_URL=${NEXT_PUBLIC_KODIK_PARSER_URL:-}
+      - NEXT_PUBLIC_ANILIBRIA_PARSER_URL=${NEXT_PUBLIC_ANILIBRIA_PARSER_URL:-}
+      - NEXT_PUBLIC_SIBNET_PARSER_URL=${NEXT_PUBLIC_SIBNET_PARSER_URL:-}
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - /app/.next
+
+networks:
+  anix-network-dev:
+    driver: bridge

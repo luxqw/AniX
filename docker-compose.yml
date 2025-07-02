@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  anix-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: anix-app
+    restart: unless-stopped
+    networks:
+      - anix-network
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - HOSTNAME=0.0.0.0
+      - NEXT_PUBLIC_KODIK_PARSER_URL=${NEXT_PUBLIC_KODIK_PARSER_URL:-}
+      - NEXT_PUBLIC_ANILIBRIA_PARSER_URL=${NEXT_PUBLIC_ANILIBRIA_PARSER_URL:-}
+      - NEXT_PUBLIC_SIBNET_PARSER_URL=${NEXT_PUBLIC_SIBNET_PARSER_URL:-}
+
+  nginx:
+    image: nginx:alpine
+    container_name: anix-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/sites-enabled:/etc/nginx/sites-enabled:ro
+      - ./ssl:/etc/ssl/certs:ro
+      - nginx-cache:/var/cache/nginx
+      - nginx-logs:/var/log/nginx
+    networks:
+      - anix-network
+    depends_on:
+      - anix-app
+
+networks:
+  anix-network:
+    driver: bridge
+
+volumes:
+  nginx-cache:
+  nginx-logs:
