@@ -109,7 +109,7 @@
 
 1. Клонируйте репозиторий:
 ```bash
-git clone https://github.com/Radiquum/AniX
+git clone https://github.com/luxqw/AniX
 cd AniX
 ```
 
@@ -126,7 +126,7 @@ make prod
 
 1. Клонируйте репозиторий:
 ```bash
-git clone https://github.com/Radiquum/AniX
+git clone https://github.com/luxqw/AniX
 cd AniX
 ```
 
@@ -164,7 +164,7 @@ make dev
 
 - [git](https://git-scm.com/)
 
-1. Клонируйте репозиторий `git clone https://github.com/Radiquum/AniX`
+1. Клонируйте репозиторий `git clone https://github.com/luxqw/AniX`
 2. Переместитесь в директорию репозитория `cd AniX`
 3. Выполните команду `docker build -t anix .`
 4. После окончания, выполните команду: `docker run -d --restart always --name anix -p 3000:3000 anix`
@@ -246,7 +246,7 @@ NEXT_PUBLIC_SIBNET_PARSER_URL=ваш_url
 
 Инструкция:
 
-1. Клонируйте репозиторий `git clone https://github.com/Radiquum/AniX`
+1. Клонируйте репозиторий `git clone https://github.com/luxqw/AniX`
 2. Переместитесь в директорию репозитория `cd AniX`
 3. Выполните команду `npm install`
 4. (опционально) скопируйте .env.sample как .env и заполните его переменными которые вы получили, если развёртывали [anix-player-parsers](./player-parsers/README.RU.md)
