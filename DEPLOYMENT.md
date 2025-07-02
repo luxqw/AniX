@@ -109,7 +109,7 @@ Requirements:
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/Radiquum/AniX
+git clone https://github.com/luxqw/AniX
 cd AniX
 ```
 
@@ -126,7 +126,7 @@ The application will be available at: `http://localhost`
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/Radiquum/AniX
+git clone https://github.com/luxqw/AniX
 cd AniX
 ```
 
@@ -156,7 +156,7 @@ The application will be available at: `http://localhost:3000`
 
 1. Run the command:
 
-`docker run -d --name anix -p 3000:3000 radiquum/anix:latest`
+`docker run -d --name anix -p 3000:3000 luxqw/anix:latest`
 
 #### Manual build
 
@@ -164,7 +164,7 @@ Additional Requirements:
 
 - [git](https://git-scm.com/)
 
-1. Clone the repository `git clone https://github.com/Radiquum/AniX`
+1. Clone the repository `git clone https://github.com/luxqw/AniX`
 2. Navigate to the repository directory `cd AniX`
 3. Run the command `docker build -t anix .`
 4. Once finished, run the command: `docker run -d --restart always --name anix -p 3000:3000 anix`
@@ -246,7 +246,7 @@ Requirements:
 
 Instructions:
 
-1. Clone the repository `git clone https://github.com/Radiquum/AniX`
+1. Clone the repository `git clone https://github.com/luxqw/AniX`
 2. Navigate to the repository directory `cd AniX`
 3. Run the command `npm install`
 4. (optional) copy `.env.sample` as `.env` and fill it with variables you received if you deployed [anix-player-parsers](./player-parsers/README.md)
