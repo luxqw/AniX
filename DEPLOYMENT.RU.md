@@ -156,7 +156,7 @@ make dev
 
 1. выполните команду:
 
-`docker run -d --name anix -p 3000:3000 radiquum/anix:latest`
+`docker run -d --name anix -p 3000:3000 luxqw/anix:latest`
 
 #### Ручной билд
 
