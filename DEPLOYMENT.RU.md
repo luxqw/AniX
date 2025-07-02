@@ -98,14 +98,67 @@
 Требования:
 
 - [docker](https://docs.docker.com/engine/install/)
+- [docker-compose](https://docs.docker.com/compose/install/) (для продакшн развертывания)
 
-### Пре-билд
+### Быстрое развертывание с Docker Compose (рекомендуется)
+
+> [!TIP]
+> Это самый простой способ развертывания с поддержкой HTTPS, SSL и production-ready конфигурацией.
+
+#### Базовое развертывание без SSL
+
+1. Клонируйте репозиторий:
+```bash
+git clone https://github.com/Radiquum/AniX
+cd AniX
+```
+
+2. Запустите развертывание:
+```bash
+make prod
+# или
+./scripts/deploy.sh --skip-ssl
+```
+
+Приложение будет доступно по адресу: `http://localhost`
+
+#### Развертывание с SSL и собственным доменом
+
+1. Клонируйте репозиторий:
+```bash
+git clone https://github.com/Radiquum/AniX
+cd AniX
+```
+
+2. Запустите развертывание с SSL:
+```bash
+make prod DOMAIN=ваш-домен.com EMAIL=ваш@email.com
+# или
+./scripts/deploy.sh --domain ваш-домен.com --email ваш@email.com
+```
+
+Приложение будет доступно по адресу: `https://ваш-домен.com`
+
+#### Разработка
+
+Для разработки используйте:
+```bash
+make dev
+# или
+./scripts/dev.sh
+```
+
+Приложение будет доступно по адресу: `http://localhost:3000`
+
+### Ручные команды Docker
+
+#### Пре-билд
 
 1. выполните команду:
 
 `docker run -d --name anix -p 3000:3000 radiquum/anix:latest`
 
-### Ручной билд
+#### Ручной билд
 
 Доп. Требования:
 
@@ -115,6 +168,35 @@
 2. Переместитесь в директорию репозитория `cd AniX`
 3. Выполните команду `docker build -t anix .`
 4. После окончания, выполните команду: `docker run -d --restart always --name anix -p 3000:3000 anix`
+
+### Полезные команды
+
+```bash
+# Просмотр логов
+make logs
+
+# Остановка приложения
+make down
+
+# Обновление SSL сертификатов
+make ssl-renew
+
+# Очистка Docker ресурсов
+make clean
+
+# Показать помощь
+make help
+```
+
+### Переменные окружения
+
+Для использования собственного парсера создайте файл `.env` со следующими переменными:
+
+```bash
+NEXT_PUBLIC_KODIK_PARSER_URL=ваш_url
+NEXT_PUBLIC_ANILIBRIA_PARSER_URL=ваш_url
+NEXT_PUBLIC_SIBNET_PARSER_URL=ваш_url
+```
 
 ### docker/Обозначения
 
@@ -130,16 +212,29 @@
 
 ### docker/После развёртывания
 
-Сервис будет доступен по адресу: `http://<ВАШ IP><:ВАШ ПОРТ>/`
+- **С Docker Compose**: `http://localhost` или `https://ваш-домен.com`
+- **С обычным Docker**: `http://<ВАШ IP><:ВАШ ПОРТ>/`
 
-### docker/Примечание
+### docker/Преимущества новой конфигурации
 
-Для использования своего домена и поддержки протокола HTTPS, вы можете использовать Traefik или другой reverse-proxy, с сертификатом SSL.
+✅ **Nginx reverse proxy** с оптимизацией производительности
+✅ **Автоматический SSL** через Let's Encrypt
+✅ **Кэширование статических файлов** для быстрой загрузки
+✅ **Сжатие Gzip** для экономии трафика
+✅ **Заголовки безопасности** для защиты от атак
+✅ **Автоматическое обновление сертификатов**
+✅ **Production-ready конфигурация**
 
-Полезные ссылки:
+### docker/Архитектура
 
-- [Конвертер из команды docker run в синтакс для docker compose](https://it-tools.tech/docker-run-to-docker-compose-converter)
-- [Как настроить Traefik + свой домен + SSL](https://letmegooglethat.com/?q=how+to+setup+traefik+with+custom+domain+and+ssl+certificate+from+lets+encrypt%3F)
+```
+Интернет → Nginx (порты 80/443) → Next.js приложение (порт 3000)
+                ↓
+            SSL сертификаты
+            Кэширование
+            Сжатие
+            Безопасность
+```
 
 ## pm2
 
