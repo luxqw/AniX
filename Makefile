@@ -73,25 +73,25 @@ ssl-renew: ## Renew SSL certificates
 
 # Docker commands
 build: ## Build Docker images
-	docker-compose build
+	docker compose build
 
 down: ## Stop all containers
-	docker-compose down
-	docker-compose -f docker-compose.dev.yml down
+	docker compose down
+	docker compose -f docker-compose.dev.yml down
 
 logs: ## View application logs
-	@if docker-compose ps | grep -q "Up"; then \
-		docker-compose logs -f; \
-	elif docker-compose -f docker-compose.dev.yml ps | grep -q "Up"; then \
-		docker-compose -f docker-compose.dev.yml logs -f; \
+	@if docker compose ps | grep -q "Up"; then \
+		docker compose logs -f; \
+	elif docker compose -f docker-compose.dev.yml ps | grep -q "Up"; then \
+		docker compose -f docker-compose.dev.yml logs -f; \
 	else \
 		echo "No running containers found"; \
 	fi
 
 # Maintenance commands
 clean: ## Clean up Docker resources
-	docker-compose down --rmi all --volumes --remove-orphans
-	docker-compose -f docker-compose.dev.yml down --rmi all --volumes --remove-orphans
+	docker compose down --rmi all --volumes --remove-orphans
+	docker compose -f docker-compose.dev.yml down --rmi all --volumes --remove-orphans
 	docker system prune -f
 
 clean-all: ## Clean everything including unused Docker resources
@@ -110,10 +110,10 @@ test: build ## Build and test the application
 # Status commands
 status: ## Show status of containers
 	@echo "Production containers:"
-	@docker-compose ps 2>/dev/null || echo "No production containers running"
+	@docker compose ps 2>/dev/null || echo "No production containers running"
 	@echo ""
 	@echo "Development containers:"
-	@docker-compose -f docker-compose.dev.yml ps 2>/dev/null || echo "No development containers running"
+	@docker compose -f docker-compose.dev.yml ps 2>/dev/null || echo "No development containers running"
 
 # Backup commands
 backup-ssl: ## Backup SSL certificates
