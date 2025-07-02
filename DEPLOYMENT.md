@@ -5,7 +5,6 @@
 Requirements:
 
 - [docker](https://docs.docker.com/engine/install/)
-- [docker-compose](https://docs.docker.com/compose/install/) (for production deployment)
 
 ### Quick Deployment with Docker Compose (recommended)
 
