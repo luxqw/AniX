@@ -5,6 +5,7 @@
 Требования:
 
 - [docker](https://docs.docker.com/engine/install/)
+- [docker-compose](https://docs.docker.com/compose/install/) (для продакшн развертывания)
 
 ### Быстрое развертывание с Docker Compose (рекомендуется)
 
